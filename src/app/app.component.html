@@ -1,1 +1,20 @@
-MASTER
+<div *ngIf="(myauth | async) as myauthReady; else myauthNotReady"> 
+  Authenticated User
+  <button mat-raised-button color="primary"  (click)="developmentservice.logout()"> 
+    <fa-icon class="fas faSignOutAlt fa-lg" [icon]="['fas', 'sign-out-alt']">
+    </fa-icon>
+    Log off
+
+  </button>
+  </div>
+
+  <ng-template #myauthNotReady>
+    Auth val: {{myauth | async}}
+    <div *ngIf="(myauth | async) === undefined">
+      SPINNER
+    </div>
+   
+    <div *ngIf="(myauth | async) === false">
+      <button mat-raised-button color="primary" (click)="developmentservice.login()"> Google login</button>
+    </div>
+    </ng-template>
