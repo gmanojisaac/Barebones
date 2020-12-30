@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "projectdevelopmenttool": {
+      "hosting": {
+        "goldenNoStrict": [
+          "projectdevelopmenttool"
+        ]
+      }
+    }
+  }
+}

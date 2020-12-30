@@ -28,6 +28,7 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -91,6 +92,7 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -120,9 +122,16 @@
               "devServerTarget": "goldenNoStrict:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {}
         }
       }
     }
   },
-  "defaultProject": "goldenNoStrict"
+  "defaultProject": "goldenNoStrict",
+  "cli": {
+    "analytics": "cbd8fd74-9e2f-4b6d-8d03-1fd0bdadbb5f"
+  }
 }
