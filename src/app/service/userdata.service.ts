@@ -61,7 +61,16 @@ export interface MainSectionGroup {
   name: string;
   section: SubSection[];
 }
-
+export interface userProfile { 
+  userAuthenObj: firebase.User,//Receive User obj after login success
+  myusrinfoFromDb:myusrinfo,
+  keysReadFromDb?:MainSectionGroup[];
+  mainsubsectionKeys?: string[];
+  subSectionKeys?:string[];
+  savedMainSectionKey:string;
+  savesubSectionKeys?:string[];
+  savedisabledval?:boolean;
+ }
 @Injectable({
   providedIn: 'root'
 })

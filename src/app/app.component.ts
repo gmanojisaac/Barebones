@@ -23,7 +23,7 @@ export class AppComponent {
       this.getObservableauthStateSub.unsubscribe();
     }
     this.getObservableauthStateSub = authdetails.subscribe((val: any) => {
-      console.log(val);
+      //console.log(val);
       this.subjectauth.next(val);
     });
     return this.subjectauth;
@@ -50,23 +50,24 @@ export class AppComponent {
       this.getProfileInfoSubscription.unsubscribe();
     }
     this.getProfileInfoSubscription = ProfileInfoDoc.valueChanges().subscribe(async (val: myusrinfo) => {
+      
       if (val === undefined) {
         this.getProfileInfoBehaviourSub.next(undefined);
       }else{
+        console.log('53',val);
         this.getProfileInfoBehaviourSub.next(val);
       }
     });
     return this.getProfileInfoBehaviourSub;
   };
 
-  Sections: Observable<MainSectionGroup[]>;
+  Sections;
   getSectionsSubscription: Subscription;
   getSectionsBehaviourSub = new BehaviorSubject(undefined);
-  getSections = (MainAndSubSectionkeys: AngularFirestoreDocument<MainSectionGroup[]>) => {
+  getSections = (MainAndSubSectionkeys: AngularFirestoreDocument<MainSectionGroup>) => {
     if (this.getSectionsSubscription !== undefined) {
       this.getSectionsSubscription.unsubscribe();
     }
-    
     this.getSectionsSubscription = MainAndSubSectionkeys.valueChanges().subscribe((val: any) => {
       if (val === undefined) {
         this.getSectionsBehaviourSub.next(undefined);
@@ -99,7 +100,7 @@ export class AppComponent {
           this.getPublicListBehaviourSub.next(undefined);
         } else {
           if (val.public !== undefined) {
-            console.log('val.public',val.public);
+            //console.log('val.public',val.public);
             this.localpublicList = val.public;
             this.getPublicListBehaviourSub.next(val.public);
           }
@@ -139,7 +140,34 @@ export class AppComponent {
     return this.getPrivateListBehaviourSub;
   };
 
+  SectionTc;
+  getTestcasesSubscription: Subscription;
+  getTestcasesBehaviourSub = new BehaviorSubject(undefined);
+  getTestcases = (TestcaseList: AngularFirestoreDocument<TestcaseInfo>) => {
+    if (this.getTestcasesSubscription !== undefined) {
+      this.getTestcasesSubscription.unsubscribe();
+    }
+    this.getTestcasesSubscription = TestcaseList.valueChanges().subscribe((val: any) => {
+      let arrayeverse = val;
+      if (val === undefined) {
+        arrayeverse = undefined;
+      } else {
+        if (!Object.keys(val.testcase).length === true) {
+          arrayeverse = undefined;
+        } else {
+          if (val.testcase !== undefined) {
+            arrayeverse = (val.testcase);
+            this.myprojectVariables.testcaseslength = arrayeverse.length;
+          } else {
+            arrayeverse = undefined;
+          }
+        }
+      }
+      this.getTestcasesBehaviourSub.next(arrayeverse);
+    });
 
+    return this.getTestcasesBehaviourSub;
+  };
 
   myusrinfo: myusrinfo= {
     MembershipEnd:undefined,
@@ -196,16 +224,20 @@ export class AppComponent {
 
     this.myonline = this.getObservableonine(this.developmentservice.isOnline$);
     this.myauth = this.getObservableauthState(this.afAuth.authState);
+
     this.AfterOnlineCheckAuth = this.myonline.pipe(
-      filter((offline) => offline !== false),
+      filter((offline) => offline !== false),//don't worry abt offline-> handled inside
       switchMap((onlineval: any) => {
         return this.myauth.pipe(
-          filter(authstat => authstat !== undefined),
-          map((afterauth: any) => {
-           if(afterauth !== null){
+          filter(authstat => authstat !== undefined),//logincase track offline,logoutcase take else branch
+          filter(authstat => authstat !== null),//only logged in case
+          switchMap((afterauth: any) => {
+            console.log('53',afterauth);
+
             this.myuserProfile.userAuthenObj=afterauth;
-            this.myProfileInfo=this.getProfileInfo(this.db.doc('myProfile/' + afterauth.uid)).pipe(
-              map((profileval: any)=>{                
+            return this.getProfileInfo(this.db.doc('myProfile/' + afterauth.uid)).pipe(
+              map((profileval: any)=>{ 
+                console.log('250',profileval)   ;            
                 if(profileval === undefined){
                   const nextMonth: Date = new Date();
                   nextMonth.setMonth(nextMonth.getMonth() + 1);
@@ -217,7 +249,6 @@ export class AppComponent {
                     projectName: 'Demo'
                   };
                   this.myuserProfile.myusrinfoFromDb= newItem;
-                  return this.myuserProfile.myusrinfoFromDb;
                 } else {
                   this.myuserProfile.myusrinfoFromDb=profileval;
                   if (new Date(this.myuserProfile.myusrinfoFromDb.MembershipEnd).valueOf() < new Date().valueOf()) {
@@ -251,8 +282,8 @@ export class AppComponent {
                   }//end normal
                   this.Sections= this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
                   this.publicList= this.getPublicList(this.db.doc(('/projectList/publicProjects')));
-                  this.privateList = this.getPrivateList(this.db.doc(('/projectList/' + this.myuserProfile.userAuthenObj.uid)));                              
-         /*      this.SectionTc = this.myprojectControls.subsectionkeysControl.valueChanges
+                  this.privateList = this.getPrivateList(this.db.doc(('/projectList/' + this.myuserProfile.userAuthenObj.uid)));                  
+                  this.SectionTc = this.myprojectControls.subsectionkeysControl.valueChanges
                   .pipe(startWith({ value: '', groupValue: '' }),
                     map((selection: any) => {
                       if (!selection || selection.groupValue === '') {
@@ -266,12 +297,12 @@ export class AppComponent {
                         }            
                       }
                     })
-                  );*/
+                  );
                 }
+                return onlineval;
               }));
-           return onlineval;
-           }else{
-            const nextMonth: Date = new Date();
+
+            /*const nextMonth: Date = new Date();
             nextMonth.setMonth(nextMonth.getMonth() + 1);
             const newItem:myusrinfo = {
               MembershipEnd: nextMonth,
@@ -285,8 +316,8 @@ export class AppComponent {
             this.getSectionsSubscription?.unsubscribe();
             this.getPublicListSubscription?.unsubscribe();
             this.getPrivateListSubscription?.unsubscribe();
-            return false;
-           }            
+            return false;*/
+   
           })
         )
       })
@@ -300,6 +331,20 @@ export class AppComponent {
     this.getPublicListBehaviourSub.next(some);
   }
   componentLogOff(){
+    const nextMonth: Date = new Date();
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            const newItem:myusrinfo = {
+              MembershipEnd: nextMonth,
+              MembershipType: 'Demo',
+              projectLocation: '/projectList/DemoProjectKey',
+              projectOwner: false,
+              projectName: 'Demo'
+            };
+            this.myuserProfile.myusrinfoFromDb=newItem;
+            this.getProfileInfoSubscription?.unsubscribe();
+            this.getSectionsSubscription?.unsubscribe();
+            this.getPublicListSubscription?.unsubscribe();
+            this.getPrivateListSubscription?.unsubscribe();
     this.developmentservice.logout();
   }
 }

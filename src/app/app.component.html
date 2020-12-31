@@ -1,313 +1,87 @@
 <div *ngIf="(AfterOnlineCheckAuth | async) as onlineAndAuthReady; else onlineAndAuthNotReady">
   <div *ngIf="(myonline | async) as myonlineReady; else myonlineNotReady">
-    <div *ngIf="(myauth | async) as myauthReady">
-      <mat-sidenav-container fxFlex="100vw">
-        <mat-sidenav-content>
-          <mat-toolbar color="primary" style="width:100vw;">
-            <mat-icon style="margin-right:20px;" *ngIf="!drawer.opened" (click)="drawer.toggle()">
-              menu
-            </mat-icon>
-            <h1>
-              StepsWise Tracking Tool
-            </h1>
-  
-            <span fxFlex="grow"></span>
-  
-            <div fxHide.lt-sm>
-              Welcome {{myuserProfile.userAuthenObj?.displayName}}!
-            </div>
-            <button mat-icon-button>
-  
-              <fa-icon (click)="componentLogOff()" class="fas faSignOutAlt fa-lg" [icon]="['fas', 'sign-out-alt']">
-              </fa-icon>
-  
-            </button>
-  
-  
-          </mat-toolbar>
-          <div class="container-wrapper" fxLayout="column">
-            <div fxLayout="row wrap" fxLayoutAlign="space-around center">
-              <div fxLayout="column" fxFlex="20vw" fxFlex.lt-sm="60vw" Style="padding-bottom:10vh;" fxLayoutGap="10px">
-                <div *ngIf="(myProfileInfo | async) as ProfileReady; else ProfileNotReady">
-                    <h4>{{ProfileReady?.projectName}}</h4>
-                </div>
-                <mat-form-field appearance="fill" *ngIf="(Sections | async) as mySections; else nokeysinSection">
-                  <mat-label>{{myprojectVariables?.initialMainSection}}</mat-label>
-                  <mat-select [formControl]="myprojectControls?.subsectionkeysControl">
-                    <mat-optgroup *ngFor="let group of mySections" [label]="group.name" [disabled]="group.disabled">
-                      <mat-option *ngFor="let mysection of group.section"
-                        [value]="{value: mysection.viewvalue}">
-                        {{mysection.viewvalue}}
-                      </mat-option>
-                    </mat-optgroup>
-                  </mat-select>
-                </mat-form-field>
-                <button mat-raised-button color="primary"
-                  *ngIf="myprojectFlags?.showPaymentpage === false && myuserProfile?.projectOwner === true  && myprojectControls?.subsectionkeysControl.valid"
-                  [disabled]="myprojectFlags?.firstTestcaseEdit === true " (click)="AddNew()">Add</button>
-                <form class="example-form" *ngIf="myprojectFlags?.firstTestcaseEdit === true" fxLayout="column"
-                  fxLayoutGap="10px">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Enter New Task Name</mat-label>
-                    <input matInput placeholder="Services or Directives"
-                      [formControl]="myprojectControls?.createTestcaseControl">
-                    <mat-hint>Unique Name!</mat-hint>
-                  </mat-form-field>
-                  <button mat-raised-button color="primary" (click)="saveTC()"
-                    [disabled]="!(myprojectControls?.createTestcaseControl.value)">Save</button>
-                  <button mat-raised-button color="warn" (click)="exitTC()">Cancel</button>
-                </form>
-                <button mat-raised-button color="accent"
-                  [fxShow]="myprojectFlags?.showPaymentpage === false && myuserProfile?.projectOwner === true && myprojectFlags?.firstTestcaseEdit === false && myprojectControls?.subsectionkeysControl.valid && myprojectVariables.testcaseslength > 0"
-                  [disabled]="myprojectFlags?.showEditTcButton !== true" (click)="openedit()">Edit</button>
-                <button mat-raised-button color="warn"
-                  [fxShow]="myprojectFlags?.showPaymentpage === false && myuserProfile?.projectOwner === true && myprojectFlags?.firstTestcaseEdit === false && myprojectControls?.subsectionkeysControl.valid && myprojectVariables.testcaseslength > 0 "
-                  [disabled]="myprojectFlags?.showEditTcButton !== true" (click)="Delete()">Delete</button>
-              </div>
-              <div fxLayout="column" fxFlex="60vw" fxFlex.lt-sm="80vw" Style="padding-bottom:50px;">
-  
-                <h1 *ngIf="myprojectVariables.viewSelectedTestcase === undefined ">Task Steps</h1>
-                <h1 *ngIf="myprojectVariables.viewSelectedTestcase !== undefined">
-                  {{myprojectVariables.viewSelectedTestcase?.heading}} </h1>
-                <mat-form-field appearance="fill">
-                  <mat-label>{{myprojectVariables.viewSelectedTestcase?.subHeading}}</mat-label>
-                  <mat-label *ngIf="myprojectVariables.viewSelectedTestcase === undefined" style="font-size: 24px;">
-                    Select Task Now!
-                  </mat-label>
-                  <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="15" cdkAutosizeMaxRows="50" fxFlex="grow"
-                    style="overflow-x: hidden;" [formControl]="myprojectControls?.testcaseInfoControl" readonly>
-  
-                </textarea>
-                </mat-form-field>
-              </div>
-            </div>
-            <div fxLayout="column" *ngIf="(SectionTc | async) as mySectionTc; else noTcsinSection">
-              <h2>Services and Directives</h2>
-              <mat-card class="list" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
-                <app-singletask ngStyle.lt-sm="width:60vw;" fxLayoutAlign.lt-sm="space-between center"
-                  fxLayoutAlign="space-between center" fxLayoutGap="10px" *ngFor="let task of mySectionTc " [task]="task"
-                  (toshow)="refreshList($event)"></app-singletask>
-                <!--[lasteditedHeading]="lasteditedHeading" [lasteditedSubHeading]="lasteditedSubHeading"-->
-              </mat-card>
-            </div>
-  
-            <ng-template #noTcsinSection>
-              <h2>Services and Directives</h2>
-              <mat-card class="list" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
-                <p class="empty-label">
-                  Empty list</p>
-              </mat-card>
-            </ng-template>
-          </div>
+    <div *ngIf="(myauth | async) as myauthReady;else myauthNotReady ">
+      <button mat-icon-button>
+
+        <fa-icon (click)="componentLogOff()" class="fas faSignOutAlt fa-lg" [icon]="['fas', 'sign-out-alt']">
+        </fa-icon>
+
+      </button>
+      <mat-form-field appearance="fill" *ngIf="(Sections | async) as mySections; else nokeysinSection">
+        <mat-select [formControl]="myprojectControls?.subsectionkeysControl">
+          <mat-optgroup *ngFor="let group of mySections" [label]="group.name" [disabled]="group.disabled">
+            <mat-option *ngFor="let mysection of group.section"
+              [value]="{value: mysection.viewvalue, groupValue: group.name}">
+              {{mysection.viewvalue}}
+            </mat-option>
+          </mat-optgroup>
+        </mat-select>
+      </mat-form-field>    
+      <div *ngIf="(SectionTc | async) as mySectionTc; else noTcsinSection">
+        TC:
+        <pre>
+          {{mySectionTc .value| json}}
 
 
-          <div *ngIf="(publicList| async ) as publicListReady; else publicListReady">
-            
-            PublicTasks:
-            <pre>
-              {{publicListReady}}
-            </pre>
-    <!--button mat-raised-button (click)="changelist()" >
-      changelist
-    </button-->
-          </div>
-          <div *ngIf="(privateList| async ) as privateListReady; else privateListNotReady">
-            PrivateTasks:
-            <pre>
-              {{privateListReady}}
-            </pre>
-           
-    
-          </div>
-    
-          <ng-template #SectionsNotReady>
-            Keys not found
-          </ng-template>
-          <ng-template #publicListReady>
-            Public List not found
-          </ng-template>
-          <ng-template #privateListNotReady>
-            Private List not found
-          </ng-template>
-    
-          <ng-template #ProfileNotReady>
-            Profile Not Ready
-          </ng-template>
-          <ng-template #nokeysinSection>
-            No KEYS found!
-          </ng-template>
-        </mat-sidenav-content>
-        <mat-sidenav #drawer class="drawer" mode="side" opened="false" (opened)="draweropen()" fxFlex.lt-sm="100vw">
-          <mat-toolbar class="header" color="warn">
-            <div>Task keys Management</div>
-            <span fxFlex="grow"></span>
-            <mat-icon style="margin-right:20px;" class="close" (click)="drawerclose()">close</mat-icon>
-          </mat-toolbar>
-          <mat-tab-group>
-            <mat-tab>
-              <ng-template mat-tab-label>Home</ng-template>
-              <ng-template matTabContent >
-                <div *ngIf="(publicList | async) as mypublicList; else nopublicList">
-                <mat-label  class="example-margin" Style="margin-top:40px;border-style: double;" fxLayoutAlign="center">Current Task : {{myuserProfile?.projectName}}</mat-label>
-               
-                <div  class="example-margin" fxLayout="column" Style="margin-top:40px;margin-bottom:50px;border-style: double; padding:1em;"
-                  fxLayoutAlign="space-around center" fxLayoutGap="10vh">
-                  
-                  <form  fxLayoutGap="20px" fxLayoutAlign="center space-around" Style="margin-top:20px;">
-                    <mat-label fxFlexAlign="center">Select/Create NewTask</mat-label>
-                    <mat-form-field appearance="fill">
-                      <input #trigger1="matAutocompleteTrigger" matInput [matAutocomplete]="auto1"
-                        placeholder="Pick one or Create New" aria-label="Number"
-                        [formControl]="myprojectControls?.publicprojectControl">
-                      <mat-icon (click)="trigger1.panelOpen ? trigger1.closePanel() : trigger1.openPanel()"
-                        class="custom-icon custom-form-field-icon">
-                        arrow_drop_down
-                      </mat-icon>
-                      <mat-autocomplete #auto1="matAutocomplete" autoActiveFirstOption>
-                        <mat-option *ngFor="let option of myprojectVariables.publicProjectHome| async" [value]="option">
-                          {{option}}</mat-option>
-                      </mat-autocomplete>
-                      <mat-hint>{{myprojectVariables.publicProjectHint}}</mat-hint>
-                    </mat-form-field>
-      
-                  </form>
-      
-                  <div fxLayoutGap="1em">
-                    <button mat-raised-button color="warn" (click)="NewProject()" [fxShow]="myprojectFlags?.homeNewProject === true"
-                      [disabled]="!(myprojectControls?.publicprojectControl.valid) || myprojectFlags?.homeNewProject === false"
-                      fxFlex="nogrow">New</button>
-                      <button mat-raised-button color="warn" (click)="DeleteProject()" [fxShow]="myprojectFlags?.homeDeleteProject === true"
-                      [disabled]="!(myprojectControls?.publicprojectControl.valid)"
-                      fxFlex="nogrow">Delete</button>
-                    <button mat-raised-button color="warn" (click)="saveCurrProject()"
-                      [disabled]="!(myprojectControls?.publicprojectControl.valid) || myprojectFlags?.homeCurrentProject === false "
-                      fxFlex="nogrow">ChangeCurrent Task</button>
-                  </div>
-                  <div>
-      
-                    <button mat-raised-button color="accent" (click)="NewMember()"
-                      [disabled]="myuserProfile?.membershipType === 'Member'" fxFlex="nogrow">Become Member</button>
-                    <mat-label class="example-margin" *ngIf="myuserProfile?.membershipType === 'Member'">Member till:
-                    </mat-label>
-                    <mat-label class="example-margin" *ngIf="myuserProfile?.membershipType !== 'Member'">Demo till:
-                    </mat-label>
-                    <span style="margin:10px">
-                      {{myuserProfile?.endMembershipValidity | date}}
-                    </span>
-                  </div>
-      
-      
-      
-                </div>
-                </div>
-                <ng-template #nopublicList>
-                  No public Tasks
-                </ng-template>
-              </ng-template>
-      
-  
-            </mat-tab>
-            <mat-tab>
-              <ng-template mat-tab-label>Edit</ng-template>
-              <ng-template matTabContent>
-                <div  class="example-margin" fxLayout="column" Style="margin-top:2vh;border-style: double; padding:1em;"
-                *ngIf="(privateList | async) as myprivateList; else noprivateList"
-                fxLayoutAlign="space-around center" fxLayoutGap="10vh">             
-                  <form Style="margin-top:20px;"  fxLayoutGap="10px">
-                    <mat-label fxFlexAlign="center">My Projects</mat-label>
-                    <mat-form-field appearance="fill">
-                      <mat-select [formControl]="myprojectControls?.ownPublicprojectControl">
-                        <mat-option *ngFor="let option of myprivateList" [value]="option">
-                          {{option}}</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                  </form>
-                </div>
-                <div class="example-margin" fxLayout="column" Style="margin-top:2vh;margin-bottom:10px;border-style: double; padding:1em;"
-                *ngIf="(privateSection | async) as myprivateMain; else noprivateMain"
-                fxLayoutAlign="space-around center" fxLayoutGap="5vh">
-                  <form [formGroup]="myprojectControls?.editMainsectionGroup"  fxLayoutGap="10px">
-                    <mat-label fxFlexAlign="center">MainSection:</mat-label>
-                    <mat-form-field appearance="fill">
-                      <input #trigger2="matAutocompleteTrigger" matInput [matAutocomplete]="auto2" placeholder="Pick one"
-                        aria-label="Number" formControlName="editMainsectionControl">
-                      <mat-icon (click)="trigger2.panelOpen ? trigger2.closePanel() : trigger2.openPanel()"
-                        class="custom-icon custom-form-field-icon">
-                        arrow_drop_down
-                      </mat-icon>
-                      <mat-autocomplete #auto2="matAutocomplete">
-                        <mat-option *ngFor="let option of (myprojectVariables?.privateTaskMainEdit | async)" [value]="option">
-                          {{option}}</mat-option>
-                      </mat-autocomplete>
-                    </mat-form-field>
-                  </form>
-                  <form Style="margin-top:10px;" [formGroup]="myprojectControls?.visibilityMainsectionGroup">
-                    <label class="example-margin">Visibility:</label>
-                    <mat-radio-group formControlName="editVisibilityControl">
-                      <mat-radio-button class="example-margin" [value]=false>Enable</mat-radio-button>
-                      <mat-radio-button class="example-margin" [value]=true>Disable</mat-radio-button>
-                    </mat-radio-group>
-                  </form>
-                  <form [formGroup]="myprojectControls?.editSubsectionGroup" Style="margin-top:10px;"  fxLayoutGap="10px">
-                    <mat-label fxFlexAlign="center">SubSection</mat-label>
-                    <mat-form-field appearance="fill">
-                      <input #trigger3="matAutocompleteTrigger" matInput [matAutocomplete]="auto3" placeholder="Pick one"
-                        aria-label="Number" formControlName="editSubsectionControl">
-                      <mat-icon (click)="trigger3.panelOpen ? trigger3.closePanel() : trigger3.openPanel()"
-                        class="custom-icon custom-form-field-icon">
-                        arrow_drop_down
-                      </mat-icon>
-                      <mat-autocomplete #auto3="matAutocomplete">
-                        <mat-option *ngFor="let option of (myprojectVariables?.privateTaskSubEdit | async)" [value]="option">{{option}}
-                        </mat-option>
-                      </mat-autocomplete>
-                      <mat-hint>{{myhint}}</mat-hint>
-                    </mat-form-field>
-                  </form>
-                </div>
-                <div *ngIf="developmentservice?.castValueAdd && developmentservice?.castValueDel && developmentservice?.castValueUpdate " Style="margin-top:2vh; padding:1em;"fxLayoutAlign="space-around center" fxLayoutGap="5vh">
-                  
-                  <button  mat-raised-button color="warn" (click)="EditAdd()" 
-                [disabled]="!(developmentservice?.castValueAdd | async) === true "
-                fxFlex="nogrow">Add</button>
-                <button  mat-raised-button color="warn" (click)="EditDelete()" 
-                [disabled]="!(developmentservice?.castValueDel | async) === true "
-                fxFlex="nogrow">Delete</button>
-                <button  mat-raised-button color="warn" (click)="EditUpdate()" 
-                [disabled]="!(developmentservice?.castValueUpdate | async) === true "
-                fxFlex="nogrow">Change Visibility</button>
-                </div>     
-              </ng-template>
-            </mat-tab>
-            <mat-tab>
-              <ng-template mat-tab-label>Payments</ng-template>
-              <ng-template matTabContent>
-              </ng-template>
-            </mat-tab>
-          </mat-tab-group>
-          <ng-template #noprivateList>
-            No Private Projects
-          </ng-template>
-          <ng-template #noprivateMain>
-            <div [fxShow]="myprojectControls?.ownPublicprojectControl.valid  === true && myuserProfile?.keysReadFromDb.length === 0 " class="example-margin" fxLayout="column" Style="margin-top:40px;margin-bottom:50px;border-style: double; padding:1em;"
-            fxLayoutAlign="space-around center" fxLayoutGap="10vh">
-            Create First Main Section:
-            <mat-form-field appearance="fill">
-              <mat-label>Enter MainSection Name:</mat-label>
-              <input matInput placeholder="Main Section Name"
-                [formControl]="myprojectControls?.firstMainSecControl">
-            </mat-form-field>
-            <button color="primary" mat-raised-button [disabled]="!myprojectControls?.firstMainSecControl.valid" (click)="NewMain()">Add</button>
-            </div>
-          </ng-template>
-        </mat-sidenav>
-      </mat-sidenav-container>
-     
-
-    
-    </div>
+        </pre>          
+      </div>
+      <ng-template #noTcsinSection>
+        No Tcs
+      </ng-template>   
+  </div>
   </div>
 
+  <ng-template #ProfileNotReady>
+    Profile Not Ready
+  </ng-template>
+  <ng-template #myauthNotReady>
+    <div *ngIf="(myonline | async) as myonlineReady; else myonlineNotReady1">
+      <div *ngIf="!(myauth | async) as myauthNotReady">
+        <div *ngIf="(myauth | async) === undefined">
+          <div fxLayoutAlign="center center" style="height:100vh;">
+          Waiting for Authentication!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
+          </div>
+  
+        </div>
+        <div *ngIf="(myauth | async) === null">
+          <div fxLayoutAlign="center center" style="height:100vh;">
+            <mat-card class="example-card" fxFlex="30vw" fxFlex.lt-sm="80vw">
+              <mat-card-header>
+                <div mat-card-avatar class="example-header-image"></div>
+                <mat-card-title>Share Tasks</mat-card-title>
+                <mat-card-subtitle>Step by Step</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div style="color:blue; padding:0px;">
+                  <div fxLayout="column" fxLayoutAlign="space-around center" style="letter-spacing: 20px;">
+                    <h1> <strong style="font-size:30px">StepsWise Tracking Tool</strong> </h1>
+                    <h1> Analayze all the Steps of a Task </h1>
+                    <h1> Record all the Steps for Easy Tracking </h1>
+                  </div>
+      
+                </div>
+              </mat-card-content>
+              <mat-card-actions>
+                <div fxLayout="row " fxLayoutAlign="space-around center">
+                  <mat-chip-list>
+                    <mat-chip style="font-size:2em; padding:10px;height: 60px !important;
+              ">Login now:</mat-chip>
+                  </mat-chip-list>
+                  <button mat-raised-button color="primary" (click)="developmentservice.login()"> Google login</button>
+                </div>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <ng-template #myonlineNotReady1>
+      <div fxLayoutAlign="center center" style="height:100vh;">
+        Checking for Internet!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
+      </div>
+    </ng-template>
+  </ng-template>
   <ng-template #myonlineNotReady>
     <div fxLayoutAlign="center center" style="height:100vh;">
       Checking for InternetConnection1!:<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
