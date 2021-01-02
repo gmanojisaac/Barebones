@@ -1,0 +1,7 @@
+<mat-card class="item" (click)="changeselected(task)" fxLayout="column"
+fxLayoutAlign="center center" fxLayoutGap="2vh">
+    <button mat-raised-button class="mybutton" color="warn" (click)="open()" >{{ task.heading }}</button>
+    <p>
+        {{ task.subHeading }}
+    </p>     
+</mat-card>
