@@ -55,11 +55,22 @@ export class AppComponent {
     this.myauth = this.getObservableauthState(this.afAuth.authState);
 
     this.AfterOnlineCheckAuth = this.myonline.pipe(
-      filter((offline) => offline !== false),//don't worry abt offline-> handled inside
+     // filter((offline) => offline !== false),//don't worry abt offline-> handled inside
       switchMap((onlineval: any) => {
         return this.myauth.pipe(
-          filter(authstat => authstat !== undefined),//logincase track offline,logoutcase take else branch
-          filter(authstat => authstat !== null),//only logged in case
+          map((checkonlineInAuth:any)=>{
+            if(onlineval===false){//goes offline
+              return onlineval;
+            
+            }
+            if(checkonlineInAuth === null){//goes logoff
+              return null;
+            }
+
+            return checkonlineInAuth;
+          }),
+          filter(checkonlineInAuth => checkonlineInAuth !== undefined),//logincase track offline,logoutcase take else branch
+          //filter(checkonlineInAuth => checkonlineInAuth !== null),//only logged in case
           map((afterauth:firebase.User) => {
             console.log('53',afterauth);
 

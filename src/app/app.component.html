@@ -1,68 +1,12 @@
 <div *ngIf="(AfterOnlineCheckAuth | async) as onlineAndAuthReady; else onlineAndAuthNotReady">
-    <div *ngIf="(myonline | async) as myonlineReady; else myonlineNotReady">
-        <div *ngIf="(myauth | async) as myauthReady;else myauthNotReady ">
-            <button mat-icon-button>
 
-                <fa-icon (click)="componentLogOff()" class="fas faSignOutAlt fa-lg" [icon]="['fas', 'sign-out-alt']">
-                </fa-icon>
-</button>
-        </div>
-    </div>
-    <ng-template #myauthNotReady>
-        <div *ngIf="(myonline | async) as myonlineReady; else myonlineNotReady1">
-            <div *ngIf="!(myauth | async) as myauthNotReady">
-                <div *ngIf="(myauth | async) === undefined">
-                    <div fxLayoutAlign="center center" style="height:100vh;">
-                        Waiting for Authentication!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
-                    </div>
+{{onlineAndAuthReady | json}}
+    <button mat-icon-button>
 
-                </div>
-                <div *ngIf="(myauth | async) === null">
-                    <div fxLayoutAlign="center center" style="height:100vh;">
-                        <mat-card class="example-card" fxFlex="30vw" fxFlex.lt-sm="80vw">
-                            <mat-card-header>
-                                <div mat-card-avatar class="example-header-image"></div>
-                                <mat-card-title>Share Tasks</mat-card-title>
-                                <mat-card-subtitle>Step by Step</mat-card-subtitle>
-                            </mat-card-header>
-                            <mat-card-content>
-                                <div style="color:blue; padding:0px;">
-                                    <div fxLayout="column" fxLayoutAlign="space-around center"
-                                        style="letter-spacing: 20px;">
-                                        <h1> <strong style="font-size:30px">StepsWise Tracking Tool</strong> </h1>
-                                        <h1> Analayze all the Steps of a Task </h1>
-                                        <h1> Record all the Steps for Easy Tracking </h1>
-                                    </div>
+        <fa-icon (click)="componentLogOff()" class="fas faSignOutAlt fa-lg" [icon]="['fas', 'sign-out-alt']">
+        </fa-icon>
+    </button>
 
-                                </div>
-                            </mat-card-content>
-                            <mat-card-actions>
-                                <div fxLayout="row " fxLayoutAlign="space-around center">
-                                    <mat-chip-list>
-                                        <mat-chip style="font-size:2em; padding:10px;height: 60px !important;
-              ">Login now:</mat-chip>
-                                    </mat-chip-list>
-                                    <button mat-raised-button color="primary" (click)="developmentservice.login()">
-                                        Google login</button>
-                                </div>
-                            </mat-card-actions>
-                        </mat-card>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <ng-template #myonlineNotReady1>
-            <div fxLayoutAlign="center center" style="height:100vh;">
-                Checking for Internet!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
-            </div>
-        </ng-template>
-    </ng-template>
-    <ng-template #myonlineNotReady>
-        <div fxLayoutAlign="center center" style="height:100vh;">
-            Checking for InternetConnection1!:<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
-        </div>
-    </ng-template>
 </div>
 <ng-template #onlineAndAuthNotReady>
     <div *ngIf="(myonline | async) as myonlineReady; else myonlineNotReady1">
