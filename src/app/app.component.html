@@ -1,21 +1,46 @@
 <div *ngIf="(AfterOnlineCheckAuth | async) as onlineAndAuthReady; else onlineAndAuthNotReady">
 
-    {{onlineAndAuthReady | json}}
+    <!--{{onlineAndAuthReady | json}}-->
     <button mat-icon-button>
 
         <fa-icon (click)="componentLogOff()" class="fas faSignOutAlt fa-lg" [icon]="['fas', 'sign-out-alt']">
         </fa-icon>
     </button>
+    <div *ngIf="(Sections | async) as SectionsReady; else SectionsnotReady">
+        sections:
+        <pre>
+            {{SectionsReady | json}}
+        </pre>
+    </div>
+    <ng-template #SectionsnotReady>
+
+        <div *ngIf="(Sections | async) === undefined">
+            <div fxLayoutAlign="center center" style="height:100vh;">
+                <mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
+            </div>
+        </div>
+        <div *ngIf="(Sections | async) === null">
+            <mat-card class="list" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
+                <mat-card-content class="empty-label">
+                 Do You want to create Demo Account?</mat-card-content>
+                 <mat-card-actions>
+                  <button mat-raised-button color="primary" (click)="CreateAccount()">New Account</button>
+                  <button mat-raised-button color="warn" (click)="reload()">Re-load</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+
+    </ng-template>
 
 </div>
 <ng-template #onlineAndAuthNotReady>
-    <div *ngIf="(myonline | async) as myonlineReady; else myonlineNotReady1">
+    <div *ngIf="(myonline | async) as myonlineReady; else myonlineNotReady">
 
-        <div *ngIf="!(myauth | async)">
+        <div *ngIf="!(myauth | async) as some; else myauthNotReady">
 
             <div *ngIf="(myauth | async) === undefined">
                 <div fxLayoutAlign="center center" style="height:100vh;">
-                    Waiting for Authentication!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
+                    Waiting for Authentication-1!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
                 </div>
             </div>
             <div *ngIf="(myauth | async) === null">
@@ -52,11 +77,16 @@
                 </div>
             </div>
         </div>
+        <ng-template #myauthNotReady>
+            <div fxLayoutAlign="center center" style="height:100vh;">
+                Waiting for Authentication-2!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
+            </div>
+        </ng-template>
     </div>
 
-    <ng-template #myonlineNotReady1>
+    <ng-template #myonlineNotReady>
         <div *ngIf="(myonline | async)==false">
-            
+
             <div fxLayoutAlign="center center" style="height:100vh;">
                 Lost Internet Connection!
             </div>

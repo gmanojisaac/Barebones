@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { BehaviorSubject, Subscription, Observable } from 'rxjs';
-import { UserdataService,projectControls, myusrinfo,projectVariables, userProfile,projectFlags, MainSectionGroup,TestcaseInfo,SubSection } from './service/userdata.service';
+import { BehaviorSubject, Subscription, Observable, of } from 'rxjs';
+import { UserdataService, userProfile, MainSectionGroup,myusrinfo } from './service/userdata.service';
 import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase/app';
-import { map, switchMap, filter,startWith } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { docData } from 'rxfire/firestore';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +28,7 @@ export class AppComponent {
     });
     return this.subjectauth;
   };
-  
+
   myonline;
   subjectonline = new BehaviorSubject(undefined);
   getObservableonlineSub: Subscription = new Subscription;
@@ -40,52 +40,113 @@ export class AppComponent {
     });
     return this.subjectonline;
   };
-  AfterOnlineCheckAuth=undefined;
+  AfterOnlineCheckAuth = undefined;
 
 
+  Sections = of(undefined);
+  getSectionsSubscription: Subscription;
+  getSectionsBehaviourSub = new BehaviorSubject(undefined);
+  getSections = (MainAndSubSectionkeys: AngularFirestoreDocument<MainSectionGroup>) => {
+    if (this.getSectionsSubscription !== undefined) {
+      this.getSectionsSubscription.unsubscribe();
+    }
+    this.getSectionsSubscription = MainAndSubSectionkeys.valueChanges().subscribe((val: any) => {
+      if (val === undefined) {
+        this.getSectionsBehaviourSub.next(undefined);
+      } else {
+        if (!Object.keys(val.MainSection).length === true) {
+          this.getSectionsBehaviourSub.next(undefined);
+        } else {
+          if (val.MainSection !== undefined) {
+            this.getSectionsBehaviourSub.next(val.MainSection);
+          }
+        }
+      }
+    });
+    return this.getSectionsBehaviourSub;
+  };
+  myuserProfile: userProfile = {
+    userAuthenObj: null,//Receive User obj after login success
+    myusrinfoFromDb: null,
+    keysReadFromDb: undefined,
+    mainsubsectionKeys: [],
+    subSectionKeys: undefined,
+    savedMainSectionKey: undefined,
+    savesubSectionKeys: undefined,
+    savedisabledval: undefined
+  };
 
-  constructor( 
-    public afAuth: AngularFireAuth,    
+
+  constructor(
+    public afAuth: AngularFireAuth,
     public developmentservice: UserdataService,
     private db: AngularFirestore,
-    ){     
+  ) {
 
 
     this.myonline = this.getObservableonine(this.developmentservice.isOnline$);
     this.myauth = this.getObservableauthState(this.afAuth.authState);
 
     this.AfterOnlineCheckAuth = this.myonline.pipe(
-     // filter((offline) => offline !== false),//don't worry abt offline-> handled inside
       switchMap((onlineval: any) => {
-        return this.myauth.pipe(
-          map((checkonlineInAuth:any)=>{
-            if(onlineval===false){//goes offline
-              return onlineval;
-            
-            }
-            if(checkonlineInAuth === null){//goes logoff
-              return null;
-            }
+        if (onlineval === true) {
+          return this.myauth.pipe(
+            switchMap((afterauth: firebase.User) => {
+              console.log('95',afterauth);
+              if (afterauth !== null && afterauth !== undefined) {
+                this.myuserProfile.userAuthenObj= afterauth;
+                return docData(this.db.firestore.doc('myProfile/' + afterauth.uid)).pipe(
+                  map((profilevalbef: any) => {
+                    console.log('98',!Object.keys(profilevalbef).length);
+                    if (!Object.keys(profilevalbef).length === true) {
+                      this.developmentservice.findOrCreate(afterauth.uid).then(success => {                        
+                        if (success !== 'doc exists') {
+                          alert('check internet Connection');
+                          this.Sections = of(undefined);
+                          return onlineval;
+                        } else {
+                          console.log(success, afterauth.uid);
+                          this.Sections = of(null);
+                          return onlineval;
+                        }
+                      });
+                      return onlineval;
+                    } else {
+                      this.getSectionsSubscription?.unsubscribe();
+                      this.myuserProfile.myusrinfoFromDb = profilevalbef;
+                      this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
+                      return onlineval;
+                    }
 
-            return checkonlineInAuth;
-          }),
-          filter(checkonlineInAuth => checkonlineInAuth !== undefined),//logincase track offline,logoutcase take else branch
-          //filter(checkonlineInAuth => checkonlineInAuth !== null),//only logged in case
-          map((afterauth:firebase.User) => {
-            console.log('53',afterauth);
-
-            return afterauth;
-
-          }))
-
+                  }));
+              } else {
+                return of(false);
+              }
+            }));
+        } else {
+          return of(false);
+        }
       })
-      
-    )
+    );
   }
-
-
-  componentLogOff(){
-
+  CreateAccount() {
+    const nextMonth: Date = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    const newItem: myusrinfo = {
+      MembershipEnd: nextMonth,
+      MembershipType: 'Demo',
+      projectLocation: '/projectList/DemoProjectKey',
+      projectOwner: false,
+      projectName: 'Demo'
+    };
+    this.myuserProfile.myusrinfoFromDb = newItem;
+    let r = confirm("Start as a New User?");
+    if (r == true) {
+      this.db.doc<any>('myProfile/' + this.myuserProfile.userAuthenObj.uid).set(newItem);
+    }
+  }
+  componentLogOff() {
+    this.getSectionsSubscription?.unsubscribe();
     this.developmentservice.logout();
   }
 }
