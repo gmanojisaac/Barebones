@@ -3,7 +3,7 @@ import { BehaviorSubject, Subscription, Observable, of } from 'rxjs';
 import { UserdataService, projectFlags, TestcaseInfo, projectControls, userProfile, MainSectionGroup,myusrinfo,projectVariables } from './service/userdata.service';
 import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase/app';
-import { map, switchMap,startWith } from 'rxjs/operators';
+import { map, switchMap,startWith,withLatestFrom } from 'rxjs/operators';
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { docData } from 'rxfire/firestore';
@@ -170,7 +170,59 @@ export class AppComponent {
 
     this.myonline = this.getObservableonine(this.developmentservice.isOnline$);
     this.myauth = this.getObservableauthState(this.afAuth.authState);
+    const publicProjsel=  this.myprojectControls.publicprojectControl.valueChanges.pipe(                            
+      startWith(''),                         
+      map((publicProjectSelected: string) => {    
+         console.log('226',publicProjectSelected);
+        if (publicProjectSelected !== '' ) {
+            const filteredlist = this.localpublicList.filter((option => option.toLowerCase().includes(publicProjectSelected.toLowerCase())));
+            this.getSectionsSubscription?.unsubscribe();
+            this.myuserProfile.myusrinfoFromDb.projectName=publicProjectSelected;
+            this.myuserProfile.myusrinfoFromDb.projectLocation='publicProjectKeys/' + publicProjectSelected;
+            this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
+            this.getPublicListBehaviourSub.next(filteredlist);
 
+        } else {
+
+          if(publicProjectSelected === null){
+            this.localpublicList=[];
+          }else{
+            //remove unwanted exec here
+
+              this.localpublicList=[];
+              this.myprojectVariables.publicProjectHint = 'Select Task from List';
+              this.getPublicListSubscription?.unsubscribe();
+              this.publicList = this.getPublicList(this.db.doc(('/projectList/publicProjects')));                               
+   
+           
+          }
+         }
+      }));
+    const keysselection= this.myprojectControls.subsectionkeysControl.valueChanges
+    .pipe(startWith({ value: '', groupValue: '' }),
+    map((selection: any) => {
+        if (!selection || selection.groupValue === '') {
+          this.myprojectVariables.initialMainSection = 'SubSection';
+          this.SectionTc = of(undefined);
+        } else {
+          this.myprojectVariables.initialMainSection = selection.groupValue;
+          if (this.myuserProfile.myusrinfoFromDb.projectName === 'Demo') {
+            this.getTestcasesSubscription?.unsubscribe();
+            this.SectionTc=this.getTestcases(this.db.doc('projectList/' + this.myuserProfile.userAuthenObj.uid));
+          } else {
+            this.getTestcasesSubscription?.unsubscribe();                            
+            this.SectionTc=this.getTestcases(this.db.doc('/' + this.myuserProfile.myusrinfoFromDb.projectName + '/' + selection.groupValue + '/items/' + selection.value));                            
+          }
+        }  
+        console.log('223',selection);
+        if(selection !== null){
+
+        }else{
+          this.getPublicListSubscription?.unsubscribe();
+          return of(false);
+        }                      
+      })
+    );
     this.AfterOnlineCheckAuth = this.myonline.pipe(
       switchMap((onlineval: any) => {
         if (onlineval === true) {
@@ -180,7 +232,7 @@ export class AppComponent {
               if (afterauth !== null && afterauth !== undefined) {
                 this.myuserProfile.userAuthenObj= afterauth;
                 return docData(this.db.firestore.doc('myProfile/' + afterauth.uid)).pipe(
-                  switchMap((profilevalbef: any) => {
+                  map((profilevalbef: any) => {
                     console.log('98-false- means profile exists',!Object.keys(profilevalbef).length);
                     if (!Object.keys(profilevalbef).length === true) {
                       this.developmentservice.findOrCreate(afterauth.uid).then(success => {                        
@@ -203,61 +255,16 @@ export class AppComponent {
                       this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
                       //return onlineval;
                     }
-                    return this.myprojectControls.subsectionkeysControl.valueChanges
-                    .pipe(startWith({ value: '', groupValue: '' }),
-                    switchMap((selection: any) => {
-                        if (!selection || selection.groupValue === '') {
-                          this.myprojectVariables.initialMainSection = 'SubSection';
-                          this.SectionTc = of(undefined);
-                        } else {
-                          this.myprojectVariables.initialMainSection = selection.groupValue;
-                          if (this.myuserProfile.myusrinfoFromDb.projectName === 'Demo') {
-                            this.getTestcasesSubscription?.unsubscribe();
-                            this.SectionTc=this.getTestcases(this.db.doc('projectList/' + this.myuserProfile.userAuthenObj.uid));
-                          } else {
-                            this.getTestcasesSubscription?.unsubscribe();                            
-                            this.SectionTc=this.getTestcases(this.db.doc('/' + this.myuserProfile.myusrinfoFromDb.projectName + '/' + selection.groupValue + '/items/' + selection.value));                            
-                          }
-                        }  
-                        console.log('223',selection);
-                        if(selection !== null){
-                          return this.myprojectControls.publicprojectControl.valueChanges.pipe(                            
-                            startWith(''),                         
-                            map((publicProjectSelected: string) => {    
-                               console.log('226',publicProjectSelected);
-                              if (publicProjectSelected !== '' ) {
-                                  const filteredlist = this.localpublicList.filter((option => option.toLowerCase().includes(publicProjectSelected.toLowerCase())));
-                                  this.getSectionsSubscription?.unsubscribe();
-                                  this.myuserProfile.myusrinfoFromDb.projectName=publicProjectSelected;
-                                  this.myuserProfile.myusrinfoFromDb.projectLocation='publicProjectKeys/' + publicProjectSelected;
-                                  this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
-                                  this.getPublicListBehaviourSub.next(filteredlist);
 
-                              } else {
 
-                                if(publicProjectSelected === null){
-                                  this.localpublicList=[];
-                                }else{
-                                  //remove unwanted exec here
-                                  if(selection.groupValue === ''){
-                                    this.localpublicList=[];
-                                    this.myprojectVariables.publicProjectHint = 'Select Task from List';
-                                    this.getPublicListSubscription?.unsubscribe();
-                                    this.publicList = this.getPublicList(this.db.doc(('/projectList/publicProjects')));                               
-                                  }
-                                 
-                                }
-                               }
-                              return onlineval;
-                            }));
-                        }else{
-                          this.getPublicListSubscription?.unsubscribe();
-                          return of(false);
-                        }                      
-                      })
-                    );
-
-                  }));
+                  }),
+                  withLatestFrom(publicProjsel, keysselection),
+                    map((values:any) =>{
+                      const [publickey, keys]= values;
+                      console.log('264',publickey,keys);
+                      return onlineval;
+                    })
+                  )
               } else {
                 this.getSectionsSubscription?.unsubscribe();
                 this.getTestcasesSubscription?.unsubscribe();
