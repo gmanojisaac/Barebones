@@ -201,11 +201,15 @@ export class AppComponent {
 
                   }));
               } else {
+                this.getSectionsSubscription?.unsubscribe();
+                this.getTestcasesSubscription?.unsubscribe();
                 this.myprojectControls.subsectionkeysControl.reset();
                 return of(false);
               }
             }));
         } else {
+          this.getSectionsSubscription?.unsubscribe();
+          this.getTestcasesSubscription?.unsubscribe();
           this.myprojectControls.subsectionkeysControl.reset();
           return of(false);
         }
