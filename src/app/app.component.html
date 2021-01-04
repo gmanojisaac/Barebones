@@ -61,19 +61,12 @@
         </pre>
     </div>
     <ng-template #SectionTcnotReady>
-
         <div *ngIf="(SectionTc | async) === undefined">
-            <div fxLayoutAlign="center center" style="height:100vh;">
-                <mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
-            </div>
-        </div>
-        <div *ngIf="(SectionTc | async) === null">
             <mat-card class="list" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
                 <p class="empty-label">
                   Empty list</p>
               </mat-card>
         </div>
-
     </ng-template>
 </div>
 <ng-template #onlineAndAuthNotReady>

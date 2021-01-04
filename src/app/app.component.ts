@@ -75,24 +75,25 @@ export class AppComponent {
       this.getTestcasesSubscription.unsubscribe();
     }
     this.getTestcasesSubscription = TestcaseList.valueChanges().subscribe((val: any) => {
-      let arrayeverse = val;
+
       if (val === undefined) {
-        arrayeverse = undefined;
+        this.getTestcasesBehaviourSub.next(undefined);
       } else {
-        if (!Object.keys(val.testcase).length === true) {
-          arrayeverse = undefined;
+        //!Object.keys(val.public).length
+        if (val.testcase.length === 0) {
+        
           this.myprojectVariables.testcaseslength = 0;
+          this.getTestcasesBehaviourSub.next(null);
         } else {
-          if (val.testcase !== undefined) {
-            arrayeverse = (val.testcase);
-            console.log('tc len', arrayeverse.length, val.testcase);
-            this.myprojectVariables.testcaseslength = arrayeverse.length;
+          if (val.testcase.length !== 0) {
+            this.myprojectVariables.testcaseslength = val.testcase.length;
+            this.getTestcasesBehaviourSub.next(val.testcase);
           } else {
-            arrayeverse = undefined;
+            //deal witH demo case
           }
         }
       }
-      this.getTestcasesBehaviourSub.next(arrayeverse);
+
     });
 
     return this.getTestcasesBehaviourSub;
@@ -184,14 +185,14 @@ export class AppComponent {
                       map((selection: any) => {
                         if (!selection || selection.groupValue === '') {
                           this.myprojectVariables.initialMainSection = 'SubSection';
-                          this.SectionTc = of(null);
+                          this.SectionTc = of(undefined);
                         } else {
                           this.myprojectVariables.initialMainSection = selection.groupValue;
                           if (this.myuserProfile.myusrinfoFromDb.projectName === 'Demo') {
                             this.getTestcasesSubscription?.unsubscribe();
                             this.SectionTc=this.getTestcases(this.db.doc('projectList/' + this.myuserProfile.userAuthenObj.uid));
                           } else {
-                            this.getTestcasesSubscription?.unsubscribe();
+                            this.getTestcasesSubscription?.unsubscribe();                            
                             this.SectionTc=this.getTestcases(this.db.doc('/' + this.myuserProfile.myusrinfoFromDb.projectName + '/' + selection.groupValue + '/items/' + selection.value));                            
                           }
                         }
@@ -233,14 +234,17 @@ export class AppComponent {
     }
   }
   CreateDefaultKeys(){
-    const newKeys = [{
+    const MainSection = [{
       name: 'MainSection',
       disabled: false,
       section: [{
         viewvalue: 'SubSection'
       }]
     }];
-    this.db.doc<any>('publicProjectKeys/' + this.myuserProfile.myusrinfoFromDb.projectName).set(newKeys);
+    //delete the default testCase if any
+    this.db.doc<any>('publicProjectKeys/' + this.myuserProfile.myusrinfoFromDb.projectName).set({MainSection},  {merge: false}).then(success=>{
+      this.myprojectControls.subsectionkeysControl.reset();
+    })
   }
   componentLogOff() {
     this.getSectionsSubscription?.unsubscribe();
