@@ -32,6 +32,7 @@ export interface projectVariables {
   initialMainSection?: string;
   testcaseslength?: number;
   viewSelectedTestcase?: TestcaseInfo;
+  publicProjectHint:string;
 }
 export interface projectControls {
   subsectionkeysControl: FormControl;//1-Keys come from db and user sub-sec selection will load a doc from demo or public proj

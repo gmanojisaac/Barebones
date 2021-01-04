@@ -79,7 +79,6 @@ export class AppComponent {
       if (val === undefined) {
         this.getTestcasesBehaviourSub.next(undefined);
       } else {
-        //!Object.keys(val.public).length
         if (val.testcase.length === 0) {
         
           this.myprojectVariables.testcaseslength = 0;
@@ -97,6 +96,29 @@ export class AppComponent {
     });
 
     return this.getTestcasesBehaviourSub;
+  };
+
+  publicList=of(undefined);
+  localpublicList=[];
+  getPublicListSubscription: Subscription;
+  getPublicListBehaviourSub = new BehaviorSubject(undefined);
+  getPublicList = (publicProjects: AngularFirestoreDocument<any>) => {
+    if (this.getPublicListSubscription !== undefined) {
+      this.getPublicListSubscription.unsubscribe();
+    }
+    this.getPublicListSubscription = publicProjects.valueChanges().subscribe((val: any) => {
+      if (val === undefined) {
+        this.getPublicListBehaviourSub.next(undefined);
+      } else {
+        if (val.public.length === 0) {
+          this.getPublicListBehaviourSub.next(null);
+        } else {
+          this.localpublicList=val.public;
+          this.getPublicListBehaviourSub.next(val.public);
+        }
+      }
+    });
+    return this.getPublicListBehaviourSub;
   };
 
   myuserProfile: userProfile = {
@@ -132,6 +154,7 @@ export class AppComponent {
     initialMainSection: undefined,
     testcaseslength: 0,
     viewSelectedTestcase: undefined,
+    publicProjectHint: undefined
   };
   myprojectFlags: projectFlags = {
     showPaymentpage: false,
@@ -182,7 +205,7 @@ export class AppComponent {
                     }
                     return this.myprojectControls.subsectionkeysControl.valueChanges
                     .pipe(startWith({ value: '', groupValue: '' }),
-                      map((selection: any) => {
+                    switchMap((selection: any) => {
                         if (!selection || selection.groupValue === '') {
                           this.myprojectVariables.initialMainSection = 'SubSection';
                           this.SectionTc = of(undefined);
@@ -195,8 +218,34 @@ export class AppComponent {
                             this.getTestcasesSubscription?.unsubscribe();                            
                             this.SectionTc=this.getTestcases(this.db.doc('/' + this.myuserProfile.myusrinfoFromDb.projectName + '/' + selection.groupValue + '/items/' + selection.value));                            
                           }
-                        }
-                        return onlineval;
+                        }  
+                        console.log('223',selection);
+                        if(selection !== null){
+                          return this.myprojectControls.publicprojectControl.valueChanges.pipe(                            
+                            startWith(''),                         
+                            map((publicProjectSelected: string) => {    
+                               console.log('226',publicProjectSelected);
+                              if (publicProjectSelected !== '' ) {
+                                  const filteredlist = this.localpublicList.filter((option => option.toLowerCase().includes(publicProjectSelected.toLowerCase())));
+                                  this.getPublicListBehaviourSub.next(filteredlist);
+                              } else {
+
+                                if(publicProjectSelected === null){
+                                  this.localpublicList=[];
+                                }else{
+                                  //remove unwanted exec here
+                                  this.localpublicList=[];
+                                  this.myprojectVariables.publicProjectHint = 'Select Task from List';
+                                  this.getPublicListSubscription?.unsubscribe();
+                                  this.publicList = this.getPublicList(this.db.doc(('/projectList/publicProjects')));                               
+                                }
+                               }
+                              return onlineval;
+                            }));
+                        }else{
+                          this.getPublicListSubscription?.unsubscribe();
+                          return of(false);
+                        }                      
                       })
                     );
 
@@ -204,14 +253,16 @@ export class AppComponent {
               } else {
                 this.getSectionsSubscription?.unsubscribe();
                 this.getTestcasesSubscription?.unsubscribe();
+                this.getPublicListSubscription?.unsubscribe();
                 this.myprojectControls.subsectionkeysControl.reset();
                 return of(false);
               }
             }));
         } else {
           this.getSectionsSubscription?.unsubscribe();
-          this.getTestcasesSubscription?.unsubscribe();
-          this.myprojectControls.subsectionkeysControl.reset();
+          this.getTestcasesSubscription?.unsubscribe();      
+          this.getPublicListSubscription?.unsubscribe();
+          this.myprojectControls.subsectionkeysControl.reset();    
           return of(false);
         }
       })
@@ -247,6 +298,7 @@ export class AppComponent {
     })
   }
   componentLogOff() {
+    this.getPublicListSubscription?.unsubscribe();
     this.getSectionsSubscription?.unsubscribe();
     this.getTestcasesSubscription?.unsubscribe();
     this.developmentservice.logout();
