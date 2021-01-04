@@ -181,7 +181,7 @@ export class AppComponent {
                 this.myuserProfile.userAuthenObj= afterauth;
                 return docData(this.db.firestore.doc('myProfile/' + afterauth.uid)).pipe(
                   switchMap((profilevalbef: any) => {
-                    console.log('98',!Object.keys(profilevalbef).length);
+                    console.log('98-false- means profile exists',!Object.keys(profilevalbef).length);
                     if (!Object.keys(profilevalbef).length === true) {
                       this.developmentservice.findOrCreate(afterauth.uid).then(success => {                        
                         if (success !== 'doc exists') {
@@ -239,10 +239,13 @@ export class AppComponent {
                                   this.localpublicList=[];
                                 }else{
                                   //remove unwanted exec here
-                                  this.localpublicList=[];
-                                  this.myprojectVariables.publicProjectHint = 'Select Task from List';
-                                  this.getPublicListSubscription?.unsubscribe();
-                                  this.publicList = this.getPublicList(this.db.doc(('/projectList/publicProjects')));                               
+                                  if(selection.groupValue === ''){
+                                    this.localpublicList=[];
+                                    this.myprojectVariables.publicProjectHint = 'Select Task from List';
+                                    this.getPublicListSubscription?.unsubscribe();
+                                    this.publicList = this.getPublicList(this.db.doc(('/projectList/publicProjects')));                               
+                                  }
+                                 
                                 }
                                }
                               return onlineval;
