@@ -227,7 +227,12 @@ export class AppComponent {
                                console.log('226',publicProjectSelected);
                               if (publicProjectSelected !== '' ) {
                                   const filteredlist = this.localpublicList.filter((option => option.toLowerCase().includes(publicProjectSelected.toLowerCase())));
+                                  this.getSectionsSubscription?.unsubscribe();
+                                  this.myuserProfile.myusrinfoFromDb.projectName=publicProjectSelected;
+                                  this.myuserProfile.myusrinfoFromDb.projectLocation='publicProjectKeys/' + publicProjectSelected;
+                                  this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
                                   this.getPublicListBehaviourSub.next(filteredlist);
+
                               } else {
 
                                 if(publicProjectSelected === null){
