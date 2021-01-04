@@ -55,10 +55,10 @@ export class AppComponent {
       if (val === undefined) {
         this.getSectionsBehaviourSub.next(undefined);
       } else {
-        if (!Object.keys(val.MainSection).length === true) {
-          this.getSectionsBehaviourSub.next(undefined);
+        if (val.MainSection.length === 0) {
+          this.getSectionsBehaviourSub.next(null);
         } else {
-          if (val.MainSection !== undefined) {
+          if (val.MainSection.length !== 0) {
             this.getSectionsBehaviourSub.next(val.MainSection);
           }
         }
@@ -233,7 +233,14 @@ export class AppComponent {
     }
   }
   CreateDefaultKeys(){
-
+    const newKeys = [{
+      name: 'MainSection',
+      disabled: false,
+      section: [{
+        viewvalue: 'SubSection'
+      }]
+    }];
+    this.db.doc<any>('publicProjectKeys/' + this.myuserProfile.myusrinfoFromDb.projectName).set(newKeys);
   }
   componentLogOff() {
     this.getSectionsSubscription?.unsubscribe();
