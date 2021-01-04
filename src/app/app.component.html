@@ -79,11 +79,17 @@
 <ng-template #onlineAndAuthNotReady>
     <div *ngIf="(myonline | async) as myonlineReady; else myonlineNotReady">
 
-        <div *ngIf="!(myauth | async) as some; else myauthNotReady">
+        <div *ngIf="(myauth | async) as some; else myauthNotReady">
+            <div fxLayoutAlign="center center" style="height:100vh;">
+                Authentication Check Success!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
+            </div>
+            
+        </div>
+        <ng-template #myauthNotReady>
 
             <div *ngIf="(myauth | async) === undefined">
                 <div fxLayoutAlign="center center" style="height:100vh;">
-                    Waiting for Authentication-1!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
+                    Waiting for Authentication!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
                 </div>
             </div>
             <div *ngIf="(myauth | async) === null">
@@ -118,11 +124,6 @@
                         </mat-card-actions>
                     </mat-card>
                 </div>
-            </div>
-        </div>
-        <ng-template #myauthNotReady>
-            <div fxLayoutAlign="center center" style="height:100vh;">
-                Waiting for Authentication-2!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
             </div>
         </ng-template>
     </div>
