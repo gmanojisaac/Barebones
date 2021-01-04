@@ -6,7 +6,9 @@
         <fa-icon (click)="componentLogOff()" class="fas faSignOutAlt fa-lg" [icon]="['fas', 'sign-out-alt']">
         </fa-icon>
     </button>
+
     <div *ngIf="(Sections | async) as SectionsReady; else SectionsnotReady">
+        <h4>{{myuserProfile?.myusrinfoFromDb?.projectName}}</h4>
         sections:
         <pre>
             {{SectionsReady | json}}
@@ -54,12 +56,12 @@
     </div>
     <ng-template #SectionTcnotReady>
 
-        <div *ngIf="(Sections | async) === undefined">
+        <div *ngIf="(SectionTc | async) === undefined">
             <div fxLayoutAlign="center center" style="height:100vh;">
                 <mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
             </div>
         </div>
-        <div *ngIf="(Sections | async) === null">
+        <div *ngIf="(SectionTc | async) === null">
             <mat-card class="list" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
                 <p class="empty-label">
                   Empty list</p>

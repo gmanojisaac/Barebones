@@ -222,6 +222,7 @@ export class AppComponent {
   }
   componentLogOff() {
     this.getSectionsSubscription?.unsubscribe();
+    this.getTestcasesSubscription?.unsubscribe();
     this.developmentservice.logout();
   }
 }
