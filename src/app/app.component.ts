@@ -162,6 +162,7 @@ export class AppComponent {
                       this.developmentservice.findOrCreate(afterauth.uid).then(success => {                        
                         if (success !== 'doc exists') {
                           alert('check internet Connection');
+                          this.myprojectFlags.newuserCheck=false;
                           this.Sections = of(undefined);
                           //return onlineval;
                         } else {
@@ -200,10 +201,12 @@ export class AppComponent {
 
                   }));
               } else {
+                this.myprojectControls.subsectionkeysControl.reset();
                 return of(false);
               }
             }));
         } else {
+          this.myprojectControls.subsectionkeysControl.reset();
           return of(false);
         }
       })
@@ -226,7 +229,7 @@ export class AppComponent {
     }
   }
   CreateDefaultKeys(){
-    
+
   }
   componentLogOff() {
     this.getSectionsSubscription?.unsubscribe();
