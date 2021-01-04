@@ -19,6 +19,7 @@ export interface userProfile {
 }
 export interface projectFlags {
   showPaymentpage: boolean;
+  newuserCheck: boolean;
 }
 export interface myusrinfo {
   MembershipEnd: Date;

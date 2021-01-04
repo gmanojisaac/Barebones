@@ -33,12 +33,18 @@
             </div>
         </div>
         <div *ngIf="(Sections | async) === null">
-            <mat-card class="list" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
+            <mat-card class="list" *ngIf="myprojectFlags.newuserCheck === false" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
+                <mat-card-content class="empty-label">
+                 Do You want to Add Default Keys?</mat-card-content>
+                 <mat-card-actions>
+                  <button mat-raised-button color="primary" (click)="CreateDefaultKeys()">New Account</button>                 
+                </mat-card-actions>
+            </mat-card>
+            <mat-card class="list" *ngIf="myprojectFlags.newuserCheck === true" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
                 <mat-card-content class="empty-label">
                  Do You want to create Demo Account?</mat-card-content>
                  <mat-card-actions>
                   <button mat-raised-button color="primary" (click)="CreateAccount()">New Account</button>
-                  <button mat-raised-button color="warn" (click)="reload()">Re-load</button>
                 </mat-card-actions>
             </mat-card>
         </div>

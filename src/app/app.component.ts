@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { BehaviorSubject, Subscription, Observable, of } from 'rxjs';
-import { UserdataService, TestcaseInfo, projectControls, userProfile, MainSectionGroup,myusrinfo,projectVariables } from './service/userdata.service';
+import { UserdataService, projectFlags, TestcaseInfo, projectControls, userProfile, MainSectionGroup,myusrinfo,projectVariables } from './service/userdata.service';
 import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase/app';
 import { map, switchMap,startWith } from 'rxjs/operators';
@@ -132,6 +132,10 @@ export class AppComponent {
     testcaseslength: 0,
     viewSelectedTestcase: undefined,
   };
+  myprojectFlags: projectFlags = {
+    showPaymentpage: false,
+    newuserCheck:false
+  };
   constructor(
     public afAuth: AngularFireAuth,
     public developmentservice: UserdataService,
@@ -162,6 +166,7 @@ export class AppComponent {
                           //return onlineval;
                         } else {
                           console.log(success, afterauth.uid);
+                          this.myprojectFlags.newuserCheck=true;
                           this.Sections = of(null);
                           //return onlineval;
                         }
@@ -219,6 +224,9 @@ export class AppComponent {
     if (r == true) {
       this.db.doc<any>('myProfile/' + this.myuserProfile.userAuthenObj.uid).set(newItem);
     }
+  }
+  CreateDefaultKeys(){
+    
   }
   componentLogOff() {
     this.getSectionsSubscription?.unsubscribe();
