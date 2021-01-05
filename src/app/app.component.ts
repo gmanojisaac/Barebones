@@ -79,6 +79,7 @@ export class AppComponent {
     this.getTestcasesSubscription = TestcaseList.valueChanges().subscribe((val: any) => {
 
       if (val === undefined) {
+        this.myprojectVariables.testcaseslength = 0;
         this.getTestcasesBehaviourSub.next(undefined);
       } else {
         if (val.testcase.length === 0) {
@@ -332,7 +333,7 @@ export class AppComponent {
       map((privateProjectSelected: string) => {
         if (privateProjectSelected !== '') {
           const filteredlist = this.localprivateList.filter((option => option.toLowerCase().includes(privateProjectSelected.toLowerCase())));
-          this.getSectionsSubscription?.unsubscribe();
+          this.getPrivateListSubscription?.unsubscribe();
           this.myuserProfile.myusrinfoFromDb.projectName = privateProjectSelected;
           this.myuserProfile.myusrinfoFromDb.projectLocation = 'publicProjectKeys/' + privateProjectSelected;
           this.PrivateSections = this.getPrivateSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
@@ -405,6 +406,9 @@ export class AppComponent {
                   })
                 )
               } else {
+                this.getPrivateListSubscription?.unsubscribe();
+                this.myprojectSub.openeditSub?.unsubscribe();
+                this.getPrivateSectionsBehaviourSub?.unsubscribe();
                 this.getSectionsSubscription?.unsubscribe();
                 this.getTestcasesSubscription?.unsubscribe();
                 this.getPublicListSubscription?.unsubscribe();
@@ -413,6 +417,9 @@ export class AppComponent {
               }
             }));
         } else {
+          this.myprojectSub.openeditSub?.unsubscribe();
+          this.getPrivateListSubscription?.unsubscribe();
+          this.getPrivateSectionsBehaviourSub?.unsubscribe();
           this.getSectionsSubscription?.unsubscribe();
           this.getTestcasesSubscription?.unsubscribe();
           this.getPublicListSubscription?.unsubscribe();
@@ -566,6 +573,9 @@ export class AppComponent {
 
   }
   componentLogOff() {
+    this.getPrivateListSubscription?.unsubscribe();
+    this.myprojectSub.openeditSub?.unsubscribe();
+    this.getPrivateSectionsBehaviourSub?.unsubscribe();
     this.getPublicListSubscription?.unsubscribe();
     this.getSectionsSubscription?.unsubscribe();
     this.getTestcasesSubscription?.unsubscribe();

@@ -85,7 +85,7 @@
                             <button mat-raised-button color="primary" (click)="saveTC()"
                                 [disabled]="!(myprojectControls?.createTestcaseControl.value)">Save</button>
                             <button mat-raised-button color="warn" (click)="exitTC()">Cancel</button>
-                        </form>                        
+                        </form>      
                         <button mat-raised-button color="accent"
                             [fxShow]="myprojectFlags?.showPaymentpage === false && myuserProfile.myusrinfoFromDb?.projectOwner === true && myprojectFlags?.firstTestcaseEdit === false && myprojectControls?.subsectionkeysControl.valid && myprojectVariables.testcaseslength > 0"
                             [disabled]="myprojectFlags?.showEditTcButton !== true" (click)="openedit()">Edit</button>
