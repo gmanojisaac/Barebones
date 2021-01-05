@@ -13,10 +13,12 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { environment } from '../environments/environment'
 
 import { GooglePayButtonModule} from '@google-pay/button-angular';
+import { MainkeysEditComponent } from './mainkeys-edit/mainkeys-edit.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    MainkeysEditComponent
 
   ],
   imports: [
