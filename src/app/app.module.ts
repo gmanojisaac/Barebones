@@ -14,11 +14,13 @@ import { environment } from '../environments/environment'
 
 import { GooglePayButtonModule} from '@google-pay/button-angular';
 import { TaskShowComponent } from './task-show/task-show.component';
+import { PrivateprojComponent } from './privateproj/privateproj.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TaskShowComponent
+    TaskShowComponent,
+    PrivateprojComponent
 
   ],
   imports: [

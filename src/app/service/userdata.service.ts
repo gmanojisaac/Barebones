@@ -32,19 +32,19 @@ export interface projectVariables {
   initialMainSection?: string;
   testcaseslength?: number;
   viewSelectedTestcase?: TestcaseInfo;
-  publicProjectHint:string;
-  privateProjectHint:string;
+  publicProjectHint?:string;
+  privateProjectHint?:string;
 }
 export interface projectControls {
-  subsectionkeysControl: FormControl;//1-Keys come from db and user sub-sec selection will load a doc from demo or public proj
-  testcaseInfoControl: FormControl; //Displays the selected Testcase details
-  createTestcaseControl: FormControl;//User enters a test case name
-  publicprojectControl: FormControl;//1-User selects a public project    
-  ownPublicprojectControl: FormControl;//1-User selects own public project
-  firstMainSecControl: FormControl
-  editMainsectionGroup: FormGroup;// user selects a Main section key
-  visibilityMainsectionGroup: FormGroup,
-  editSubsectionGroup: FormGroup;  // user selects a Sub section key
+  subsectionkeysControl?: FormControl;//1-Keys come from db and user sub-sec selection will load a doc from demo or public proj
+  testcaseInfoControl?: FormControl; //Displays the selected Testcase details
+  createTestcaseControl?: FormControl;//User enters a test case name
+  publicprojectControl?: FormControl;//1-User selects a public project    
+  ownPublicprojectControl?: FormControl;//1-User selects own public project
+  firstMainSecControl?: FormControl
+  editMainsectionGroup?: FormGroup;// user selects a Main section key
+  visibilityMainsectionGroup?: FormGroup,
+  editSubsectionGroup?: FormGroup;  // user selects a Sub section key
 
 }
 export interface SubSection {
