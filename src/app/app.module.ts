@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent,DialogEditTestcase} from './app.component';
+import { AppComponent} from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppSharedModule } from './app-shared/app-shared.module';
 import { AngularFireModule } from '@angular/fire';
@@ -18,7 +18,7 @@ import { TaskShowComponent } from './task-show/task-show.component';
 @NgModule({
   declarations: [
     AppComponent,
-    TaskShowComponent,DialogEditTestcase
+    TaskShowComponent
 
   ],
   imports: [
@@ -32,8 +32,6 @@ import { TaskShowComponent } from './task-show/task-show.component';
     AngularFireAuthModule, // auth
     AngularFireStorageModule // storage
   ],
-  providers: [],
-  entryComponents:[DialogEditTestcase],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
