@@ -1,80 +1,150 @@
 
 <div *ngIf="(AfterOnlineCheckAuth | async) as onlineAndAuthReady; else onlineAndAuthNotReady">
-    <button mat-icon-button>
+    <mat-sidenav-container fxFlex="100vw">
+        <mat-sidenav-content>
+            <mat-toolbar color="primary" style="width:100vw;">
+                <mat-icon style="margin-right:20px;" *ngIf="!drawer.opened" (click)="drawer.toggle()">
+                    menu
+                </mat-icon>
+                <h1>
+                    StepsWise Tracking Tool
+                </h1>
 
-        <fa-icon (click)="componentLogOff()" class="fas faSignOutAlt fa-lg" [icon]="['fas', 'sign-out-alt']">
-        </fa-icon>
-    </button>
-    <div *ngIf="(Sections | async) as SectionsReady; else SectionsnotReady">
-        <h4>{{myuserProfile?.myusrinfoFromDb?.projectName}}</h4>
-        sections:
-        <pre>
-            {{SectionsReady | json}}
-        </pre>
-        <mat-form-field appearance="fill" *ngIf="Sections !== undefined">
-            <mat-label>{{myprojectVariables?.initialMainSection}}</mat-label>
-            <mat-select [formControl]="myprojectControls?.subsectionkeysControl">
-                <mat-optgroup *ngFor="let group of SectionsReady" [label]="group.name" [disabled]="group.disabled">
-                    <mat-option *ngFor="let mysection of group.section"
-                        [value]="{value: mysection.viewvalue, groupValue: group.name}">
-                        {{mysection.viewvalue}}
-                    </mat-option>
-                </mat-optgroup>
-            </mat-select>
-        </mat-form-field>
-    </div>
-    <ng-template #SectionsnotReady>
+                <span fxFlex="grow"></span>
 
-        <div *ngIf="(Sections | async) === undefined">
-            <div fxLayoutAlign="center center" style="height:100vh;">
-                <mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
+                <div fxHide.lt-sm>
+                    Welcome {{myuserProfile.userAuthenObj?.displayName}}!
+                </div>
+                <button mat-icon-button>
+
+                    <fa-icon (click)="componentLogOff()" class="fas faSignOutAlt fa-lg"
+                        [icon]="['fas', 'sign-out-alt']">
+                    </fa-icon>
+
+                </button>
+
+
+            </mat-toolbar>
+            <div class="container-wrapper" fxLayout="column">
+                <div fxLayout="row wrap" fxLayoutAlign="space-around center">
+                    <div fxLayout="column" fxFlex="20vw" fxFlex.lt-sm="60vw" Style="padding-bottom:10vh;"
+                        fxLayoutGap="10px">
+                        <h4>{{myuserProfile.myusrinfoFromDb?.projectName}}</h4>
+                        <mat-form-field appearance="fill"
+                            *ngIf="(Sections | async) as SectionsReady; else SectionsnotReady">
+                            <mat-label>{{myprojectVariables?.initialMainSection}}</mat-label>
+                            <mat-select [formControl]="myprojectControls?.subsectionkeysControl">
+                                <mat-optgroup *ngFor="let group of SectionsReady" [label]="group.name"
+                                    [disabled]="group.disabled">
+                                    <mat-option *ngFor="let mysection of group.section"
+                                        [value]="{value: mysection.viewvalue, groupValue: group.name}">
+                                        {{mysection.viewvalue}}
+                                    </mat-option>
+                                </mat-optgroup>
+                            </mat-select>
+                        </mat-form-field>
+                        <ng-template #SectionsnotReady>
+
+                            <div *ngIf="(Sections | async) === undefined">
+                                <div fxLayoutAlign="center center" style="height:100vh;">
+                                    <mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
+                                </div>
+                            </div>
+                            <div *ngIf="(Sections | async) === null">
+                                <mat-card class="list" *ngIf="myprojectFlags.newuserCheck === false" fxLayout="row wrap"
+                                    fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
+                                    <mat-card-content class="empty-label">
+                                        Do You want to Add Default Keys?</mat-card-content>
+                                    <mat-card-actions>
+                                        <button mat-raised-button color="primary" (click)="CreateDefaultKeys()">New
+                                            Account</button>
+                                    </mat-card-actions>
+                                </mat-card>
+                                <mat-card class="list" *ngIf="myprojectFlags.newuserCheck === true" fxLayout="row wrap"
+                                    fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
+                                    <mat-card-content class="empty-label">
+                                        Do You want to create Demo Account?</mat-card-content>
+                                    <mat-card-actions>
+                                        <button mat-raised-button color="primary" (click)="CreateAccount()">New
+                                            Account</button>
+                                    </mat-card-actions>
+                                </mat-card>
+                            </div>
+
+                        </ng-template>
+                        <button mat-raised-button color="primary"
+                            *ngIf="myprojectFlags?.showPaymentpage === false && myuserProfile.myusrinfoFromDb?.projectOwner === true  && myprojectControls?.subsectionkeysControl.valid"
+                            [disabled]="myprojectFlags?.firstTestcaseEdit === true " (click)="AddNew()">Add</button>
+                        <form class="example-form" *ngIf="myprojectFlags?.firstTestcaseEdit === true" fxLayout="column"
+                            fxLayoutGap="10px">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Enter New Task Name</mat-label>
+                                <input matInput placeholder="Services or Directives"
+                                    [formControl]="myprojectControls?.createTestcaseControl">
+                                <mat-hint>Unique Name!</mat-hint>
+                            </mat-form-field>
+                            <button mat-raised-button color="primary" (click)="saveTC()"
+                                [disabled]="!(myprojectControls?.createTestcaseControl.value)">Save</button>
+                            <button mat-raised-button color="warn" (click)="exitTC()">Cancel</button>
+                        </form>      
+                        <button mat-raised-button color="accent"
+                            [fxShow]="myprojectFlags?.showPaymentpage === false && myuserProfile.myusrinfoFromDb?.projectOwner === true && myprojectFlags?.firstTestcaseEdit === false && myprojectControls?.subsectionkeysControl.valid && myprojectVariables.testcaseslength > 0"
+                            [disabled]="myprojectFlags?.showEditTcButton !== true" (click)="openedit()">Edit</button>
+                        <button mat-raised-button color="warn"
+                            [fxShow]="myprojectFlags?.showPaymentpage === false && myuserProfile.myusrinfoFromDb?.projectOwner === true && myprojectFlags?.firstTestcaseEdit === false && myprojectControls?.subsectionkeysControl.valid && myprojectVariables.testcaseslength > 0 "
+                            [disabled]="myprojectFlags?.showEditTcButton !== true" (click)="Delete()">Delete</button>
+                    </div>
+                    <div fxLayout="column" fxFlex="60vw" fxFlex.lt-sm="80vw" Style="padding-bottom:50px;">
+
+                        <h1 *ngIf="myprojectVariables.viewSelectedTestcase === undefined ">Task Steps</h1>
+                        <h1 *ngIf="myprojectVariables.viewSelectedTestcase !== undefined">
+                            {{myprojectVariables.viewSelectedTestcase?.heading}} </h1>
+                        <mat-form-field appearance="fill">
+                            <mat-label>{{myprojectVariables.viewSelectedTestcase?.subHeading}}</mat-label>
+                            <mat-label *ngIf="myprojectVariables.viewSelectedTestcase === undefined"
+                                style="font-size: 24px;">
+                                Select Task Now!
+                            </mat-label>
+                            <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="15" cdkAutosizeMaxRows="50"
+                                fxFlex="grow" style="overflow-x: hidden;"
+                                [formControl]="myprojectControls?.testcaseInfoControl" readonly>
+
+                    </textarea>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div fxLayout="column" *ngIf="(SectionTc | async) as SectionTcReady; else SectionTcnotReady">
+                    <h2>Services and Directives</h2>
+                    <mat-card class="list" fxLayout="row wrap" fxLayout.lt-sm="column"
+                        fxLayoutAlign="space-around center">
+                        <app-task-show ngStyle.lt-sm="width:60vw;" fxLayoutAlign.lt-sm="space-between center"
+                            fxLayoutAlign="space-between center" fxLayoutGap="10px" *ngFor="let task of SectionTcReady "
+                            [task]="task" (toshow)="refreshList($event)"></app-task-show>
+                    </mat-card>
+                </div>
+                <ng-template #SectionTcnotReady>
+                    <div *ngIf="(SectionTc | async) === undefined">
+                        <mat-card class="list" fxLayout="row wrap" fxLayout.lt-sm="column"
+                            fxLayoutAlign="space-around center">
+                            <p class="empty-label">
+                                Empty list</p>
+                        </mat-card>
+                    </div>
+                </ng-template>
             </div>
-        </div>
-        <div *ngIf="(Sections | async) === null">
-            <mat-card class="list" *ngIf="myprojectFlags.newuserCheck === false" fxLayout="row wrap"
-                fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
-                <mat-card-content class="empty-label">
-                    Do You want to Add Default Keys?</mat-card-content>
-                <mat-card-actions>
-                    <button mat-raised-button color="primary" (click)="CreateDefaultKeys()">New Account</button>
-                </mat-card-actions>
-            </mat-card>
-            <mat-card class="list" *ngIf="myprojectFlags.newuserCheck === true" fxLayout="row wrap"
-                fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
-                <mat-card-content class="empty-label">
-                    Do You want to create Demo Account?</mat-card-content>
-                <mat-card-actions>
-                    <button mat-raised-button color="primary" (click)="CreateAccount()">New Account</button>
-                </mat-card-actions>
-            </mat-card>
-        </div>
-
-    </ng-template>
-    <div *ngIf="(SectionTc | async) as SectionTcReady; else SectionTcnotReady">
-        SectionTc:
-
-        <pre>
-            <div *ngFor="let task of SectionTcReady ">
-                {{task | json}}
-            </div>
-            
-        </pre>
-    </div>
-    <ng-template #SectionTcnotReady>
-        <div *ngIf="(SectionTc | async) === undefined">
-            <mat-card class="list" fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
-                <p class="empty-label">
-                    Empty list</p>
-            </mat-card>
-        </div>
-    </ng-template>
+        </mat-sidenav-content>
+        <mat-sidenav #drawer class="drawer" mode="side" opened="false" (opened)="draweropen()" fxFlex.lt-sm="100vw">
+        <mat-toolbar class="header" color="warn">
+            <div>Task keys Management</div>
+            <span fxFlex="grow"></span>
+            <mat-icon style="margin-right:20px;" class="close" (click)="drawerclose()">close</mat-icon>
+          </mat-toolbar>
+          <mat-tab-group>
+    <mat-tab>
+    <ng-template mat-tab-label>Edit</ng-template>
+    <ng-template matTabContent>
+    
     <div *ngIf="(privateList | async) as privateListReady; else privateListnotReady">
-        privateListReady:
-        <pre>
-            <div *ngFor="let task of privateListReady ">
-                {{task | json}}
-            </div>            
-        </pre>
         <mat-label fxFlexAlign="center">Select/Create PrivateTask</mat-label>
         <mat-form-field appearance="fill">
             <input #trigger1="matAutocompleteTrigger" matInput [matAutocomplete]="auto1"
@@ -90,14 +160,7 @@
             </mat-autocomplete>
             <mat-hint>{{myprojectVariables.privateProjectHint}}</mat-hint>
         </mat-form-field>
-        Added-Keys-
         <div *ngIf="(PrivateSections | async) as PrivateSectionsReady; else PrivateSectionsnotReady">
-            <!--pre>
-                {{PrivateSectionsReady | json}}
-            </pre-->
-            <!--div *ngFor="let task of PrivateSectionsReady ">
-                {{task | json}}
-            </div-->
             <form [formGroup]="myprojectControls?.editMainsectionGroup"  fxLayoutGap="10px">
                 <mat-label fxFlexAlign="center">MainSection:</mat-label>
                 <mat-form-field appearance="fill">
@@ -140,42 +203,24 @@
                 </mat-form-field>
               </form>
         </div>
-        <ng-template #PrivateSectionsnotReady>
-            No Selected Private Project Keys
-        </ng-template>
+
     </div>
+    <ng-template #PrivateSectionsnotReady>
+        <div style="width:25vw;">
+            No Selected Private Project Keys
+        </div>
+       
+    </ng-template>
     <ng-template #privateListnotReady>
         Not-Applicable Screen -> will always have 1 public project
     </ng-template>
 
-
-    <div *ngIf="(publicList | async) as publicListReady; else publicListnotReady">
-        publicListReady:
-        <pre>
-            <div *ngFor="let task of publicListReady ">
-                {{task | json}}
-            </div>            
-        </pre>
-        <mat-label fxFlexAlign="center">Select/Create NewTask</mat-label>
-        <mat-form-field appearance="fill">
-            <input #trigger1="matAutocompleteTrigger" matInput [matAutocomplete]="auto1"
-                placeholder="Pick one or Create New" aria-label="Number"
-                [formControl]="myprojectControls?.publicprojectControl">
-            <mat-icon (click)="trigger1.panelOpen ? trigger1.closePanel() : trigger1.openPanel()"
-                class="custom-icon custom-form-field-icon">
-                arrow_drop_down
-            </mat-icon>
-            <mat-autocomplete #auto1="matAutocomplete" autoActiveFirstOption>
-                <mat-option *ngFor="let option of publicListReady" [value]="option">
-                    {{option}}</mat-option>
-            </mat-autocomplete>
-            <mat-hint>{{myprojectVariables.publicProjectHint}}</mat-hint>
-        </mat-form-field>
-
-    </div>
-    <ng-template #publicListnotReady>
-        Not-Applicable Screen -> will always have 1 public project
     </ng-template>
+</mat-tab>
+</mat-tab-group>
+        
+</mat-sidenav>
+</mat-sidenav-container>
 
 
 </div>

@@ -1,5 +1,5 @@
 
-import { Component } from '@angular/core';
+import { Component,ViewChild } from '@angular/core';
 import { BehaviorSubject, Subscription, Observable, of } from 'rxjs';
 import { UserdataService, projectFlags, TestcaseInfo, projectControls, userProfile, MainSectionGroup, myusrinfo, projectVariables } from './service/userdata.service';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -9,6 +9,8 @@ import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { docData } from 'rxfire/firestore';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-root',
@@ -222,12 +224,13 @@ export class AppComponent {
     
     return this.getPrivateSectionsBehaviourSub;
   };
-
+  @ViewChild('drawer') public sidenav: MatSidenav;
   constructor(
     public afAuth: AngularFireAuth,
     public developmentservice: UserdataService,
     private db: AngularFirestore,
-    public fb: FormBuilder
+    public fb: FormBuilder,
+    public dialog: MatDialog
   ) {
     this.myonline = this.getObservableonine(this.developmentservice.isOnline$);
     this.myauth = this.getObservableauthState(this.afAuth.authState);
@@ -408,6 +411,8 @@ export class AppComponent {
                   })
                 )
               } else {
+                this.getPrivateListSubscription?.unsubscribe();
+                this.getPrivateSectionsSubscription?.unsubscribe();
                 this.getSectionsSubscription?.unsubscribe();
                 this.getTestcasesSubscription?.unsubscribe();
                 this.getPublicListSubscription?.unsubscribe();
@@ -416,6 +421,8 @@ export class AppComponent {
               }
             }));
         } else {
+          this.getPrivateListSubscription?.unsubscribe();
+          this.getPrivateSectionsSubscription?.unsubscribe();
           this.getSectionsSubscription?.unsubscribe();
           this.getTestcasesSubscription?.unsubscribe();
           this.getPublicListSubscription?.unsubscribe();
@@ -455,9 +462,16 @@ export class AppComponent {
     })
   }
   componentLogOff() {
+    this.getPrivateListSubscription?.unsubscribe();
+    this.getPrivateSectionsSubscription?.unsubscribe();
     this.getPublicListSubscription?.unsubscribe();
     this.getSectionsSubscription?.unsubscribe();
     this.getTestcasesSubscription?.unsubscribe();
     this.developmentservice.logout();
+  }
+  draweropen() {
+  }
+  drawerclose() {
+    this.sidenav.close();
   }
 }
