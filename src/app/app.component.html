@@ -133,6 +133,144 @@
             </div>
         </mat-sidenav-content>
         <mat-sidenav #drawer class="drawer" mode="side" opened="false" (opened)="draweropen()" fxFlex.lt-sm="100vw">
+            <mat-toolbar class="header" color="warn">
+                <div>Task keys Management</div>
+                <span fxFlex="grow"></span>
+                <mat-icon style="margin-right:20px;" class="close" (click)="drawerclose()">close</mat-icon>
+              </mat-toolbar>
+              <mat-tab-group>
+                <mat-tab>
+                  <ng-template mat-tab-label>Home</ng-template>
+                  <ng-template matTabContent >
+                   <mat-label  class="example-margin" Style="margin-top:40px;margin-right:30px;border-style: double;" fxLayoutAlign="center">Current Task : {{myuserProfile?.myusrinfoFromDb?.projectName}}</mat-label>
+                   <div  class="example-margin" fxLayout="column" Style="margin-top:40px;margin-bottom:50px;margin-right:30px; border-style: double; padding:2em;"
+                      fxLayoutAlign="space-around center" fxLayoutGap="10vh">
+                     <form fxLayoutGap="20px" fxLayoutAlign="center space-around" Style="margin-top:20px;">
+                        <mat-label fxFlexAlign="center">Select/Create NewTask</mat-label>
+                        <mat-form-field appearance="fill">
+                          <input #trigger1="matAutocompleteTrigger" matInput [matAutocomplete]="auto1"
+                            placeholder="Pick one or Create New" aria-label="Number"
+                            [formControl]="myprojectControls?.publicprojectControl">
+                          <mat-icon (click)="trigger1.panelOpen ? trigger1.closePanel() : trigger1.openPanel()"
+                            class="custom-icon custom-form-field-icon">
+                            arrow_drop_down
+                          </mat-icon>
+                          <mat-autocomplete #auto1="matAutocomplete" autoActiveFirstOption>
+                            <mat-option *ngFor="let option of publicList | async" [value]="option">
+                              {{option}}</mat-option>
+                          </mat-autocomplete>
+                          <mat-hint>{{myprojectVariables?.publicProjectHint}}</mat-hint>
+                        </mat-form-field>      
+                      </form>
+                      <div fxLayoutGap="1em">
+                        <button mat-raised-button color="warn" (click)="NewProject()" [fxShow]="myprojectFlags?.homeNewProject === true"
+                          [disabled]="!(myprojectControls?.publicprojectControl.valid) || myprojectFlags?.homeNewProject === false"
+                          fxFlex="nogrow">New</button>
+                          <button mat-raised-button color="warn" (click)="DeleteProject()" [fxShow]="myprojectFlags?.homeDeleteProject === true"
+                          [disabled]="!(myprojectControls?.publicprojectControl.valid)"
+                          fxFlex="nogrow">Delete</button>
+                        <button mat-raised-button color="warn" (click)="saveCurrProject()"
+                          [disabled]="!(myprojectControls?.publicprojectControl.valid) || myprojectFlags?.homeCurrentProject === false "
+                          fxFlex="nogrow">ChangeCurrent Task</button>
+                      </div>
+                      <div>
+          
+                        <button mat-raised-button color="accent" (click)="NewMember()"
+                          [disabled]="myuserProfile?.MembershipType === 'Member'" fxFlex="nogrow">Become Member</button>
+                        <mat-label class="example-margin" *ngIf="myuserProfile?.myusrinfoFromDb?.MembershipType === 'Member'">Member till:
+                        </mat-label>
+                        <mat-label class="example-margin" *ngIf="myuserProfile?.myusrinfoFromDb?.MembershipType !== 'Member'">Demo till:
+                        </mat-label>
+                        <span style="margin:10px">
+                          {{myuserProfile?.myusrinfoFromDb?.MembershipEnd.valueOf() | date}}
+                        </span>
+                      </div>      
+                   </div>
+                  <ng-template #nopublicList>
+                      No public Tasks
+                  </ng-template>
+     
+                  </ng-template>  
+                </mat-tab>
+                <mat-tab>
+                  <ng-template mat-tab-label>Edit</ng-template>
+                  <ng-template matTabContent>
+                    <div  class="example-margin" fxLayout="column" Style="margin-top:2vh;border-style: double; padding:1em;margin-right:30px;margin-left:30px;"
+                    *ngIf="(privateList | async) as myprivateList; else noprivateList"
+                    fxLayoutAlign="space-around center" fxLayoutGap="10vh">             
+                      <form Style="margin-top:20px;"  fxLayoutGap="10px">
+                        <mat-label fxFlexAlign="center">My Projects</mat-label>
+                        <mat-form-field appearance="fill">
+                          <mat-select [formControl]="myprojectControls?.ownPublicprojectControl">
+                            <mat-option *ngFor="let option of myprivateList" [value]="option">
+                              {{option}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </form>
+                    </div>
+                    <div class="example-margin" fxLayout="column" Style="margin-top:2vh;margin-bottom:10px;border-style: double; padding:1em;margin-right:30px;margin-left:30px;"
+                    *ngIf="(privateSection| async) as myprivateMain; else noprivateMain"
+                    fxLayoutAlign="space-around center" fxLayoutGap="5vh">
+                      <form [formGroup]="myprojectControls?.editMainsectionGroup"  fxLayoutGap="10px">
+                        <mat-label fxFlexAlign="center">MainSection:</mat-label>
+                        <mat-form-field appearance="fill">
+                          <input #trigger2="matAutocompleteTrigger" matInput [matAutocomplete]="auto2" placeholder="Pick one"
+                            aria-label="Number" formControlName="editMainsectionControl">
+                          <mat-icon (click)="trigger2.panelOpen ? trigger2.closePanel() : trigger2.openPanel()"
+                            class="custom-icon custom-form-field-icon">
+                            arrow_drop_down
+                          </mat-icon>
+                          <mat-autocomplete #auto2="matAutocomplete">
+                            <mat-option *ngFor="let option of myprivateMain" [value]="option">
+                              {{option}}</mat-option>
+                          </mat-autocomplete>
+                        </mat-form-field>
+                      </form>
+                      <form Style="margin-top:10px;" [formGroup]="myprojectControls?.visibilityMainsectionGroup">
+                        <label class="example-margin">Visibility:</label>
+                        <mat-radio-group formControlName="editVisibilityControl">
+                          <mat-radio-button class="example-margin" [value]=false>Enable</mat-radio-button>
+                          <mat-radio-button class="example-margin" [value]=true>Disable</mat-radio-button>
+                        </mat-radio-group>
+                      </form>
+                      <form [formGroup]="myprojectControls?.editSubsectionGroup" Style="margin-top:10px;"  fxLayoutGap="10px">
+                        <mat-label fxFlexAlign="center">SubSection</mat-label>
+                        <mat-form-field appearance="fill">
+                          <input #trigger3="matAutocompleteTrigger" matInput [matAutocomplete]="auto3" placeholder="Pick one"
+                            aria-label="Number" formControlName="editSubsectionControl">
+                          <mat-icon (click)="trigger3.panelOpen ? trigger3.closePanel() : trigger3.openPanel()"
+                            class="custom-icon custom-form-field-icon">
+                            arrow_drop_down
+                          </mat-icon>
+                          <mat-autocomplete #auto3="matAutocomplete">
+                            <mat-option *ngFor="let option of (myprojectVariables?.privateTaskMainEdit | async)" [value]="option">{{option}}
+                            </mat-option>
+                          </mat-autocomplete>
+                          <mat-hint>{{myhint}}</mat-hint>
+                        </mat-form-field>
+                      </form>
+                    </div>
+                    <div *ngIf="developmentservice?.castValueAdd && developmentservice?.castValueDel && developmentservice?.castValueUpdate " Style="margin-top:2vh; padding:1em;"fxLayoutAlign="space-around center" fxLayoutGap="5vh">
+                      
+                      <button  mat-raised-button color="warn" (click)="EditAdd()" 
+                    [disabled]="!(developmentservice?.castValueAdd | async) === true "
+                    fxFlex="nogrow">Add</button>
+                    <button  mat-raised-button color="warn" (click)="EditDelete()" 
+                    [disabled]="!(developmentservice?.castValueDel | async) === true "
+                    fxFlex="nogrow">Delete</button>
+                    <button  mat-raised-button color="warn" (click)="EditUpdate()" 
+                    [disabled]="!(developmentservice?.castValueUpdate | async) === true "
+                    fxFlex="nogrow">Change Visibility</button>
+                    </div>     
+                  </ng-template>
+                </mat-tab>
+                <mat-tab>
+                  <ng-template mat-tab-label>Payments</ng-template>
+                  <ng-template matTabContent>
+                  </ng-template>
+                </mat-tab>
+              </mat-tab-group>
+        
         </mat-sidenav>
     </mat-sidenav-container>
 </div>

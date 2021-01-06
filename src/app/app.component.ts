@@ -1,4 +1,4 @@
-import { Component,OnInit,Inject } from '@angular/core';
+import { Component,OnInit,Inject,ViewChild } from '@angular/core';
 import { BehaviorSubject, Subscription, Observable, of} from 'rxjs';
 import { UserdataService, projectFlags,projectSub, TestcaseInfo, projectControls, userProfile, MainSectionGroup, myusrinfo, projectVariables } from './service/userdata.service';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -9,7 +9,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { docData } from 'rxfire/firestore';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-
+import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-root',
@@ -77,7 +77,7 @@ export class AppComponent {
       this.getTestcasesSubscription.unsubscribe();
     }
     this.getTestcasesSubscription = TestcaseList.valueChanges().subscribe((val: any) => {
-
+console.log('80', val);
       if (val === undefined) {
         this.myprojectVariables.testcaseslength = 0;
         this.getTestcasesBehaviourSub.next(undefined);
@@ -157,6 +157,7 @@ export class AppComponent {
     myusrinfoFromDb: null,
     keysReadFromDb: undefined,
     mainsubsectionKeys: [],
+    selectedPublicProject:'',
     subSectionKeys: undefined,
     savedMainSectionKey: undefined,
     savesubSectionKeys: undefined,
@@ -188,11 +189,24 @@ export class AppComponent {
     publicProjectHint: undefined,
     privateProjectHint: undefined
   };
+
   myprojectFlags: projectFlags = {
-    showPaymentpage: false,
-    newuserCheck: false,
+    newuserCheck:false,
+    showPaymentpage: undefined,//for expired user-remove it
+    firstTestcaseEdit: false,//showditutton
     showEditTcButton: false,
-    firstTestcaseEdit: false
+    homeNewProject: false,
+    homeDeleteProject: false,
+    homeCurrentProject: false,
+    editModifyProject: undefined,
+    editAddMainsec: undefined,
+    editDeleteMainsec: undefined,
+    editVisibility: undefined,
+    editAddSubSec: undefined,
+    editDeleteSubsec: undefined,
+    editAddProject: undefined,
+    editDeleteProject: undefined,
+    editUpdateProject: undefined,
   };
 
   PrivateSections = undefined;
@@ -230,7 +244,7 @@ export class AppComponent {
 
     return this.getPrivateSectionsBehaviourSub;
   };
-
+  @ViewChild('drawer') public sidenav: MatSidenav;
   constructor(
     public afAuth: AngularFireAuth,
     public developmentservice: UserdataService,
@@ -244,22 +258,46 @@ export class AppComponent {
     const publicProjsel = this.myprojectControls.publicprojectControl.valueChanges.pipe(
       startWith(''),
       map((publicProjectSelected: string) => {
-        if (publicProjectSelected !== '') {
-          const filteredlist = this.localpublicList.filter((option => option.toLowerCase().includes(publicProjectSelected.toLowerCase())));
-          this.getSectionsSubscription?.unsubscribe();
-          this.myuserProfile.myusrinfoFromDb.projectName = publicProjectSelected;
-          this.myuserProfile.myusrinfoFromDb.projectLocation = 'publicProjectKeys/' + publicProjectSelected;
-          this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
-          this.getPublicListBehaviourSub.next(filteredlist);
+        if (!publicProjectSelected || publicProjectSelected === '') {
+          this.localpublicList = [];
+          this.myprojectVariables.publicProjectHint = 'Select Task from List';
+          this.getPublicListSubscription?.unsubscribe();
+          this.publicList = this.getPublicList(this.db.doc(('/projectList/publicProjects')));          
         } else {
-          if (publicProjectSelected === null) {
-            this.localpublicList = [];
+          const filteredlist = this.localpublicList.filter((option => option.toLowerCase().includes(publicProjectSelected.toLowerCase())));
+          const uniqueinlist = this.localpublicList.filter(publicproj => (publicproj.toLowerCase().localeCompare(publicProjectSelected.toLowerCase()) === 0));
+          const isOnwnerCheck = this.localprivateList.filter(privateproj => (privateproj.toLowerCase().localeCompare(publicProjectSelected.toLowerCase()) === 0));
+
+          if (uniqueinlist.length > 0) {
+            if (isOnwnerCheck.length > 0) {
+              this.myprojectFlags.homeDeleteProject = true;
+            } else {
+              this.myprojectFlags.homeDeleteProject = false;
+            }
+            this.myprojectFlags.homeNewProject = false;
+
+            if (this.myuserProfile.myusrinfoFromDb.projectName === publicProjectSelected) {
+              this.myprojectVariables.publicProjectHint = 'Already Current Project';
+              this.myprojectFlags.homeCurrentProject = false;
+            } else {
+              this.myprojectVariables.publicProjectHint = '';
+              this.myprojectFlags.homeCurrentProject = true;
+            }
           } else {
-            this.localpublicList = [];
-            this.myprojectVariables.publicProjectHint = 'Select Task from List';
-            this.getPublicListSubscription?.unsubscribe();
-            this.publicList = this.getPublicList(this.db.doc(('/projectList/publicProjects')));
-          }
+            if (this.myuserProfile.myusrinfoFromDb.MembershipType === 'Demo') {
+              this.myprojectFlags.homeNewProject = false;
+            } else {
+              this.myprojectFlags.homeNewProject = true;
+            }
+            this.myprojectFlags.homeCurrentProject = false;
+            this.myprojectFlags.homeDeleteProject = false;
+            this.myprojectVariables.publicProjectHint = '';
+
+          }                  
+          this.myuserProfile.selectedPublicProject= publicProjectSelected;
+          this.myuserProfile.myusrinfoFromDb.projectLocation = 'publicProjectKeys/' + publicProjectSelected;
+          this.getPublicListBehaviourSub.next(filteredlist);
+ 
         }
       }));
     const EditSubSectionSelection = this.myprojectControls.editSubsectionGroup.valueChanges.pipe(
@@ -331,23 +369,19 @@ export class AppComponent {
     const privateProjsel = this.myprojectControls.ownPublicprojectControl.valueChanges.pipe(
       startWith(''),
       map((privateProjectSelected: string) => {
-        if (privateProjectSelected !== '') {
+        if (!privateProjectSelected || privateProjectSelected === '') {
+          this.localprivateList = [];
+            this.myprojectVariables.privateProjectHint = 'Select Task from List';
+            this.PrivateSections = of(undefined);
+            this.getPrivateListSubscription?.unsubscribe();
+            this.privateList = this.getPrivateList(this.db.doc(('/projectList/' + this.myuserProfile.userAuthenObj.uid)));
+         } else {
           const filteredlist = this.localprivateList.filter((option => option.toLowerCase().includes(privateProjectSelected.toLowerCase())));
           this.getPrivateListSubscription?.unsubscribe();
           this.myuserProfile.myusrinfoFromDb.projectName = privateProjectSelected;
           this.myuserProfile.myusrinfoFromDb.projectLocation = 'publicProjectKeys/' + privateProjectSelected;
           this.PrivateSections = this.getPrivateSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
           this.getPrivateListBehaviourSub.next(filteredlist);
-        } else {
-          if (privateProjectSelected === null) {
-            this.localprivateList = [];
-          } else {
-            this.localprivateList = [];
-            this.myprojectVariables.privateProjectHint = 'Select Task from List';
-            this.PrivateSections = of(undefined);
-            this.getPrivateListSubscription?.unsubscribe();
-            this.privateList = this.getPrivateList(this.db.doc(('/projectList/' + this.myuserProfile.userAuthenObj.uid)));
-          }
         }
       }),
       withLatestFrom(MainSecKeysSelection, EditVisibility, EditSubSectionSelection));
@@ -429,6 +463,73 @@ export class AppComponent {
       })
     );
   }
+  NewProject() {
+    this.myuserProfile.selectedPublicProject=this.myprojectControls.publicprojectControl.value;
+    const ProjectName = this.myprojectControls.publicprojectControl.value;
+    const newKeys = [{
+      name: 'MainSection',
+      disabled: false,
+      section: [{
+        viewvalue: 'SubSection'
+      }]
+    }];
+    const newItem = {
+      projectLocation: 'publicProjectKeys/' + ProjectName,
+      projectOwner: true,
+      projectName: ProjectName
+    };
+    this.developmentservice.createnewproject(this.myuserProfile.userAuthenObj.uid, ProjectName, newItem, newKeys).then(success => {
+      this.myprojectFlags.homeDeleteProject = false;
+      this.myprojectFlags.homeNewProject = false;
+      this.myprojectFlags.homeCurrentProject = false;
+      this.myprojectControls.publicprojectControl.reset();
+      this.saveCurrProject();
+    });
+  }
+  DeleteProject() {
+    this.myuserProfile.selectedPublicProject='Demo';    
+    const ProjectName = this.myprojectControls.publicprojectControl.value;
+    let r = confirm("Confirm Project Delete?");
+    if (r == true) {
+      const newItem = {
+        projectLocation: 'projectList/DemoProjectKey',
+        projectOwner: true,
+        projectName: 'Demo'
+      };
+      this.developmentservice.deleteproject(this.myuserProfile.userAuthenObj.uid, ProjectName, newItem).then(success => {
+        this.myprojectFlags.homeDeleteProject = false;
+        this.myprojectFlags.homeNewProject = false;
+        this.myprojectFlags.homeCurrentProject = false;        
+        this.myprojectControls.publicprojectControl.reset();
+        this.saveCurrProject();
+      });
+    }
+  }
+  saveCurrProject(){
+    this.myuserProfile.myusrinfoFromDb.projectName = this.myuserProfile.selectedPublicProject;
+    this.getSectionsSubscription?.unsubscribe();
+    if(this.myuserProfile.myusrinfoFromDb.projectName === 'Demo'){
+      this.Sections = this.getSections(this.db.doc('/projectList/DemoProjectKey'));
+    }else{
+      this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));          
+    }
+    this.myprojectControls.subsectionkeysControl.reset();
+    this.sidenav.close();
+  }
+      
+
+  NewMember(){
+    const nextMonth: Date = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 12);
+    const newItem = {
+      MembershipEnd: nextMonth.toDateString(),
+      MembershipType: 'Member',
+      projectOwner: true
+    }
+    this.db.doc<any>('myProfile/' + this.myuserProfile.userAuthenObj.uid).set(newItem, {merge:true}).then(success=>{
+      this.sidenav.close();
+    });
+  }
   loadFirstPageKeys(profileData: any) {
     if (profileData !== undefined) {//norecords
       if (new Date(profileData.MembershipEnd).valueOf() < new Date().valueOf()) {
@@ -463,6 +564,11 @@ export class AppComponent {
         this.myprojectFlags.showPaymentpage = false;
       }//end normal      
     }//end demo/Member        
+  }
+  draweropen() {
+  }
+  drawerclose() {
+    this.sidenav.close();
   }
   AddNew() {
     this.myprojectFlags.firstTestcaseEdit = true;
