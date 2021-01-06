@@ -77,7 +77,6 @@ export class AppComponent {
       this.getTestcasesSubscription.unsubscribe();
     }
     this.getTestcasesSubscription = TestcaseList.valueChanges().subscribe((val: any) => {
-console.log('80', val);
       if (val === undefined) {
         this.myprojectVariables.testcaseslength = 0;
         this.getTestcasesBehaviourSub.next(undefined);
@@ -133,7 +132,6 @@ console.log('80', val);
       this.getPrivateListSubscription.unsubscribe();
     }
     this.getPrivateListSubscription = privateProjects.valueChanges().subscribe((val: any) => {
-      console.log('val', val);
       if (val === undefined) {
         this.getPrivateListBehaviourSub.next(undefined);
       } else {
@@ -213,10 +211,12 @@ console.log('80', val);
   getPrivateSectionsSubscription: Subscription;
   getPrivateSectionsBehaviourSub = new BehaviorSubject(undefined);
   getPrivateSections = (MainAndSubSectionPrivatekeys: AngularFirestoreDocument<MainSectionGroup>) => {
+    //console.log('214',getPrivateSectionsSubscription);
     if (this.getPrivateSectionsSubscription !== undefined) {
       this.getPrivateSectionsSubscription.unsubscribe();
     }
     this.getPrivateSectionsSubscription = MainAndSubSectionPrivatekeys.valueChanges().subscribe((val: any) => {
+      console.log('219',val);
       if (val === undefined) {
         this.myuserProfile.mainsubsectionKeys = [];
         this.myuserProfile.keysReadFromDb = [];
@@ -343,6 +343,7 @@ console.log('80', val);
     const MainSecKeysSelection = this.myprojectControls.editMainsectionGroup.valueChanges.pipe(
       startWith({ editMainsectionControl: '' }),
       map((editMainSecSelected: any) => {
+        console.log('344',editMainSecSelected);
         if (editMainSecSelected.editMainsectionControl !== null && editMainSecSelected.editMainsectionControl !== '') {
           this.myuserProfile.subSectionKeys = [];
 
@@ -372,16 +373,16 @@ console.log('80', val);
         if (!privateProjectSelected || privateProjectSelected === '') {
           this.localprivateList = [];
             this.myprojectVariables.privateProjectHint = 'Select Task from List';
-            this.PrivateSections = of(undefined);
+            //this.PrivateSections = of(undefined);
             this.getPrivateListSubscription?.unsubscribe();
             this.privateList = this.getPrivateList(this.db.doc(('/projectList/' + this.myuserProfile.userAuthenObj.uid)));
          } else {
+
           const filteredlist = this.localprivateList.filter((option => option.toLowerCase().includes(privateProjectSelected.toLowerCase())));
-          this.getPrivateListSubscription?.unsubscribe();
+          //this.getPrivateSectionsSubscription?.unsubscribe();
           this.myuserProfile.myusrinfoFromDb.projectName = privateProjectSelected;
           this.myuserProfile.myusrinfoFromDb.projectLocation = 'publicProjectKeys/' + privateProjectSelected;
           this.PrivateSections = this.getPrivateSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
-          this.getPrivateListBehaviourSub.next(filteredlist);
         }
       }),
       withLatestFrom(MainSecKeysSelection, EditVisibility, EditSubSectionSelection));
@@ -412,7 +413,6 @@ console.log('80', val);
                 this.myuserProfile.userAuthenObj = afterauth;
                 return docData(this.db.firestore.doc('myProfile/' + afterauth.uid)).pipe(
                   map((profilevalbef: any) => {
-                    console.log('98-false- means profile exists', !Object.keys(profilevalbef).length);
                     if (!Object.keys(profilevalbef).length === true) {
                       this.developmentservice.findOrCreate(afterauth.uid).then(success => {
                         if (success !== 'doc exists') {
@@ -679,6 +679,7 @@ console.log('80', val);
 
   }
   componentLogOff() {
+    this.getPrivateSectionsSubscription?.unsubscribe();
     this.getPrivateListSubscription?.unsubscribe();
     this.myprojectSub.openeditSub?.unsubscribe();
     this.getPrivateSectionsBehaviourSub?.unsubscribe();

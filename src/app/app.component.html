@@ -209,7 +209,7 @@
                       </form>
                     </div>
                     <div class="example-margin" fxLayout="column" Style="margin-top:2vh;margin-bottom:10px;border-style: double; padding:1em;margin-right:30px;margin-left:30px;"
-                    *ngIf="(privateSection| async) as myprivateMain; else noprivateMain"
+                    *ngIf="(privateSections| async) as myprivateMain; else noprivateMain"
                     fxLayoutAlign="space-around center" fxLayoutGap="5vh">
                       <form [formGroup]="myprojectControls?.editMainsectionGroup"  fxLayoutGap="10px">
                         <mat-label fxFlexAlign="center">MainSection:</mat-label>
