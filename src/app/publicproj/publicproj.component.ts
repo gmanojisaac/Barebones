@@ -15,6 +15,7 @@ import firebase from 'firebase/app';
 })
 export class PublicprojComponent implements OnInit,AfterViewInit,OnDestroy {
   @Input() profileinfoUid: firebase.User;
+  @Input() profileinfoProjName: string;
   @Output() toChangeCurrentProj = new EventEmitter<string>();
   publicList = of(undefined);
   localpublicList = [];
@@ -149,7 +150,9 @@ export class PublicprojComponent implements OnInit,AfterViewInit,OnDestroy {
           this.myuserProfile.selectedPublicProject= publicProjectSelected;
           this.myuserProfile.myusrinfoFromDb.projectLocation = 'publicProjectKeys/' + publicProjectSelected;
           this.getPublicListBehaviourSub.next(filteredlist);
- 
+          if(this.profileinfoProjName === publicProjectSelected) {
+            this.myprojectFlags.homeCurrentProject = false;
+          }
         }
       })).subscribe(_=>{
 
