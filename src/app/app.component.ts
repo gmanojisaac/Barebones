@@ -106,7 +106,7 @@ export class AppComponent {
     userAuthenObj: null,//Receive User obj after login success
     myusrinfoFromDb: null,
     keysReadFromDb: undefined,
-    mainsubsectionKeys: [],
+    mainsubsectionKeys: undefined,
     subSectionKeys: undefined,
     savedMainSectionKey: undefined,
     savesubSectionKeys: undefined,
@@ -406,6 +406,7 @@ export class AppComponent {
   exitTC() {
     this.myprojectFlags.firstTestcaseEdit = false;
   }
+  
 }
 
 @Component({

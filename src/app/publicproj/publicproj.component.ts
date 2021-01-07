@@ -82,7 +82,7 @@ export class PublicprojComponent implements OnInit,AfterViewInit,OnDestroy {
       projectOwner: false
     },
     keysReadFromDb: undefined,
-    mainsubsectionKeys: [],
+    mainsubsectionKeys: undefined,
     selectedPublicProject:'',
     subSectionKeys: undefined,
     savedMainSectionKey: undefined,

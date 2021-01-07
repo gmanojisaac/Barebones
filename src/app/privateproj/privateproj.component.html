@@ -1,20 +1,23 @@
 <div *ngIf="(privateList | async) as privateListReady; else privateListnotReady">
-    <mat-label fxFlexAlign="center">Select/Create PrivateTask</mat-label>
-    <mat-form-field appearance="fill">
-        <input #trigger1="matAutocompleteTrigger" matInput [matAutocomplete]="auto1"
-            placeholder="Pick one or Create New" aria-label="Number"
-            [formControl]="myprojectControls?.ownPublicprojectControl">
-        <mat-icon (click)="trigger1.panelOpen ? trigger1.closePanel() : trigger1.openPanel()"
-            class="custom-icon custom-form-field-icon">
-            arrow_drop_down
-        </mat-icon>
-        <mat-autocomplete #auto1="matAutocomplete" autoActiveFirstOption>
-            <mat-option *ngFor="let option of privateListReady" [value]="option">
-                {{option}}</mat-option>
-        </mat-autocomplete>
-        <mat-hint>{{myprojectVariables.privateProjectHint}}</mat-hint>
-    </mat-form-field>
-    <div *ngIf="(PrivateSections | async) as PrivateSectionsReady; else PrivateSectionsnotReady">
+    <div fxLayout="row" Style="margin-top:40px;margin-bottom:50px;margin-right:30px; border-style: double; padding:1em;" >
+      <mat-label >Select/Create PrivateTask</mat-label>
+      <mat-form-field appearance="fill">
+          <input #trigger1="matAutocompleteTrigger" matInput [matAutocomplete]="auto1"
+              placeholder="Pick one or Create New" aria-label="Number"
+              [formControl]="myprojectControls?.ownPublicprojectControl">
+          <mat-icon (click)="trigger1.panelOpen ? trigger1.closePanel() : trigger1.openPanel()"
+              class="custom-icon custom-form-field-icon">
+              arrow_drop_down
+          </mat-icon>
+          <mat-autocomplete #auto1="matAutocomplete" autoActiveFirstOption>
+              <mat-option *ngFor="let option of privateListReady" [value]="option">
+                  {{option}}</mat-option>
+          </mat-autocomplete>
+          <mat-hint>{{myprojectVariables.privateProjectHint}}</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="(PrivateSections | async) as PrivateSectionsReady; else PrivateSectionsnotReady" Style="margin-top:40px;margin-bottom:50px;margin-right:30px; border-style: double; padding:1em;" >
         <form [formGroup]="myprojectControls?.editMainsectionGroup"  fxLayoutGap="10px">
             <mat-label fxFlexAlign="center">MainSection:</mat-label>
             <mat-form-field appearance="fill">
@@ -25,7 +28,7 @@
                 arrow_drop_down
               </mat-icon>
               <mat-autocomplete #auto2="matAutocomplete">
-                <mat-option *ngFor="let option of myuserProfile?.mainsubsectionKeys" [value]="option">
+                <mat-option *ngFor="let option of myuserProfile?.mainsubsectionKeys | async" [value]="option">
                   {{option}}</mat-option>
               </mat-autocomplete>
             </mat-form-field>
@@ -56,16 +59,30 @@
               <mat-hint>{{myhint}}</mat-hint>
             </mat-form-field>
           </form>
+          <div Style="margin-top:2vh; padding:1em;"fxLayoutAlign="space-around center" fxLayoutGap="5vh">
+            <button  mat-raised-button color="warn" (click)="EditAdd()" 
+          [disabled]="!add"
+          fxFlex="nogrow">Add</button>
+          <button  mat-raised-button color="warn" (click)="EditDelete()" 
+          [disabled]="!delete"
+          fxFlex="nogrow">Delete</button>
+          <button  mat-raised-button color="warn" (click)="EditUpdate()" 
+          [disabled]="!update"
+          fxFlex="nogrow">Change Visibility</button>
+          </div>  
     </div>
 
 </div>
 
 <ng-template #PrivateSectionsnotReady>
-    <div style="width:25vw;">
+    <div Style="margin-top:40px;margin-bottom:50px;margin-right:30px; border-style: double; padding:1em;">
         No Selected Private Project Keys
     </div>
    
 </ng-template>
 <ng-template #privateListnotReady>
-    Applicable Screen -> can have 0 private project
+    <div Style="margin-top:40px;margin-bottom:50px;margin-right:30px; border-style: double; padding:1em;">
+      Applicable Screen -> can have 0 private project
+    </div>
+    
 </ng-template>
