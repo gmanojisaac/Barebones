@@ -11,15 +11,32 @@ export interface userProfile {
   userAuthenObj: firebase.User,//Receive User obj after login success
   myusrinfoFromDb: myusrinfo,
   keysReadFromDb?: MainSectionGroup[];
+  selectedPublicProject?:string;
   mainsubsectionKeys?: string[];
   subSectionKeys?: string[];
   savedMainSectionKey: string;
   savesubSectionKeys?: string[];
   savedisabledval?: boolean;
 }
-export interface projectFlags {
-  showPaymentpage: boolean;
-  newuserCheck: boolean;
+export interface projectFlags
+{    
+    newuserCheck?: boolean;//show add or New Testcase based on number of testcases in subsection
+    showPaymentpage?:boolean;//for expired user-remove it
+    firstTestcaseEdit?:boolean;
+    showEditTcButton?:boolean;
+    homeNewProject?:boolean;
+    homeDeleteProject?:boolean;
+    homeCurrentProject?:boolean;
+    editModifyProject?:boolean;
+    editAddMainsec?:boolean;
+    editDeleteMainsec?:boolean;
+    editVisibility?:boolean;//visibility button
+    editAddSubSec?:boolean;
+    editDeleteSubsec?:boolean;
+    editAddProject?:boolean;
+    editDeleteProject?:boolean;
+    editUpdateProject?:boolean;
+    
 }
 export interface myusrinfo {
   MembershipEnd: Date;

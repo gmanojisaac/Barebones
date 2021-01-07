@@ -1,4 +1,4 @@
-import { Component, OnInit,Input,AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit,Input,AfterViewInit, OnDestroy } from '@angular/core';
 import { map, switchMap, startWith, withLatestFrom } from 'rxjs/operators';
 import { BehaviorSubject, Subscription, Observable, of } from 'rxjs';
 import { UserdataService, projectFlags, TestcaseInfo, projectControls, userProfile, MainSectionGroup, myusrinfo, projectVariables } from '../service/userdata.service';
@@ -9,6 +9,7 @@ import firebase from 'firebase/app';
 
 @Component({
   selector: 'app-privateproj',
+  changeDetection: ChangeDetectionStrategy.Default,
   templateUrl: './privateproj.component.html',
   styleUrls: ['./privateproj.component.scss']
 })

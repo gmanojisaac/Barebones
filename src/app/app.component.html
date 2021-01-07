@@ -1,4 +1,3 @@
-
 <div *ngIf="(AfterOnlineCheckAuth | async) as onlineAndAuthReady; else onlineAndAuthNotReady">
     <mat-sidenav-container fxFlex="100vw">
         <mat-sidenav-content>
@@ -86,7 +85,7 @@
                             <button mat-raised-button color="primary" (click)="saveTC()"
                                 [disabled]="!(myprojectControls?.createTestcaseControl.value)">Save</button>
                             <button mat-raised-button color="warn" (click)="exitTC()">Cancel</button>
-                        </form>      
+                        </form>
                         <button mat-raised-button color="accent"
                             [fxShow]="myprojectFlags?.showPaymentpage === false && myuserProfile.myusrinfoFromDb?.projectOwner === true && myprojectFlags?.firstTestcaseEdit === false && myprojectControls?.subsectionkeysControl.valid && myprojectVariables.testcaseslength > 0"
                             [disabled]="myprojectFlags?.showEditTcButton !== true" (click)="openedit()">Edit</button>
@@ -134,25 +133,27 @@
             </div>
         </mat-sidenav-content>
         <mat-sidenav #drawer class="drawer" mode="side" opened="false" (opened)="draweropen()" fxFlex.lt-sm="100vw">
-        <mat-toolbar class="header" color="warn">
-            <div>Task keys Management</div>
-            <span fxFlex="grow"></span>
-            <mat-icon style="margin-right:20px;" class="close" (click)="drawerclose()">close</mat-icon>
-          </mat-toolbar>
-          <mat-tab-group>
-    <mat-tab>
-    <ng-template mat-tab-label>Edit</ng-template>
-    <ng-template matTabContent>
-    <app-privateproj [profileinfoUid]="myuserProfile?.userAuthenObj"></app-privateproj>
-
-
-
-    </ng-template>
-</mat-tab>
-</mat-tab-group>
-        
-</mat-sidenav>
-</mat-sidenav-container>
+            <mat-toolbar class="header" color="warn">
+                <div>Task keys Management</div>
+                <span fxFlex="grow"></span>
+                <mat-icon style="margin-right:20px;" class="close" (click)="drawerclose()">close</mat-icon>
+            </mat-toolbar>
+            <mat-tab-group>
+                <mat-tab>
+                    <ng-template mat-tab-label>Home</ng-template>
+                    <ng-template matTabContent>
+                        <app-publicproj [profileinfoUid]="myuserProfile?.userAuthenObj"></app-publicproj>
+                    </ng-template>
+                </mat-tab>
+                <mat-tab>
+                    <ng-template mat-tab-label>Edit</ng-template>
+                    <ng-template matTabContent>
+                        <app-privateproj [profileinfoUid]="myuserProfile?.userAuthenObj"></app-privateproj>
+                    </ng-template>
+                </mat-tab>
+            </mat-tab-group>
+        </mat-sidenav>
+    </mat-sidenav-container>
 
 
 </div>

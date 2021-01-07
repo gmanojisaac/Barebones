@@ -101,31 +101,6 @@ export class AppComponent {
     return this.getTestcasesBehaviourSub;
   };
 
-  publicList = of(undefined);
-  localpublicList = [];
-  getPublicListSubscription: Subscription;
-  getPublicListBehaviourSub = new BehaviorSubject(undefined);
-  getPublicList = (publicProjects: AngularFirestoreDocument<any>) => {
-    if (this.getPublicListSubscription !== undefined) {
-      this.getPublicListSubscription.unsubscribe();
-    }
-    this.getPublicListSubscription = publicProjects.valueChanges().subscribe((val: any) => {
-      if (val === undefined) {
-        this.getPublicListBehaviourSub.next(undefined);
-      } else {
-        if (val.public.length === 0) {
-          this.getPublicListBehaviourSub.next(null);
-        } else {
-          this.localpublicList = val.public;
-          this.getPublicListBehaviourSub.next(val.public);
-        }
-      }
-    });
-    return this.getPublicListBehaviourSub;
-  };
-
-
-
   myuserProfile: userProfile = {
     userAuthenObj: null,//Receive User obj after login success
     myusrinfoFromDb: null,
@@ -178,29 +153,6 @@ export class AppComponent {
   ) {
     this.myonline = this.getObservableonine(this.developmentservice.isOnline$);
     this.myauth = this.getObservableauthState(this.afAuth.authState);
-    const publicProjsel = this.myprojectControls.publicprojectControl.valueChanges.pipe(
-      startWith(''),
-      map((publicProjectSelected: string) => {
-        if (publicProjectSelected !== '') {
-          const filteredlist = this.localpublicList.filter((option => option.toLowerCase().includes(publicProjectSelected.toLowerCase())));
-          this.getSectionsSubscription?.unsubscribe();
-          this.myuserProfile.myusrinfoFromDb.projectName = publicProjectSelected;
-          this.myuserProfile.myusrinfoFromDb.projectLocation = 'publicProjectKeys/' + publicProjectSelected;
-          this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
-          this.getPublicListBehaviourSub.next(filteredlist);
-        } else {
-          if (publicProjectSelected === null) {
-            this.localpublicList = [];
-          } else {
-            this.localpublicList = [];
-            this.myprojectVariables.publicProjectHint = 'Select Task from List';
-            this.getPublicListSubscription?.unsubscribe();
-            this.publicList = this.getPublicList(this.db.doc(('/projectList/publicProjects')));
-          }
-        }
-      }));
-
-
     const keysselection = this.myprojectControls.subsectionkeysControl.valueChanges
       .pipe(startWith({ value: '', groupValue: '' }),
         map((selection: any) => {
@@ -255,7 +207,7 @@ export class AppComponent {
 
 
                   }),
-                  withLatestFrom(publicProjsel, keysselection),//,privateProjsel),
+                  withLatestFrom(keysselection),
                   map((values: any) => {
                     const [publickey, keys] = values;
                     return onlineval;
@@ -266,7 +218,6 @@ export class AppComponent {
                 //this.getPrivateSectionsSubscription?.unsubscribe();
                 this.getSectionsSubscription?.unsubscribe();
                 this.getTestcasesSubscription?.unsubscribe();
-                this.getPublicListSubscription?.unsubscribe();
                 this.myprojectControls.subsectionkeysControl.reset();
                 return of(false);
               }
@@ -276,7 +227,6 @@ export class AppComponent {
           //this.getPrivateSectionsSubscription?.unsubscribe();
           this.getSectionsSubscription?.unsubscribe();
           this.getTestcasesSubscription?.unsubscribe();
-          this.getPublicListSubscription?.unsubscribe();
           this.myprojectControls.subsectionkeysControl.reset();
           return of(false);
         }
@@ -313,9 +263,6 @@ export class AppComponent {
     })
   }
   componentLogOff() {
-    //this.getPrivateListSubscription?.unsubscribe();
-    //this.getPrivateSectionsSubscription?.unsubscribe();
-    this.getPublicListSubscription?.unsubscribe();
     this.getSectionsSubscription?.unsubscribe();
     this.getTestcasesSubscription?.unsubscribe();
     this.developmentservice.logout();
