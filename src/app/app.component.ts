@@ -82,7 +82,7 @@ export class AppComponent {
       if (val === undefined) {
         this.getTestcasesBehaviourSub.next(undefined);
       } else {
-        console.log('85',val.testcase);
+        //console.log('85',val.testcase);
         if (val.testcase.length === 0) {
 
           this.myprojectVariables.testcaseslength = 0;
@@ -136,7 +136,10 @@ export class AppComponent {
     testcaseslength: 0,
     viewSelectedTestcase: undefined,
     publicProjectHint: undefined,
-    privateProjectHint: undefined
+    privateProjectHint: undefined,    
+    lastSavedVisibility: false,
+    editProjectkeysSaved: undefined
+
   };
   myprojectFlags: projectFlags = {
     showPaymentpage: false,
@@ -165,7 +168,7 @@ export class AppComponent {
             this.SectionTc = of(undefined);
           } else {
             this.myprojectVariables.initialMainSection = selection.groupValue;
-            console.log('168',this.myuserProfile.myusrinfoFromDb.projectName);
+            //console.log('168',this.myuserProfile.myusrinfoFromDb.projectName);
             if (this.myuserProfile.myusrinfoFromDb.projectName === 'Demo') {
               //this.getTestcasesSubscription?.unsubscribe();
               this.SectionTc = this.getTestcases(this.db.doc('projectList/' + this.myuserProfile.userAuthenObj.uid));
@@ -185,7 +188,7 @@ export class AppComponent {
                 this.myuserProfile.userAuthenObj = afterauth;
                 return docData(this.db.firestore.doc('myProfile/' + afterauth.uid)).pipe(
                   map((profilevalbef: any) => {
-                    console.log('98-false- means profile exists', !Object.keys(profilevalbef).length);
+                    //console.log('98-false- means profile exists', !Object.keys(profilevalbef).length);
                     if (!Object.keys(profilevalbef).length === true) {
                       this.developmentservice.findOrCreate(afterauth.uid).then(success => {
                         if (success !== 'doc exists') {
@@ -193,7 +196,7 @@ export class AppComponent {
                           this.myprojectFlags.newuserCheck = false;
                           this.Sections = of(undefined);
                         } else {
-                          console.log(success, afterauth.uid);
+                          //console.log(success, afterauth.uid);
                           this.myprojectFlags.newuserCheck = true;
                           this.Sections = of(null);
                         }

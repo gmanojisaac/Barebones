@@ -56,6 +56,8 @@ export interface projectVariables {
   viewSelectedTestcase?: TestcaseInfo;
   publicProjectHint?:string;
   privateProjectHint?:string;
+  editProjectkeysSaved:MainSectionGroup[];
+  lastSavedVisibility:boolean;
 }
 export interface projectControls {
   subsectionkeysControl?: FormControl;//1-Keys come from db and user sub-sec selection will load a doc from demo or public proj
@@ -150,6 +152,15 @@ export class UserdataService {
         this.db.firestore.doc('projectList/' + uid).set({ownerRecord: firebase.firestore.FieldValue.arrayUnion(projectname)},{merge: true}),
         this.db.firestore.doc('publicProjectKeys/' + projectname).set({MainSection},  {merge: false}) ,
         this.db.firestore.doc('projectList/' + 'publicProjects/').set({public: firebase.firestore.FieldValue.arrayUnion(projectname)},{merge: true})
+      ]);
+      return promise;
+    });
+  }
+  async createDefKeys(projectname: string,MainSection:any) : Promise<void>{
+    await this.db.firestore.runTransaction(() => {
+      const promise = Promise.all([      
+        this.db.firestore.doc('publicProjectKeys/' + projectname).set({MainSection},  {merge: false}) ,
+        this.db.firestore.doc(projectname+ '/MainSection/items/SubSection').delete()
       ]);
       return promise;
     });

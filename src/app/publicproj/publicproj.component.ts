@@ -69,7 +69,9 @@ export class PublicprojComponent implements OnInit,AfterViewInit,OnDestroy {
   };
 
   myprojectVariables: projectVariables = {
-    publicProjectHint: undefined
+    publicProjectHint: undefined,    
+    lastSavedVisibility: false,
+    editProjectkeysSaved: undefined
   };
 
   myuserProfile: userProfile = {

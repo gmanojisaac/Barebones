@@ -6,7 +6,6 @@ import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AngularFirestore } from '@angular/fire/firestore';
 import firebase from 'firebase/app';
-import { noUndefined } from '@angular/compiler/src/util';
 
 @Component({
   selector: 'app-privateproj',
@@ -16,7 +15,7 @@ import { noUndefined } from '@angular/compiler/src/util';
 })
 export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
   @Input() profileinfoUid: firebase.User;
-
+  myhint='';
   privateList = of(undefined);
   localprivateList = [];
   getPrivateListSubscription: Subscription;
@@ -26,7 +25,7 @@ export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
       this.getPrivateListSubscription.unsubscribe();
     }
     this.getPrivateListSubscription = privateProjects.valueChanges().subscribe((val: any) => {
-      console.log('val', val);
+      //console.log('val', val);
       if (val === undefined) {
         this.getPrivateListBehaviourSub.next(undefined);
       } else {
@@ -64,6 +63,7 @@ export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
         } else {
           if ((val.MainSection.length !== 0) ) {
             this.myuserProfile.keysReadFromDb = val.MainSection;
+            this.myuserProfile.dupmainsubsectionKeys=[];
             this.myuserProfile.mainsubsectionKeys = of(undefined);
             this.myuserProfile.keysReadFromDb?.forEach(eachMainfield => {              
               this.myuserProfile.dupmainsubsectionKeys.push(eachMainfield.name);              
@@ -100,7 +100,9 @@ export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
   };
 
   myprojectVariables: projectVariables = {
-    privateProjectHint: undefined
+    privateProjectHint: undefined,
+    lastSavedVisibility: false,
+    editProjectkeysSaved: undefined
   };
 
   myprojectControls: projectControls = {
@@ -129,32 +131,38 @@ export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
     }
 
   ngOnInit(): void {
-    console.log('profileinfoUid',this.profileinfoUid);
+    //console.log('profileinfoUid',this.profileinfoUid);
   }
 
   ngAfterViewInit(){
     this.myuserProfile.userAuthenObj=this.profileinfoUid;
-    console.log('profileinfoUid',this.profileinfoUid);
+    //console.log('profileinfoUid',this.profileinfoUid);
     const EditSubSectionSelection= this.myprojectControls.editSubsectionGroup.valueChanges.pipe(
       startWith({ editSubsectionControl: '' }), 
       map((editSubSecSelected: any) => {
         //check not null
-          console.log('141',this.myuserProfile.savesubSectionKeys,editSubSecSelected, !editSubSecSelected, editSubSecSelected.editSubsectionControl !== null,editSubSecSelected.editSubsectionControl !== '');
+          //console.log('141',this.myuserProfile.savesubSectionKeys,editSubSecSelected, !editSubSecSelected, editSubSecSelected.editSubsectionControl !== null,editSubSecSelected.editSubsectionControl !== '');
         if (editSubSecSelected.editSubsectionControl !== null && editSubSecSelected.editSubsectionControl !== '') {
           if(this.myuserProfile.savesubSectionKeys !== undefined){
             const userselection = editSubSecSelected.editSubsectionControl;
             const filteredlist = this.myuserProfile.savesubSectionKeys.filter((option => option.toLowerCase().includes(userselection.toLowerCase())));
             const uniqueinlist = this.myuserProfile.savesubSectionKeys.filter(publicproj => (publicproj.toLowerCase().localeCompare(userselection.toLowerCase()) === 0));
-            console.log('146', uniqueinlist,filteredlist);
+            //console.log('146', uniqueinlist,filteredlist);
             if (uniqueinlist.length > 0) {
               this.delete = true;
               this.add= false;
+              this.myhint='Delete SubSectionkeys';
             } else {
               this.delete = false;
               this.add= true;
+              this.myhint='Add SubSectionkeys';
             }
-            
-            this.myuserProfile.subSectionKeys= filteredlist;
+            if(filteredlist.length === 0){
+
+            }else{
+              this.myuserProfile.subSectionKeys= filteredlist;
+            }
+           
           }
 
         } else {
@@ -173,9 +181,14 @@ export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
           if (filteredlist.length > 0) {
             if(selectedvisibility.editVisibilityControl === this.myuserProfile.savedisabledval){    
               this.update = false;
-
+              this.delete=true;
+              this.myprojectControls.editSubsectionGroup.reset();
+              this.myprojectControls.editSubsectionGroup.enable();
             }else{
               this.update = true;
+              this.myhint='';
+              this.delete=false;
+              this.add=false;
               this.myprojectControls.editSubsectionGroup.reset();
               this.myprojectControls.editSubsectionGroup.disable();
             }             
@@ -219,13 +232,16 @@ export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
           if(uniqueinlist.length > 0){
             this.myprojectControls.visibilityMainsectionGroup.enable();
             this.add = false;
+            this.delete=true;
             this.update = false;            
             this.myprojectControls.editSubsectionGroup.enable();
             this.myprojectControls.editSubsectionGroup.reset();
-          }else{
+          }else{            
             this.add = true;
             this.update = false;  
+            this.delete=false;
             this.myprojectControls.visibilityMainsectionGroup.reset();
+            this.myprojectControls.visibilityMainsectionGroup.setValue({ editVisibilityControl: true });
             this.myprojectControls.editSubsectionGroup.reset();
             this.myprojectControls.editSubsectionGroup.disable();
 
@@ -233,10 +249,9 @@ export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
           if(filteredlist.length !== 0){
             this.myuserProfile.mainsubsectionKeys= of(this.myuserProfile.dupmainsubsectionKeys);
           }else{
-
             this.myuserProfile.mainsubsectionKeys=of(filteredlist);
           }
-
+          //this.myhint='';
         }else{
           this.add = false;
           this.myuserProfile.mainsubsectionKeys= of(this.myuserProfile.dupmainsubsectionKeys);
@@ -271,15 +286,15 @@ export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
       const [publickey, keys] = values;
 
     })).subscribe(_=>{
-
     });
   }
-  /*
+ 
   EditAdd() {
     const ownproj=this.myprojectControls.ownPublicprojectControl.value;
     const mainval= this.myprojectControls.editMainsectionGroup.controls['editMainsectionControl'].value;
     const disabledval= this.myprojectControls.visibilityMainsectionGroup.controls['editVisibilityControl'].value;
     const subval= this.myprojectControls.editSubsectionGroup.controls['editSubsectionControl'].value;
+    console.log('298', this.myhint);
     if(this.myhint !== ''){
       let SubSecArr= this.myuserProfile.keysReadFromDb;
       SubSecArr.forEach(eachMainfield=>
@@ -291,23 +306,14 @@ export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
         });
       this.myprojectVariables.editProjectkeysSaved=SubSecArr;
       this.developmentservice.addSubSection(ownproj, mainval, subval, this.myprojectVariables.editProjectkeysSaved).then(success=>{
-        this.getPrivateSectionsBehaviourSub.complete();
-        this.myprojectControls.editSubsectionGroup.disable();
-        this.myprojectControls.visibilityMainsectionGroup.disable();
-        this.myprojectControls.editMainsectionGroup.reset();
-        this.privateSection = this.getPrivateSections(this.db.doc('/publicProjectKeys/' + ownproj));        
-
+        this.PrivateSections= of(undefined);
       });
     }else{
       let SubSecArr= this.myuserProfile.keysReadFromDb;
       SubSecArr.push({name:mainval, disabled: disabledval, section:[] });
       this.myprojectVariables.editProjectkeysSaved=SubSecArr;
       this.developmentservice.addMainSection(ownproj, this.myprojectVariables.editProjectkeysSaved).then(success=>{
-        this.getPrivateSectionsBehaviourSub.complete();
-        this.myprojectControls.editSubsectionGroup.disable();
-        this.myprojectControls.visibilityMainsectionGroup.disable();
-        this.myprojectControls.editMainsectionGroup.reset();
-        this.privateSection = this.getPrivateSections(this.db.doc('/publicProjectKeys/' + ownproj));        
+        this.PrivateSections= of(undefined);  
       });
     }
   }
@@ -329,13 +335,7 @@ export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
         });
         this.myprojectVariables.editProjectkeysSaved=SubSecArr;
         this.developmentservice.addSubSection(ownproj, mainval, subval, this.myprojectVariables.editProjectkeysSaved).then(success=>{
-          this.getPrivateSectionsBehaviourSub.complete();
-          
-          //this.myprojectControls.editSubsectionGroup.disable();
-          //this.myprojectControls.visibilityMainsectionGroup.disable();
-          //this.myprojectControls.editMainsectionGroup.reset();
-          this.privateSection = this.getPrivateSections(this.db.doc('/publicProjectKeys/' + ownproj));        
-        
+          this.PrivateSections= of(undefined);
         });
     }else{
       //console.log('mainsec-del',ownproj,mainval,disabledval,subval);
@@ -343,12 +343,7 @@ export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
       SubSecArr= SubSecArr.filter(mymainkeys=> mymainkeys.name !== mainval);
       this.myprojectVariables.editProjectkeysSaved=SubSecArr;
       this.developmentservice.deleteMainSection(ownproj, this.myprojectVariables.editProjectkeysSaved).then(success=>{
-        this.getPrivateSectionsBehaviourSub.complete();
-        //this.myprojectControls.editSubsectionGroup.disable();
-        //this.myprojectControls.visibilityMainsectionGroup.disable();
-        this.myprojectControls.editMainsectionGroup.reset();
-        this.privateSection = this.getPrivateSections(this.db.doc('/publicProjectKeys/' + ownproj));        
-      
+        this.PrivateSections= of(undefined);
       });
     }
   }
@@ -357,7 +352,6 @@ export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
     const mainval= this.myprojectControls.editMainsectionGroup.controls['editMainsectionControl'].value;
     const disabledval= this.myprojectControls.visibilityMainsectionGroup.controls['editVisibilityControl'].value;
     const subval= this.myprojectControls.editSubsectionGroup.controls['editSubsectionControl'].value;
-    //console.log('mainsec-update',ownproj,mainval,disabledval,subval)
     let SubSecArr= this.myuserProfile.keysReadFromDb;
     SubSecArr.forEach(eachMainfield=>
       {
@@ -367,14 +361,20 @@ export class PrivateprojComponent implements OnInit,AfterViewInit,OnDestroy {
       });
     this.myprojectVariables.editProjectkeysSaved=SubSecArr;
     this.developmentservice.updatevisibility(ownproj, this.myprojectVariables.editProjectkeysSaved).then(success=>{
-      this.getPrivateSectionsBehaviourSub.complete();
-      this.myprojectControls.editSubsectionGroup.disable();
-      this.myprojectControls.visibilityMainsectionGroup.disable();
-      this.myprojectControls.editMainsectionGroup.reset();
-      this.privateSection = this.getPrivateSections(this.db.doc('/publicProjectKeys/' + ownproj));        
-    
+      this.PrivateSections= of(undefined);
     });
-  }*/
+  }
+  CreateDefault(){
+    const ProjectName = this.myprojectControls.ownPublicprojectControl.value;
+    const newKeys = [{
+      name: 'MainSection',
+      disabled: false,
+      section: [{
+        viewvalue: 'SubSection'
+      }]
+    }];
+    this.developmentservice.createDefKeys(ProjectName,newKeys);
+  }
   ngOnDestroy(){
     this.privateProjsel.unsubscribe();
     this.getPrivateListSubscription?.unsubscribe();
