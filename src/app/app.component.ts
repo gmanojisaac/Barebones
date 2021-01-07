@@ -1,7 +1,7 @@
 
-import { Component,ViewChild } from '@angular/core';
+import { Component,ViewChild,OnInit,Inject } from '@angular/core';
 import { BehaviorSubject, Subscription, Observable, of } from 'rxjs';
-import { UserdataService, projectFlags, TestcaseInfo, projectControls, userProfile, MainSectionGroup, myusrinfo, projectVariables } from './service/userdata.service';
+import { UserdataService, projectSub, projectFlags, TestcaseInfo, projectControls, userProfile, MainSectionGroup, myusrinfo, projectVariables } from './service/userdata.service';
 import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase/app';
 import { map, switchMap, startWith, withLatestFrom } from 'rxjs/operators';
@@ -82,6 +82,7 @@ export class AppComponent {
       if (val === undefined) {
         this.getTestcasesBehaviourSub.next(undefined);
       } else {
+        console.log('85',val.testcase);
         if (val.testcase.length === 0) {
 
           this.myprojectVariables.testcaseslength = 0;
@@ -139,10 +140,13 @@ export class AppComponent {
   };
   myprojectFlags: projectFlags = {
     showPaymentpage: false,
-    newuserCheck: false
+    newuserCheck: false,
+    firstTestcaseEdit: false
   };
 
-
+  myprojectSub: projectSub ={
+    openeditSub:undefined
+  };
   @ViewChild('drawer') public sidenav: MatSidenav;
   constructor(
     public afAuth: AngularFireAuth,
@@ -161,11 +165,12 @@ export class AppComponent {
             this.SectionTc = of(undefined);
           } else {
             this.myprojectVariables.initialMainSection = selection.groupValue;
+            console.log('168',this.myuserProfile.myusrinfoFromDb.projectName);
             if (this.myuserProfile.myusrinfoFromDb.projectName === 'Demo') {
-              this.getTestcasesSubscription?.unsubscribe();
+              //this.getTestcasesSubscription?.unsubscribe();
               this.SectionTc = this.getTestcases(this.db.doc('projectList/' + this.myuserProfile.userAuthenObj.uid));
             } else {
-              this.getTestcasesSubscription?.unsubscribe();
+              //this.getTestcasesSubscription?.unsubscribe();
               this.SectionTc = this.getTestcases(this.db.doc('/' + this.myuserProfile.myusrinfoFromDb.projectName + '/' + selection.groupValue + '/items/' + selection.value));
             }
           }
@@ -194,6 +199,7 @@ export class AppComponent {
                         }
                       });
                     } else {
+                      this.loadFirstPageKeys(profilevalbef);
                       this.getSectionsSubscription?.unsubscribe();
                       this.myuserProfile.myusrinfoFromDb = profilevalbef;
                       this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
@@ -206,6 +212,7 @@ export class AppComponent {
                   })
                 )
               } else {
+                this.myprojectSub.openeditSub?.unsubscribe();
                 this.getSectionsSubscription?.unsubscribe();
                 this.getTestcasesSubscription?.unsubscribe();
                 this.myprojectControls.subsectionkeysControl.reset();
@@ -213,6 +220,7 @@ export class AppComponent {
               }
             }));
         } else {
+          this.myprojectSub.openeditSub?.unsubscribe();
           this.getSectionsSubscription?.unsubscribe();
           this.getTestcasesSubscription?.unsubscribe();
           this.myprojectControls.subsectionkeysControl.reset();
@@ -221,9 +229,44 @@ export class AppComponent {
       })
     );
   }
+  loadFirstPageKeys(profileData: any) {
+    if (profileData !== undefined) {//norecords
+      if (new Date(profileData.MembershipEnd).valueOf() < new Date().valueOf()) {
+        if (profileData.MembershipType === 'Demo') {//expired
+          this.myuserProfile.myusrinfoFromDb.projectOwner = false;//cannot add tc
+          this.myuserProfile.myusrinfoFromDb.projectName = 'Demo';
+          this.myuserProfile.myusrinfoFromDb.projectLocation = '/projectList/DemoProjectKey';
+          this.myuserProfile.myusrinfoFromDb.MembershipType = 'Demo';
+          this.myuserProfile.myusrinfoFromDb.MembershipEnd = new Date(profileData.MembershipEnd);
+          this.myprojectFlags.showPaymentpage = true;// show only payments Page
+        } else {//expired member
+          const nextMonth: Date = new Date();
+          nextMonth.setMonth(nextMonth.getMonth() + 1);
+          const newItem = {
+            MembershipEnd: nextMonth.toDateString(),
+            MembershipType: 'Demo',
+            projectLocation: '/projectList/DemoProjectKey',
+            projectOwner: true,
+            projectName: 'Demo'
+          };
+          this.db.doc<any>('myProfile/' + this.myuserProfile.userAuthenObj.uid).set(newItem);
+          this.myuserProfile.myusrinfoFromDb.projectOwner = true;
+          this.myuserProfile.myusrinfoFromDb.projectName = 'Demo';
+          this.myuserProfile.myusrinfoFromDb.projectLocation = '/projectList/DemoProjectKey';
+          this.myuserProfile.myusrinfoFromDb.MembershipType = 'Demo';
+          this.myuserProfile.myusrinfoFromDb.MembershipEnd = new Date(nextMonth.toDateString());
+          this.myprojectFlags.showPaymentpage = false;
+        }
+      } else {//start normal
+        this.myuserProfile.myusrinfoFromDb= profileData;
+        //console.log('446',this.myuserProfile.myusrinfoFromDb);
+        this.myprojectFlags.showPaymentpage = false;
+      }//end normal      
+    }//end demo/Member        
+  }
   saveCurrProject(selectedproj: string){
     this.myuserProfile.myusrinfoFromDb.projectLocation='/publicProjectKeys/' + selectedproj;
-    this.myuserProfile.myusrinfoFromDb.projectName = this.myuserProfile.selectedPublicProject;
+    this.myuserProfile.myusrinfoFromDb.projectName = selectedproj;
     this.getSectionsSubscription?.unsubscribe();
     if(this.myuserProfile.myusrinfoFromDb.projectName === 'Demo'){
       this.Sections = this.getSections(this.db.doc('/projectList/DemoProjectKey'));
@@ -231,6 +274,10 @@ export class AppComponent {
       this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));          
     }
     this.myprojectControls.subsectionkeysControl.reset();
+    //this.myprojectControls.testcaseInfoControl.reset();
+    this.myprojectVariables.viewSelectedTestcase=undefined;            
+    this.myprojectVariables.initialMainSection = 'SubSection';
+    //this.SectionTc = of(undefined);
     this.sidenav.close();
   }
 
@@ -264,13 +311,152 @@ export class AppComponent {
     })
   }
   componentLogOff() {
+    this.myprojectSub.openeditSub?.unsubscribe();
     this.getSectionsSubscription?.unsubscribe();
     this.getTestcasesSubscription?.unsubscribe();
     this.developmentservice.logout();
+  }
+  refreshList(item: TestcaseInfo) {//When user Selects testitem by doubleclick
+    this.myprojectFlags.showEditTcButton = true;
+    this.myprojectVariables.viewSelectedTestcase = item;//`${item.subHeading}`;
+    this.myprojectControls.testcaseInfoControl.setValue(`${item.description}`)
   }
   draweropen() {
   }
   drawerclose() {
     this.sidenav.close();
+  }
+
+  openedit() {
+    let locationForEdit = '';
+    if (this.myuserProfile.myusrinfoFromDb.projectName === 'Demo') {
+      locationForEdit = '/projectList/' + this.myuserProfile.userAuthenObj.uid;
+    } else {
+      const userselection = this.myprojectControls.subsectionkeysControl.value;
+      locationForEdit = this.myuserProfile.myusrinfoFromDb.projectName + '/' + userselection.groupValue + '/items/' + userselection.value;
+    }
+    const dialogRef = this.dialog.open(DialogEditTestcase, {
+      width: '80vw',
+      data: this.myprojectVariables.viewSelectedTestcase,
+      disableClose: true
+    });
+    this.myprojectSub.openeditSub = dialogRef.afterClosed().subscribe(result => {
+      if (result !== null) {
+        this.myprojectFlags.showEditTcButton = false;
+        const updateObject: TestcaseInfo = { ...result };
+        this.developmentservice.editTestcase(locationForEdit, this.myprojectVariables.viewSelectedTestcase, updateObject);
+        this.myprojectVariables.viewSelectedTestcase = updateObject;
+        this.myprojectControls.testcaseInfoControl.setValue(`${updateObject.description}`)
+      }
+    });
+  }
+  Delete() {
+    let r = confirm("Confirm Tc Delete?");
+    if (r == true) {
+      let locationForDelete = '';
+      if (this.myuserProfile.myusrinfoFromDb.projectName === 'Demo') {
+        locationForDelete = '/projectList/' + this.myuserProfile.userAuthenObj.uid;
+      } else {
+        const userselection = this.myprojectControls.subsectionkeysControl.value;
+        locationForDelete = this.myuserProfile.myusrinfoFromDb.projectName + '/' + userselection.groupValue + '/items/' + userselection.value;
+      }
+      this.developmentservice.deleteTestcase(locationForDelete, this.myprojectVariables.viewSelectedTestcase).then(success => {
+        const updateObject: TestcaseInfo = {
+          heading: this.myprojectControls.createTestcaseControl.value,//Heading in testcase list
+          subHeading: 'Edit SubHeading',//Sub-Heading in testcase list
+          description: 'Edit here!',//Description in testcase view
+          linktoTest: 'https://www.google.com/'//stackblitzLink in testcase edit/doubleclick
+        };
+
+        this.myprojectVariables.viewSelectedTestcase = updateObject;
+        this.myprojectControls.testcaseInfoControl.setValue(`${updateObject.description}`);
+        this.myprojectFlags.showEditTcButton = false;
+      });
+    } else {
+      this.myprojectFlags.showEditTcButton = true;
+    }
+
+
+  }
+  AddNew() {
+    this.myprojectFlags.firstTestcaseEdit = true;
+  }
+  saveTC() {
+    let locationForSave = '';
+    if (this.myuserProfile.myusrinfoFromDb.projectName === 'Demo') {
+      locationForSave = '/projectList/' + this.myuserProfile.userAuthenObj.uid;
+    } else {
+      const userselection = this.myprojectControls.subsectionkeysControl.value;
+      //console.log('userselection', userselection);
+      locationForSave = this.myuserProfile.myusrinfoFromDb.projectName + '/' + userselection.groupValue + '/items/' + userselection.value;
+    }
+    const updateObject: TestcaseInfo = {
+      heading: this.myprojectControls.createTestcaseControl.value,//Heading in testcase list
+      subHeading: 'Edit SubHeading',//Sub-Heading in testcase list
+      description: 'Edit here!',//Description in testcase view
+      linktoTest: 'https://www.google.com/'//stackblitzLink in testcase edit/doubleclick
+    };
+    this.developmentservice.createNewTestcase(locationForSave, updateObject).then(success => {
+      this.myprojectFlags.firstTestcaseEdit = false;
+      this.myprojectControls?.createTestcaseControl.reset();
+      this.myprojectFlags.showEditTcButton = false;
+    });
+
+  }
+  exitTC() {
+    this.myprojectFlags.firstTestcaseEdit = false;
+  }
+}
+
+@Component({
+  selector: 'dialog-edit-testcase',
+  template: `
+  <h1 mat-dialog-title>Edit TestCase</h1>
+  <div mat-dialog-content>
+  <form [formGroup]="userProfile" fxLayout="row wrap" fxLayoutAlign="center center">
+    <mat-form-field appearance="fill" floatLabel="Edit Sub-Heading" fxFlex="75vw">
+      <mat-label>Change Sub-Heading</mat-label>
+      <input matInput placeholder="Sub-Heading" formControlName = "subHeading">
+    </mat-form-field>
+    <mat-form-field appearance="fill" floatLabel="Edit Link" fxFlex="75vw">
+    <mat-label>Update in Stackblitz</mat-label>
+    <input matInput placeholder="Stackblitz github link" formControlName = "linktoTest">
+    </mat-form-field>
+    <mat-form-field appearance="fill" floatLabel="Edit Description" fxFlex="75vw">
+      <mat-label>Give More Information</mat-label>
+      <textarea 
+        matInput 
+        placeholder="Explain More here" 
+        formControlName = "description"
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="13"
+        cdkAutosizeMaxRows="70" 
+        ></textarea>
+    </mat-form-field>
+  </form>  
+</div>
+<div mat-dialog-actions>
+<button mat-button mat-raised-button color="primary" [mat-dialog-close]="userProfile.value"  [disabled]="userProfile.pristine">Update</button>
+  <button mat-button mat-raised-button color="warn" (click)="onNoClick()" cdkFocusInitial >Cancel</button>  
+</div> `
+})
+export class DialogEditTestcase implements OnInit {
+  userProfile: FormGroup;
+  constructor(
+    public dialogRef: MatDialogRef<DialogEditTestcase>,
+    @Inject(MAT_DIALOG_DATA) public data: TestcaseInfo,
+    private fb: FormBuilder) { }
+
+  onNoClick(): void {
+    this.dialogRef.close(null);
+  }
+
+  ngOnInit() {
+    this.userProfile = this.fb.group({
+      heading: [this.data.heading],
+      subHeading: [this.data.subHeading],
+      description: [this.data.description],
+      linktoTest: [this.data.linktoTest]
+    });
   }
 }

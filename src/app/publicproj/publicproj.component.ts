@@ -161,12 +161,47 @@ export class PublicprojComponent implements OnInit,AfterViewInit,OnDestroy {
     this.getPublicListSubscription?.unsubscribe();
     this.getPrivateListSubscription?.unsubscribe();
   }
-  NewProject()
-  {
+  NewProject() {
+    this.myuserProfile.selectedPublicProject=this.myprojectControls.publicprojectControl.value;
+    const ProjectName = this.myprojectControls.publicprojectControl.value;
+    const newKeys = [{
+      name: 'MainSection',
+      disabled: false,
+      section: [{
+        viewvalue: 'SubSection'
+      }]
+    }];
+    const newItem = {
+      projectLocation: 'publicProjectKeys/' + ProjectName,
+      projectOwner: true,
+      projectName: ProjectName
+    };
+    this.developmentservice.createnewproject(this.myuserProfile.userAuthenObj.uid, ProjectName, newItem, newKeys).then(success => {
+      this.myprojectFlags.homeDeleteProject = false;
+      this.myprojectFlags.homeNewProject = false;
+      this.myprojectFlags.homeCurrentProject = false;
+      this.myprojectControls.publicprojectControl.reset();
+      this.saveCurrProject();
+    });
   }
-  
-  DeleteProject()
-  {
+  DeleteProject() {
+    this.myuserProfile.selectedPublicProject='Demo';    
+    const ProjectName = this.myprojectControls.publicprojectControl.value;
+    let r = confirm("Confirm Project Delete?");
+    if (r == true) {
+      const newItem = {
+        projectLocation: 'projectList/DemoProjectKey',
+        projectOwner: true,
+        projectName: 'Demo'
+      };
+      this.developmentservice.deleteproject(this.myuserProfile.userAuthenObj.uid, ProjectName, newItem).then(success => {
+        this.myprojectFlags.homeDeleteProject = false;
+        this.myprojectFlags.homeNewProject = false;
+        this.myprojectFlags.homeCurrentProject = false;        
+        this.myprojectControls.publicprojectControl.reset();
+        this.saveCurrProject();
+      });
+    }
   }
   
   saveCurrProject()
@@ -174,8 +209,16 @@ export class PublicprojComponent implements OnInit,AfterViewInit,OnDestroy {
     this.toChangeCurrentProj.emit(this.myuserProfile.selectedPublicProject);
   }
   
-  NewMember()
-  {
+  NewMember(){
+    const nextMonth: Date = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 12);
+    const newItem = {
+      MembershipEnd: nextMonth.toDateString(),
+      MembershipType: 'Member',
+      projectOwner: true
+    }
+    this.db.doc<any>('myProfile/' + this.myuserProfile.userAuthenObj.uid).set(newItem, {merge:true}).then(success=>{
+    });
   }
   
 }

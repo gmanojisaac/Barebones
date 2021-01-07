@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent} from './app.component';
+import { AppComponent,DialogEditTestcase} from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppSharedModule } from './app-shared/app-shared.module';
 import { AngularFireModule } from '@angular/fire';
@@ -22,7 +22,8 @@ import { PublicprojComponent } from './publicproj/publicproj.component';
     AppComponent,
     TaskShowComponent,
     PrivateprojComponent,
-    PublicprojComponent
+    PublicprojComponent,
+    DialogEditTestcase
   ],
   imports: [
     BrowserModule,
@@ -35,6 +36,7 @@ import { PublicprojComponent } from './publicproj/publicproj.component';
     AngularFireAuthModule, // auth
     AngularFireStorageModule // storage
   ],
+  entryComponents:[DialogEditTestcase],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,7 +1,7 @@
 <div *ngIf="(AfterOnlineCheckAuth | async) as onlineAndAuthReady; else onlineAndAuthNotReady">
     <mat-sidenav-container fxFlex="100vw">
-        <mat-sidenav-content>
-            <mat-toolbar color="primary" style="width:100vw;">
+        <mat-sidenav-content fxLayout="column">
+            <mat-toolbar color="primary">
                 <mat-icon style="margin-right:20px;" *ngIf="!drawer.opened" (click)="drawer.toggle()">
                     menu
                 </mat-icon>
@@ -24,7 +24,7 @@
 
 
             </mat-toolbar>
-            <div class="container-wrapper" fxLayout="column">
+            <div class="container-wrapper">
                 <div fxLayout="row wrap" fxLayoutAlign="space-around center">
                     <div fxLayout="column" fxFlex="20vw" fxFlex.lt-sm="60vw" Style="padding-bottom:10vh;"
                         fxLayoutGap="10px">
@@ -114,16 +114,18 @@
                 </div>
                 <div fxLayout="column" *ngIf="(SectionTc | async) as SectionTcReady; else SectionTcnotReady">
                     <h2>Services and Directives</h2>
-                    <mat-card class="list" fxLayout="row wrap" fxLayout.lt-sm="column"
+                    <div>
+                    <mat-card class="list" fxFlex="95vw" fxLayout="row wrap" fxLayout.lt-sm="column"
                         fxLayoutAlign="space-around center">
                         <app-task-show ngStyle.lt-sm="width:60vw;" fxLayoutAlign.lt-sm="space-between center"
                             fxLayoutAlign="space-between center" fxLayoutGap="10px" *ngFor="let task of SectionTcReady "
                             [task]="task" (toshow)="refreshList($event)"></app-task-show>
                     </mat-card>
+                    </div>
                 </div>
                 <ng-template #SectionTcnotReady>
                     <div *ngIf="(SectionTc | async) === undefined">
-                        <mat-card class="list" fxLayout="row wrap" fxLayout.lt-sm="column"
+                        <mat-card class="list" style="max-width:95vw;" fxLayout="row wrap" fxLayout.lt-sm="column"
                             fxLayoutAlign="space-around center">
                             <p class="empty-label">
                                 Empty list</p>
@@ -197,7 +199,7 @@
                             <div fxLayout="row " fxLayoutAlign="space-around center">
                                 <mat-chip-list>
                                     <mat-chip style="font-size:2em; padding:10px;height: 60px !important;
-            ">Login now:</mat-chip>
+            ">GLogin:</mat-chip>
                                 </mat-chip-list>
                                 <button mat-raised-button color="primary" (click)="developmentservice.login()"> Google
                                     login</button>
