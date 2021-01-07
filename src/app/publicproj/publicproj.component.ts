@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit,Input,AfterViewInit, OnDestroy } from '@angular/core';
+import { Component,Output, EventEmitter,ChangeDetectionStrategy, OnInit,Input,AfterViewInit, OnDestroy } from '@angular/core';
 import { map, switchMap, startWith, withLatestFrom } from 'rxjs/operators';
 import { BehaviorSubject, Subscription, Observable, of } from 'rxjs';
 import { UserdataService, projectFlags, TestcaseInfo, projectControls, userProfile, MainSectionGroup, myusrinfo, projectVariables } from '../service/userdata.service';
@@ -15,7 +15,7 @@ import firebase from 'firebase/app';
 })
 export class PublicprojComponent implements OnInit,AfterViewInit,OnDestroy {
   @Input() profileinfoUid: firebase.User;
-
+  @Output() toChangeCurrentProj = new EventEmitter<string>();
   publicList = of(undefined);
   localpublicList = [];
   getPublicListSubscription: Subscription;
@@ -171,6 +171,7 @@ export class PublicprojComponent implements OnInit,AfterViewInit,OnDestroy {
   
   saveCurrProject()
   {
+    this.toChangeCurrentProj.emit(this.myuserProfile.selectedPublicProject);
   }
   
   NewMember()

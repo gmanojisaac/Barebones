@@ -187,25 +187,17 @@ export class AppComponent {
                           alert('check internet Connection');
                           this.myprojectFlags.newuserCheck = false;
                           this.Sections = of(undefined);
-                          //return onlineval;
                         } else {
                           console.log(success, afterauth.uid);
                           this.myprojectFlags.newuserCheck = true;
                           this.Sections = of(null);
-                          //return onlineval;
                         }
                       });
-                      //return onlineval;
                     } else {
                       this.getSectionsSubscription?.unsubscribe();
                       this.myuserProfile.myusrinfoFromDb = profilevalbef;
                       this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
-
-                     
-                      //return onlineval;
                     }
-
-
                   }),
                   withLatestFrom(keysselection),
                   map((values: any) => {
@@ -214,8 +206,6 @@ export class AppComponent {
                   })
                 )
               } else {
-                //this.getPrivateListSubscription?.unsubscribe();
-                //this.getPrivateSectionsSubscription?.unsubscribe();
                 this.getSectionsSubscription?.unsubscribe();
                 this.getTestcasesSubscription?.unsubscribe();
                 this.myprojectControls.subsectionkeysControl.reset();
@@ -223,8 +213,6 @@ export class AppComponent {
               }
             }));
         } else {
-          //this.getPrivateListSubscription?.unsubscribe();
-          //this.getPrivateSectionsSubscription?.unsubscribe();
           this.getSectionsSubscription?.unsubscribe();
           this.getTestcasesSubscription?.unsubscribe();
           this.myprojectControls.subsectionkeysControl.reset();
@@ -233,6 +221,19 @@ export class AppComponent {
       })
     );
   }
+  saveCurrProject(selectedproj: string){
+    this.myuserProfile.myusrinfoFromDb.projectLocation='/publicProjectKeys/' + selectedproj;
+    this.myuserProfile.myusrinfoFromDb.projectName = this.myuserProfile.selectedPublicProject;
+    this.getSectionsSubscription?.unsubscribe();
+    if(this.myuserProfile.myusrinfoFromDb.projectName === 'Demo'){
+      this.Sections = this.getSections(this.db.doc('/projectList/DemoProjectKey'));
+    }else{
+      this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));          
+    }
+    this.myprojectControls.subsectionkeysControl.reset();
+    this.sidenav.close();
+  }
+
   CreateAccount() {
     const nextMonth: Date = new Date();
     nextMonth.setMonth(nextMonth.getMonth() + 1);

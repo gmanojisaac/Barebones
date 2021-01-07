@@ -142,7 +142,7 @@
                 <mat-tab>
                     <ng-template mat-tab-label>Home</ng-template>
                     <ng-template matTabContent>
-                        <app-publicproj [profileinfoUid]="myuserProfile?.userAuthenObj"></app-publicproj>
+                        <app-publicproj [profileinfoUid]="myuserProfile?.userAuthenObj" (toChangeCurrentProj)="saveCurrProject($event)"></app-publicproj>
                     </ng-template>
                 </mat-tab>
                 <mat-tab>
