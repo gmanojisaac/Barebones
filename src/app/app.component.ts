@@ -1,10 +1,10 @@
 
 import { Component, ViewChild} from '@angular/core';
-import { BehaviorSubject, Subscription, Observable } from 'rxjs';
+import { BehaviorSubject, Subscription, Observable,of } from 'rxjs';
 import { UserdataService, userProfile } from './service/userdata.service';
 import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase/app';
-import { map, switchMap,of} from 'rxjs/operators';
+import { map, switchMap} from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { docData } from 'rxfire/firestore';
 import { FormBuilder } from '@angular/forms';
