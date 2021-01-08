@@ -26,12 +26,7 @@
 </div>
 <ng-template #onlineAndAuthNotReady>
     <div *ngIf="(myonline | async) as myonlineReady; else myonlineNotReady">
-        <div *ngIf="(myauth | async) as some; else myauthNotReady">
-            <div fxLayoutAlign="center center" style="height:100vh;">
-                Authentication Check Success!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
-            </div>
-        </div>
-        <ng-template #myauthNotReady>
+        <div *ngIf="!(myauth | async) as authnotready">
             <div *ngIf="(myauth | async) === undefined">
                 <div fxLayoutAlign="center center" style="height:100vh;">
                     Waiting for Authentication!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
@@ -70,7 +65,7 @@
                     </mat-card>
                 </div>
             </div>
-        </ng-template>
+        </div>
     </div>
 
     <ng-template #myonlineNotReady>
@@ -80,12 +75,5 @@
                 Lost Internet Connection!
             </div>
         </div>
-
-        <div *ngIf="(myonline | async) === undefined">
-            <div fxLayoutAlign="center center" style="height:100vh;">
-                Checking for Internet!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
-            </div>
-        </div>
-
     </ng-template>
 </ng-template>

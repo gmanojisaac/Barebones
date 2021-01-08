@@ -26,7 +26,7 @@ export class AppComponent {
       this.getObservableauthStateSub.unsubscribe();
     }
     this.getObservableauthStateSub = authdetails.subscribe((val: any) => {
-      //console.log(val);
+      console.log('29',val);
       this.subjectauth.next(val);
     });
     return this.subjectauth;
@@ -38,7 +38,7 @@ export class AppComponent {
   getObservableonine = (localonline: Observable<boolean>) => {
     this.getObservableonlineSub?.unsubscribe();
     this.getObservableonlineSub = localonline.subscribe((valOnline: any) => {
-
+      console.log('41',valOnline);
       this.subjectonline.next(valOnline);
     });
     return this.subjectonline;
@@ -60,9 +60,11 @@ export class AppComponent {
     this.myauth = this.getObservableauthState(this.afAuth.authState);
     this.AfterOnlineCheckAuth = this.myonline.pipe(
       switchMap((onlineval: any) => {
+        console.log('64',onlineval);
         if (onlineval === true) {
           return this.myauth.pipe(
             switchMap((afterauth: firebase.User) => {
+              console.log('66',afterauth);
               if (afterauth !== null && afterauth !== undefined) {
                 this.myuserProfile.userAuthenObj = afterauth;
                 return docData(this.db.firestore.doc('myProfile/' + afterauth.uid)).pipe(
