@@ -21,17 +21,22 @@
         </mat-toolbar>
     </div>
     <ng-template #startPage>
-        <div class="loginscreen" fxLayoutAlign="center center" style="height:100vh;">
-            <mat-card class="example-card" fxFlex="80vw" fxFlex.lt-sm="80vw">
+        <div class="loginscreen" fxLayoutAlign="space-around center" style="height:100vh;">
+            <mat-label>
+                <div fxLayout="column" style="letter-spacing: 20px;">
+                    <h1> <strong style="font-size:40px">StepsWise Task Tracker</strong> </h1>
+                </div>
+            </mat-label>
+            <mat-card class="example-card" fxFlex="40vw" fxFlex.lt-sm="80vw">
                 <mat-card-header>
                     <div mat-card-avatar class="example-header-image"></div>
                     <mat-card-title style="color:red;">Share Tasks</mat-card-title>
                     <mat-card-subtitle style="color:red;">Step by Step</mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
-                    <div style="color:yellow; padding:0px;" fxLayout="row" fxLayoutGap="20%"  fxLayoutAlign="space-between center" fxFlexOffset="20%" >
-                        <div fxLayout="column" style="letter-spacing: 20px;">
-                            <h1> <strong style="font-size:30px">StepsWise Task Tracker</strong> </h1>
+                    <div style="color:yellow; padding:0px;" fxLayout="row" fxLayoutGap="20%"  fxLayoutAlign="space-between center" >
+                        
+                        <div>
                             <h1> Analayze all the Steps of a Task </h1>
                             <h1> Record all the Steps for Easy Tracking </h1>
                         </div>
@@ -67,21 +72,25 @@
                     Waiting for Authentication!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
                 </div>
             </div>
-            <div *ngIf="(myauth | async) === null" class="loginscreen" fxLayoutAlign="center center"
+            <div *ngIf="(myauth | async) === null" class="loginscreen" fxLayoutAlign="space-around center"
                 style="height:100vh;">
-                <mat-card class="example-card" fxFlex="80vw" fxFlex.lt-sm="80vw">
+
+                <mat-label>
+                    <div fxLayout="column" style="letter-spacing: 20px;">
+                        <h1> <strong style="font-size:40px">StepsWise Task Tracker</strong> </h1>
+                    </div>
+                </mat-label>
+                <mat-card class="example-card" fxFlex="40vw" fxFlex.lt-sm="80vw">
                     <mat-card-header>
                         <div mat-card-avatar class="example-header-image"></div>
                         <mat-card-title style="color:red;">Share Tasks</mat-card-title>
                         <mat-card-subtitle style="color:red;">Step by Step</mat-card-subtitle>
                     </mat-card-header>
                     <mat-card-content>
-                        <div style="color:yellow; padding:0px;" fxLayout="row"fxLayoutGap="20%"  fxLayoutAlign="space-between center" fxFlexOffset="20%" >
-                            <div fxLayout="column" style="letter-spacing: 20px;">
-                                <h1> <strong style="font-size:30px">StepsWise Task Tracker</strong> </h1>
+                        <div style="color:yellow; padding:0px;" fxLayout="row" fxLayoutGap="20%"  fxLayoutAlign="space-between center" >
+                            <div>
                                 <h1> Analayze all the Steps of a Task </h1>
                                 <h1> Record all the Steps for Easy Tracking </h1>
-
                             </div>
                             <div fxLayout="column" fxLayoutGap="10%">
                                 <mat-chip-list>
