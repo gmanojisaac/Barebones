@@ -1,9 +1,18 @@
 .example-card {
-  background-color: cyan;
+  background-color: rgba(112, 53, 53, 0.5);
  }
  
+.loginscreen{
+  background: url(../../src/assets/ricardo.jpg) no-repeat;
+  background-size: cover;
+}
+
+.avatar{
+  background-size: cover;
+}
+ 
  .example-header-image {
-   background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+   background-image: url(../../src/assets/IMG-20210107-WA0004.jpg);
    background-size: cover;
  }
 

@@ -1,10 +1,10 @@
 
 import { Component, ViewChild} from '@angular/core';
-import { BehaviorSubject, Subscription, Observable, of } from 'rxjs';
+import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { UserdataService, userProfile } from './service/userdata.service';
 import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase/app';
-import { map, switchMap} from 'rxjs/operators';
+import { map, switchMap,of} from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { docData } from 'rxfire/firestore';
 import { FormBuilder } from '@angular/forms';
@@ -19,6 +19,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 export class AppComponent {
   title = 'goldenNoStrict';
   myauth;
+  loggedinstate:Observable<string>=new BehaviorSubject(undefined);
   subjectauth = new BehaviorSubject(undefined);
   getObservableauthStateSub: Subscription = new Subscription;
   getObservableauthState = (authdetails: Observable<firebase.User>) => {
@@ -91,7 +92,11 @@ export class AppComponent {
       })
     );
   }
+  startfirstpage(){
+    this.loggedinstate=of('firstpage');
+  }
   componentLogOff() {
+    this.loggedinstate=of('undefined');
     this.developmentservice.logout();
   }
   draweropen() {

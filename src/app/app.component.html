@@ -1,28 +1,63 @@
 <div *ngIf="(AfterOnlineCheckAuth | async) as onlineAndAuthReady; else onlineAndAuthNotReady">
-    <mat-sidenav-container fxFlex="100vw">
-        <mat-sidenav-content>
-            <mat-toolbar color="primary">
-                <h1>
-                    StepsWise Tracking Tool
-                </h1>
+    <div *ngIf="(loggedinstate | async) === 'firstpage' as myloggedinstate; else startPage">
+        <mat-toolbar color="primary">
+            <h1>
+                StepsWise Tracking Tool
+            </h1>
 
-                <span fxFlex="grow"></span>
+            <span fxFlex="grow"></span>
 
-                <div fxHide.lt-sm>
-                    Welcome {{myuserProfile?.userAuthenObj.displayName}}!
-                </div>
-                <button mat-icon-button>
+            <div fxHide.lt-sm>
+                Welcome {{myuserProfile?.userAuthenObj.displayName}}!
+            </div>
+            <button mat-icon-button>
 
-                    <fa-icon (click)="componentLogOff()" class="fas faSignOutAlt fa-lg"
-                        [icon]="['fas', 'sign-out-alt']">
-                    </fa-icon>
+                <fa-icon (click)="componentLogOff()" class="fas faSignOutAlt fa-lg" [icon]="['fas', 'sign-out-alt']">
+                </fa-icon>
 
-                </button>
+            </button>
 
 
-            </mat-toolbar>
-        </mat-sidenav-content>
-    </mat-sidenav-container>
+        </mat-toolbar>
+    </div>
+    <ng-template #startPage>
+        <div class="loginscreen" fxLayoutAlign="center center" style="height:100vh;">
+            <mat-card class="example-card" fxFlex="80vw" fxFlex.lt-sm="80vw">
+                <mat-card-header>
+                    <div mat-card-avatar class="example-header-image"></div>
+                    <mat-card-title style="color:red;">Share Tasks</mat-card-title>
+                    <mat-card-subtitle style="color:red;">Step by Step</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div style="color:yellow; padding:0px;" fxLayout="row" fxLayoutGap="20%"  fxLayoutAlign="space-between center" fxFlexOffset="20%" >
+                        <div fxLayout="column" style="letter-spacing: 20px;">
+                            <h1> <strong style="font-size:30px">StepsWise Task Tracker</strong> </h1>
+                            <h1> Analayze all the Steps of a Task </h1>
+                            <h1> Record all the Steps for Easy Tracking </h1>
+                        </div>
+                        <div fxLayout="column" fxLayoutGap="10%">
+                            <mat-chip-list>
+                                <mat-chip
+                                    style="font-size:2em; cursor:none; opacity:.6; background-color:yellow;color: red; padding:10px;height: 60px !important;">
+                                    Logged in as</mat-chip>
+                            </mat-chip-list>
+                            <mat-chip-list>
+                                <img mat-card-avatar class="avatar" [src]="myuserProfile?.userAuthenObj.photoURL" />
+                                <mat-chip style="margin-left:15%;">{{myuserProfile?.userAuthenObj.displayName}}
+                                </mat-chip>
+
+                            </mat-chip-list>
+                            <button mat-raised-button color="primary" (click)="startfirstpage()">Continue as
+                                {{myuserProfile?.userAuthenObj.displayName}}</button>
+                        </div>
+                    </div>
+                </mat-card-content>
+
+            </mat-card>
+        </div>
+    </ng-template>
+
+
 </div>
 <ng-template #onlineAndAuthNotReady>
     <div *ngIf="(myonline | async) as myonlineReady; else myonlineNotReady">
@@ -32,38 +67,37 @@
                     Waiting for Authentication!<mat-spinner [diameter]="30" Style="margin-left:10px;"></mat-spinner>
                 </div>
             </div>
-            <div *ngIf="(myauth | async) === null">
-                <div fxLayoutAlign="center center" style="height:100vh;">
-                    <mat-card class="example-card" fxFlex="30vw" fxFlex.lt-sm="80vw">
-                        <mat-card-header>
-                            <div mat-card-avatar class="example-header-image"></div>
-                            <mat-card-title>Share Tasks</mat-card-title>
-                            <mat-card-subtitle>Step by Step</mat-card-subtitle>
-                        </mat-card-header>
-                        <mat-card-content>
-                            <div style="color:blue; padding:0px;">
-                                <div fxLayout="column" fxLayoutAlign="space-around center"
-                                    style="letter-spacing: 20px;">
-                                    <h1> <strong style="font-size:30px">StepsWise Tracking Tool</strong> </h1>
-                                    <h1> Analayze all the Steps of a Task </h1>
-                                    <h1> Record all the Steps for Easy Tracking </h1>
-
-                                </div>
+            <div *ngIf="(myauth | async) === null" class="loginscreen" fxLayoutAlign="center center"
+                style="height:100vh;">
+                <mat-card class="example-card" fxFlex="80vw" fxFlex.lt-sm="80vw">
+                    <mat-card-header>
+                        <div mat-card-avatar class="example-header-image"></div>
+                        <mat-card-title style="color:red;">Share Tasks</mat-card-title>
+                        <mat-card-subtitle style="color:red;">Step by Step</mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div style="color:yellow; padding:0px;" fxLayout="row"fxLayoutGap="20%"  fxLayoutAlign="space-between center" fxFlexOffset="20%" >
+                            <div fxLayout="column" style="letter-spacing: 20px;">
+                                <h1> <strong style="font-size:30px">StepsWise Task Tracker</strong> </h1>
+                                <h1> Analayze all the Steps of a Task </h1>
+                                <h1> Record all the Steps for Easy Tracking </h1>
 
                             </div>
-                        </mat-card-content>
-                        <mat-card-actions>
-                            <div fxLayout="row " fxLayoutAlign="space-around center">
+                            <div fxLayout="column" fxLayoutGap="10%">
                                 <mat-chip-list>
-                                    <mat-chip style="font-size:2em; padding:10px;height: 60px !important;
-            ">GLogin:</mat-chip>
+                                    <mat-chip
+                                        style="font-size:1.5em; cursor:none; opacity:.6; background-color:yellow;color: red; padding:10px;height: 60px !important;">
+                                        Start Tasking!!</mat-chip>
                                 </mat-chip-list>
                                 <button mat-raised-button color="primary" (click)="developmentservice.login()"> Google
                                     login</button>
                             </div>
-                        </mat-card-actions>
-                    </mat-card>
-                </div>
+
+                        </div>
+                    </mat-card-content>
+
+                </mat-card>
+
             </div>
         </div>
     </div>
