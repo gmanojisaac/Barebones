@@ -1,0 +1,20 @@
+<div fxLayout="column" style="width: 100%; height: 75vh;overflow-y:auto; " fxLayoutGap="10%" >
+    <!--p><mat-checkbox   (change)="shouldValidate($event)">Restrict moves to same level only</mat-checkbox></p-->
+    <mat-label  style="font-size: 24px;">Change your Task Order</mat-label>
+    <mat-tree style="display:block;min-width:1*vw;"  #tree [dataSource]="dataSource" [treeControl]="treeControl" cdkDropList (cdkDropListDropped)="drop($event)" >
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding cdkDrag [cdkDragData]="node" (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
+        <button mat-icon-button disabled></button>
+        {{node.filename}} : {{node.type}}
+      </mat-tree-node>
+    
+      <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding cdkDrag [cdkDragData]="node" (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
+        <button mat-icon-button matTreeNodeToggle (click)="expansionModel.toggle(node.id)"
+                [attr.aria-label]="'toggle ' + node.filename">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
+        {{node.filename}} : {{node.type}}
+      </mat-tree-node>
+    </mat-tree>
+</div>

@@ -10,10 +10,12 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { environment } from '../environments/environment';
 import { GooglePayButtonModule} from '@google-pay/button-angular';
+import { TreeStructureComponent } from './tree-structure/tree-structure.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    TreeStructureComponent
   ],
   imports: [
     BrowserModule,

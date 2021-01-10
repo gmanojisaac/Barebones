@@ -62,6 +62,16 @@ export interface projectFlags
     newuserProfileDetails?:boolean;
 }
 
+export interface SubSection {
+  viewvalue: string;
+}
+
+export interface MainSectionGroup {
+  disabled: boolean;
+  name: string;
+  section: SubSection[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
