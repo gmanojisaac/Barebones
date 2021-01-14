@@ -1,7 +1,7 @@
 
 import { Component, ViewChild,AfterViewInit } from '@angular/core';
 import { BehaviorSubject, Subscription, Observable,of } from 'rxjs';
-import { UserdataService, userProfile,usrinfo, projectFlags, usrinfoDetails,projectControls } from './service/userdata.service';
+import { UserdataService,MainSectionGroup, userProfile,usrinfo, projectFlags, usrinfoDetails,projectControls } from './service/userdata.service';
 import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase/app';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -10,14 +10,30 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSidenav } from '@angular/material/sidenav';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { map, switchMap, startWith, withLatestFrom } from 'rxjs/operators';
-
-
-
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger
+} from "@angular/animations";
+import { AngularFirestoreDocument } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  animations: [
+    trigger('slideAnimation', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms', style({ opacity: 1 })
+      )]),
+      transition(':leave', [
+        animate('300ms', style({ opacity: 0 })
+      )])
+    ])]
+
 })
 export class AppComponent {
   title = 'goldenNoStrict';
@@ -49,8 +65,32 @@ export class AppComponent {
   };
   AfterOnlineCheckAuth = undefined;
 
+  Sections = of(undefined);
+  getSectionsSubscription: Subscription;
+  getSectionsBehaviourSub = new BehaviorSubject(undefined);
+  getSections = (MainAndSubSectionkeys: AngularFirestoreDocument<MainSectionGroup>) => {
+    if (this.getSectionsSubscription !== undefined) {
+      this.getSectionsSubscription.unsubscribe();
+    }
+    this.getSectionsSubscription = MainAndSubSectionkeys.valueChanges().subscribe((val: any) => {
+      if (val === undefined) {
+        this.getSectionsBehaviourSub.next(undefined);
+      } else {
+        if (val.MainSection.length === 0) {
+          this.getSectionsBehaviourSub.next(null);
+        } else {
+          if (val.MainSection.length !== 0) {
+            this.getSectionsBehaviourSub.next(val.MainSection);
+          }
+        }
+      }
+    });
+    return this.getSectionsBehaviourSub;
+  };
+
   myuserProfile: userProfile = {
     userAuthenObj: null,//Receive User obj after login success
+    myusrinfoFromDb: null
   };
 
   myprojectControls: projectControls = {
@@ -138,13 +178,19 @@ myusrinfoDetails:usrinfoDetails={
                       this.developmentservice.findOrCreate(afterauth.uid).then(success => {
                         if (success !== 'doc exists') {
                           alert('check internet Connection');
+                          this.Sections = of(undefined);
                         } else {
                           this.myprofilevalbef=of(undefined);
+                          this.Sections = of(null);
                         }
                         return of(onlineval);
                       });
                     } else {
                       this.myprofilevalbef=of(profilevalbef);
+                      this.loadFirstPageKeys(profilevalbef);
+                      this.getSectionsSubscription?.unsubscribe();
+                      this.myuserProfile.myusrinfoFromDb = profilevalbef;
+                      this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
                       return docData(this.db.firestore.doc('Profile/' + afterauth.uid)).pipe(
                         map((profileDetails:usrinfoDetails)=>{
                           
@@ -161,18 +207,21 @@ myusrinfoDetails:usrinfoDetails={
                           return onlineval;
                         }));                     
                     }
+                    this.getSectionsSubscription?.unsubscribe();
                     this.myprojectControls.addProfileDetails.reset();
                     this.myprojectControls.addProfileDetails.enable();
                     return of(onlineval);
                   })
                 )
               } else {
+                this.getSectionsSubscription?.unsubscribe();
                 this.myprojectControls.addProfileDetails.reset();
                 this.myprojectControls.addProfileDetails.enable();
                 return of(false);
               }
             }));
         } else {
+          this.getSectionsSubscription?.unsubscribe();
           this.myprojectControls.addProfileDetails.reset();
           this.myprojectControls.addProfileDetails.enable();
           return of(false);
@@ -181,7 +230,41 @@ myusrinfoDetails:usrinfoDetails={
     );
 
   }
-
+  loadFirstPageKeys(profileData: any) {
+    if (profileData !== undefined) {//norecords
+      if (new Date(profileData.MembershipEnd).valueOf() < new Date().valueOf()) {
+        if (profileData.MembershipType === 'Demo') {//expired
+          this.myuserProfile.myusrinfoFromDb.projectOwner = false;//cannot add tc
+          this.myuserProfile.myusrinfoFromDb.projectName = 'Demo';
+          this.myuserProfile.myusrinfoFromDb.projectLocation = '/projectList/DemoProjectKey';
+          this.myuserProfile.myusrinfoFromDb.MembershipType = 'Demo';
+          this.myuserProfile.myusrinfoFromDb.MembershipEnd = new Date(profileData.MembershipEnd);
+          this.myprojectFlags.showPaymentpage = true;// show only payments Page
+        } else {//expired member
+          const nextMonth: Date = new Date();
+          nextMonth.setMonth(nextMonth.getMonth() + 1);
+          const newItem = {
+            MembershipEnd: nextMonth.toDateString(),
+            MembershipType: 'Demo',
+            projectLocation: '/projectList/DemoProjectKey',
+            projectOwner: true,
+            projectName: 'Demo'
+          };
+          this.db.doc<any>('myProfile/' + this.myuserProfile.userAuthenObj.uid).set(newItem);
+          this.myuserProfile.myusrinfoFromDb.projectOwner = true;
+          this.myuserProfile.myusrinfoFromDb.projectName = 'Demo';
+          this.myuserProfile.myusrinfoFromDb.projectLocation = '/projectList/DemoProjectKey';
+          this.myuserProfile.myusrinfoFromDb.MembershipType = 'Demo';
+          this.myuserProfile.myusrinfoFromDb.MembershipEnd = new Date(nextMonth.toDateString());
+          this.myprojectFlags.showPaymentpage = false;
+        }
+      } else {//start normal
+        this.myuserProfile.myusrinfoFromDb= profileData;
+        //console.log('446',this.myuserProfile.myusrinfoFromDb);
+        this.myprojectFlags.showPaymentpage = false;
+      }//end normal      
+    }//end demo/Member        
+  }
 
   CreateNewUser(){
     const nextMonth: Date = new Date();
@@ -214,6 +297,7 @@ myusrinfoDetails:usrinfoDetails={
     this.loggedinstate=of('firstpage');
   }
   componentLogOff() {
+    this.getSectionsSubscription?.unsubscribe();
     this.myprojectFlags.newuserProfileDetails = false;
     this.myprofileDetails=of(undefined);
     this.loggedinstate=of('undefined');

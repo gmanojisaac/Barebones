@@ -112,10 +112,12 @@
 
                 <mat-grid-tile colspan="1" rowspan="1" [style.background]="'red'">
                     Public Tasks
+
                 </mat-grid-tile>
 
                 <mat-grid-tile colspan="1" rowspan="1" [style.background]="'blue'" >
-                    <app-tree-structure ></app-tree-structure>
+                    <!--app-tree-structure  [Sections]="Sections" ></app-tree-structure-->
+                    <app-nested-tree  [Sections]="Sections" ></app-nested-tree>
                 </mat-grid-tile>
 
             </mat-grid-list>

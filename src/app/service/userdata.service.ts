@@ -7,8 +7,22 @@ import { map, first } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormControl, FormGroup } from '@angular/forms';
 
+export interface myusrinfo {
+  MembershipEnd: Date;
+  MembershipType: string;
+  projectLocation: string;
+  projectName: string;
+  projectOwner: boolean;
+}
+export interface MainSectionGroup {
+  disabled: boolean;
+  name: string;
+  section: SubSection[];
+}
+
 export interface userProfile {
-  userAuthenObj: firebase.User
+  userAuthenObj: firebase.User,
+  myusrinfoFromDb: myusrinfo
 }
 export interface usrinfo {
   MembershipEnd: Date;

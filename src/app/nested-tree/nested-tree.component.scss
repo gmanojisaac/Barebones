@@ -1,0 +1,30 @@
+.example-tree-invisible {
+    display: none;
+  }
+  
+  .example-tree ul,
+  .example-tree li {
+    margin-top: 0;
+    margin-bottom: 0;
+    list-style-type: none;
+  }
+  
+  .mat-tree-position {
+      position: relative;
+      top: 5%;
+  }
+  
+  .mat-tree-node {
+    background-color: rgb(66, 157, 253);
+    color: white;
+    user-select: none;
+    cursor: move;
+  
+    &.cdk-drag-preview { // while dragging
+      z-index:12;
+    }
+    &.cdk-drag-placeholder { // potential drop area
+      opacity: 0;
+    }
+  }
+  
