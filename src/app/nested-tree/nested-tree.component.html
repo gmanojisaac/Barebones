@@ -1,5 +1,5 @@
 <div *ngIf="(Sections | async) as SectionsReady; else SectionsnotReady">
-    <div fxLayout="column" style="width: 100%; height: 75vh;overflow-y:auto; " fxLayoutGap="10%" >
+    <div fxLayout="column" style="width: 100%; height: 75vh;overflow-y:auto;" fxLayoutGap="10%" >
     <app-add-node (addedNode)="addNode($event)" [isTop]="true"></app-add-node>
 
     <mat-tree
@@ -25,7 +25,7 @@
             (addedNode)="addChildNode($event)"
             [isTop]="false"
             [currentNode]="node"
-            *ngIf="node.Children.length !== 0 || AddedMainSec === true"
+            *ngIf="!(node.Description === 'Child' && node.Children.length === 0 && AddedMainSec === true)"
           ></app-add-node>
         </li>
       </mat-tree-node>

@@ -1,13 +1,11 @@
 import { TreeData, DialogData } from '../nested-tree.component';
-import { Component, Inject, Output, EventEmitter, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy,Inject, Output, EventEmitter, Input } from '@angular/core';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 
-
-
-
 @Component({
   selector: 'app-add-node',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './add-node.component.html',
   styleUrls: ['./add-node.component.scss']
 })
@@ -27,15 +25,22 @@ export class AddNodeComponent {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const node: TreeData = {
-          Id: null,
-          Name: result.nodeName,
-          Description: result.nodeDescription,
-          Children: []
-        };
+
         if (this.isTop) {
+          const node: TreeData = {
+            Id: null,
+            Name: result.nodeName,
+            Description: 'Parent',
+            Children: []
+          };
           this.addedNode.emit(node);
         } else {
+          const node: TreeData = {
+            Id: null,
+            Name: result.nodeName,
+            Description: 'Child',
+            Children: []
+          };
           this.addedNode.emit({currentNode: this.currentNode, node: node});
         }
       }
