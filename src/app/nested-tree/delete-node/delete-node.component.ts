@@ -13,5 +13,12 @@ export class DeleteNodeComponent {
   deleteNode() {
     this.deletedNode.emit(this.currentNode);
   }
-
+/*
+.delete-btn {
+    cursor: pointer;
+    position: relative;
+    left: 89%;
+    font-size: 18px;
+  }
+  */
 }

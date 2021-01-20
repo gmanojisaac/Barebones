@@ -116,14 +116,11 @@
                 </mat-grid-tile>
 
                 <mat-grid-tile colspan="1" rowspan="1" [style.background]="'blue'" >
-                    <!--app-tree-structure  [Sections]="Sections" ></app-tree-structure-->
-                    <app-nested-tree  [Sections]="Sections"  fxFlex fxFlexAlign="center"></app-nested-tree>
+                    <!--app-tree-structure  [Sections]="Sections" fxFlex="75%" fxFlexAlign="center" ></app-tree-structure-->
+                    <app-nested-tree  [Sections]="Sections" [latestProject]="myuserProfile.myusrinfoFromDb?.projectName"  fxFlex fxFlexAlign="center"></app-nested-tree>
                 </mat-grid-tile>
 
             </mat-grid-list>
-
-
-
         </div>
     </div>
     <ng-template #startPage>
@@ -206,8 +203,10 @@
                                         style="font-size:1.5em; cursor:none; opacity:.6; background-color:yellow;color: red; padding:10px;height: 60px !important;">
                                         Start Tasking!!</mat-chip>
                                 </mat-chip-list>
-                                <button mat-raised-button color="primary" (click)="developmentservice.login()"> Google
-                                    login</button>
+
+                                    <button type="button"  (click)="developmentservice.login()" class="login-with-google-btn" >
+                                        Sign in with Google
+                                      </button>
                             </div>
 
                         </div>

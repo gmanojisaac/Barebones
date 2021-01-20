@@ -133,4 +133,89 @@ export class UserdataService {
       return promise;
     });
   }
+
+  
+  async createnewproject(uid:string, projectname: string, newprojectinfo: any, MainSection:any) : Promise<void>{
+    await this.db.firestore.runTransaction(() => {
+      const promise = Promise.all([
+        this.db.firestore.doc('myProfile/' + uid).set(newprojectinfo,{merge: true}),
+        this.db.firestore.doc('projectList/' + uid).set({ownerRecord: firebase.firestore.FieldValue.arrayUnion(projectname)},{merge: true}),
+        this.db.firestore.doc('publicProjectKeys/' + projectname).set({MainSection},  {merge: false}) ,
+        this.db.firestore.doc('projectList/' + 'publicProjects/').set({public: firebase.firestore.FieldValue.arrayUnion(projectname)},{merge: true})
+      ]);
+      return promise;
+    });
+  }
+  async createDefKeys(projectname: string,MainSection:any) : Promise<void>{
+    await this.db.firestore.runTransaction(() => {
+      const promise = Promise.all([      
+        this.db.firestore.doc('publicProjectKeys/' + projectname).set({MainSection},  {merge: false}) ,
+        this.db.firestore.doc(projectname+ '/MainSection/items/SubSection').delete()
+      ]);
+      return promise;
+    });
+  }
+  async deleteproject(uid:string,oldprojectName:string, newprojectinfo: any) : Promise<void>{
+    console.log('oldprojectName',oldprojectName);
+    await this.db.firestore.runTransaction(() => {
+      const promise = Promise.all([
+        this.db.firestore.doc('projectList/' + uid).update({ownerRecord: firebase.firestore.FieldValue.arrayRemove(oldprojectName)}),
+        this.db.firestore.doc('projectList/' + 'publicProjects').update({public: firebase.firestore.FieldValue.arrayRemove(oldprojectName)}),
+        this.db.firestore.doc('myProfile/' + uid).set(newprojectinfo,{merge: true}),
+        this.db.firestore.doc('publicProjectKeys/' + oldprojectName).delete()
+      ]);
+      return promise;
+    });
+  }  
+  async deleteMainSection(ProjectName: string, MainSection: any) : Promise<void>{    
+    await this.db.firestore.runTransaction(() => {
+      const promise = Promise.all([
+        this.db.doc('publicProjectKeys/' + ProjectName).set({MainSection },  {merge: false} )
+    ]);
+    return promise;
+  });
+  }
+  async addMainSection(ProjectName: string,  MainSection: any) : Promise<void>{    
+    await this.db.firestore.runTransaction(() => {
+      console.log('reached',ProjectName);
+      const promise = Promise.all([
+        this.db.doc('/publicProjectKeys/' + ProjectName ).set({MainSection },  {merge: false} )
+    ]);
+    return promise;
+  });
+  }  
+  async updatevisibility(ProjectName: string,MainSection: any) : Promise<void>{
+    await this.db.firestore.runTransaction(() => {
+      const promise = Promise.all([
+        this.db.doc('publicProjectKeys/' + ProjectName).set({MainSection},  {merge: false})
+    ]);
+    return promise;
+  });}
+  async addSubSection(ProjectName: string,MainSectionName:string, SubSectionName: string,MainSection: any) : Promise<void>{
+    await this.db.firestore.runTransaction(() => {
+      const promise = Promise.all([
+        this.db.doc('publicProjectKeys/' + ProjectName).set({MainSection},  {merge: false}),
+        this.db.doc(ProjectName + '/' + MainSectionName + '/items/' + SubSectionName ).delete()  
+    ]);
+    return promise;
+  });}
+  async deleteSubSection(ProjectName: string, MainSection: string, SubSectionName: string, SubsecObj: any) : Promise<void>{
+    await this.db.firestore.runTransaction(() => {
+      const promise = Promise.all([
+        this.db.doc( ProjectName + '/' + MainSection + '/items/' + SubSectionName + '/').delete(),
+        this.db.doc('publicProjectKeys/' + ProjectName).set(SubsecObj,  {merge: false})        
+      ]);
+      return promise;
+    });
+  }
+  async updateSubSection(ProjectName: string, MainSection: string, subSection: any) : Promise<void>{
+    await this.db.firestore.runTransaction(() => {
+      const promise = Promise.all([
+        //this.db.doc('publicProjectKeys/' + ProjectName).update({ [MainSection]: firebase.firestore.FieldValue.delete()}),
+        this.db.doc('publicProjectKeys/' + ProjectName).set(subSection),
+      ]);
+      return promise;
+    });
+  }
+  
 }

@@ -51,3 +51,12 @@ export class EditNodeDialog {
   }
 
 }
+/*
+.edit-btn {
+    cursor: pointer;
+    position: relative;
+    padding-left:4px;
+    left: 92%;
+    font-size: 18px;
+  }
+  */

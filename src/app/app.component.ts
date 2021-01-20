@@ -46,7 +46,6 @@ export class AppComponent {
       this.getObservableauthStateSub.unsubscribe();
     }
     this.getObservableauthStateSub = authdetails.subscribe((val: any) => {
-      console.log('29',val);
       this.subjectauth.next(val);
     });
     return this.subjectauth;
@@ -58,7 +57,6 @@ export class AppComponent {
   getObservableonine = (localonline: Observable<boolean>) => {
     this.getObservableonlineSub?.unsubscribe();
     this.getObservableonlineSub = localonline.subscribe((valOnline: any) => {
-      console.log('41',valOnline);
       this.subjectonline.next(valOnline);
     });
     return this.subjectonline;
@@ -165,11 +163,9 @@ myusrinfoDetails:usrinfoDetails={
     this.myauth = this.getObservableauthState(this.afAuth.authState);
     this.AfterOnlineCheckAuth = this.myonline.pipe(
       switchMap((onlineval: any) => {
-        console.log('64',onlineval);
         if (onlineval === true) {
           return this.myauth.pipe(
             switchMap((afterauth: firebase.User) => {
-              console.log('66',afterauth);
               if (afterauth !== null && afterauth !== undefined) {
                 this.myuserProfile.userAuthenObj = afterauth;
                 return docData(this.db.firestore.doc('myProfile/' + afterauth.uid)).pipe(
@@ -190,6 +186,7 @@ myusrinfoDetails:usrinfoDetails={
                       this.loadFirstPageKeys(profilevalbef);
                       this.getSectionsSubscription?.unsubscribe();
                       this.myuserProfile.myusrinfoFromDb = profilevalbef;
+                      console.log('189',this.myuserProfile.myusrinfoFromDb.projectLocation);
                       this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
                       return docData(this.db.firestore.doc('Profile/' + afterauth.uid)).pipe(
                         map((profileDetails:usrinfoDetails)=>{
@@ -198,13 +195,12 @@ myusrinfoDetails:usrinfoDetails={
                             this.myprofileDetails=of(undefined);
                           }else{
                               this.myprofileDetails=of(profileDetails);
-                              console.log('profileDetails', this.myprofileDetails);
                           }                              
                           //return of(onlineval);
                         }) ,withLatestFrom(addProfileDetailsSub),
                         map((values: any) => {
                           const [publickey, keys] = values;
-                          return onlineval;
+                          return of(onlineval);
                         }));                     
                     }
                     this.getSectionsSubscription?.unsubscribe();

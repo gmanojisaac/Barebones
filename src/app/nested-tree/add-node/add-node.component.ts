@@ -1,22 +1,27 @@
 import { TreeData, DialogData } from '../nested-tree.component';
-import { Component, ChangeDetectionStrategy,Inject, Output, EventEmitter, Input } from '@angular/core';
+import { Component, Inject, Output, AfterViewInit, EventEmitter, Input,ChangeDetectionStrategy } from '@angular/core';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UserdataService,MainSectionGroup } from '../../service/userdata.service';
+
 
 @Component({
   selector: 'app-add-node',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection:ChangeDetectionStrategy.OnPush,
   templateUrl: './add-node.component.html',
   styleUrls: ['./add-node.component.scss']
 })
-export class AddNodeComponent {
+export class AddNodeComponent implements AfterViewInit {
   @Input() isTop: boolean;
+  @Input() latestaddProject: string;  
   @Input() currentNode: TreeData;
+  @Input() AlltheKeys:any[];
   @Output() addedNode = new EventEmitter;
   name: string;
   description: string;
 
-  constructor(public dialog: MatDialog) {}
+  constructor(public dialog: MatDialog,
+    public developmentservice: UserdataService) {}
 
   openDialog(): void {
     const dialogRef = this.dialog.open(NewNodeDialog, {
@@ -25,7 +30,7 @@ export class AddNodeComponent {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-
+console.log('33',this.isTop);
         if (this.isTop) {
           const node: TreeData = {
             Id: null,
@@ -33,7 +38,9 @@ export class AddNodeComponent {
             Description: 'Parent',
             Children: []
           };
-          this.addedNode.emit(node);
+          this.AlltheKeys.push({name:result.nodeName, disabled: false, section:[] });
+          this.developmentservice.addMainSection(this.latestaddProject, this.AlltheKeys).then(success=>{
+          });
         } else {
           const node: TreeData = {
             Id: null,
@@ -41,11 +48,21 @@ export class AddNodeComponent {
             Description: 'Child',
             Children: []
           };
-          this.addedNode.emit({currentNode: this.currentNode, node: node});
+          this.AlltheKeys.forEach(mainsec=>{
+            if(mainsec.name === this.currentNode.Name){
+              mainsec.section.push({viewvalue:node.Name});
+            }
+          });
+          this.developmentservice.addSubSection(this.latestaddProject,this.currentNode.Name,node.Name,  this.AlltheKeys).then(success=>{
+          });
         }
       }
     });
   }
+  ngAfterViewInit() {
+    console.log('62',this.AlltheKeys);
+  }
+
 }
 
 @Component({
@@ -63,3 +80,17 @@ export class NewNodeDialog {
   }
 
 }
+/*
+.top-node {
+    position: relative;
+    left: 40%;
+    margin-left: 4px;
+  }
+  
+  .add-btn {
+    cursor: pointer;
+    position: relative;
+    left: 93%;
+    margin-top: 0px;
+  }
+  */
