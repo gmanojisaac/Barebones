@@ -1,6 +1,6 @@
 <div *ngIf="(Sections | async) as SectionsReady; else SectionsnotReady">
     <div fxLayout="column" style="width: 100%; height: 75vh;overflow-y:auto;" >
-      <app-add-node (addedNode)="addNode($event)" [isTop]="true" [AlltheKeys]="AlltheKeys" [latestaddProject]="Project"></app-add-node>
+     
 <mat-card>
   <mat-card-header style="padding:2%; border:solid; background-color: black;color:white;">
     ProjectName   
@@ -90,7 +90,9 @@
         </li>
       </mat-nested-tree-node>
     </mat-tree>
+    <app-add-node (addedNode)="addNode($event)" [isTop]="true" [AlltheKeys]="AlltheKeys" [latestaddProject]="Project"></app-add-node>
   </mat-card>
+  
     </div>
 
 </div>

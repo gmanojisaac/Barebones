@@ -4,14 +4,9 @@ mat-tree {
 .mat-tree-node {
   padding: 0;
   background-color: white;
-    border: solid;
-      margin: 0;
+  border: solid;
+  margin: 0;
   position: relative;
-  top: 24px; 
-}
-
-.mat-nested-tree-node {
-  top: -24px;
 }
 
 ul, li { 
@@ -21,6 +16,10 @@ ul, li {
 }
 
 li.example-tree-container {
+  border-bottom: 0;  
+}
+
+li.example-tree-container:last-child ul{
   border-bottom: 0;
 }
 
@@ -30,8 +29,12 @@ li {
   border-width: 0 0 2px 2px; 
   position: relative;
   top: -20px;
+  padding-bottom: 1%;
 }
 
+li:active{
+  border:0;
+}
 div { 
   margin: 0;
   position: relative;
@@ -42,19 +45,7 @@ ul {
   border-top: 2px solid black;
   margin-left: -40px;
   padding-left: 60px;
-}
-
-.mat-nested-tree-node:last-child li {
-padding-top:20px;
-    padding-left: 40px;
-  border: 20px solid black;
-  border-width: 0 0 2px 2px; 
-  position: relative;
-  top: -35px;
-}
-
-.mat-nested-tree-node:last-child li ul {
-  border:none;
+  padding-bottom: -2%;
 }
 
 .mat-icon-button {
