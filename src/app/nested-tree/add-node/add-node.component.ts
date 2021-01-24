@@ -16,7 +16,7 @@ export class AddNodeComponent implements AfterViewInit {
   @Input() latestaddProject: string;  
   @Input() currentNode: TreeData;
   @Input() AlltheKeys:any[];
-  @Output() addedNode = new EventEmitter;
+
   name: string;
   description: string;
 
@@ -24,13 +24,13 @@ export class AddNodeComponent implements AfterViewInit {
     public developmentservice: UserdataService) {}
 
   openDialog(): void {
+    console.log('27',this.latestaddProject);
     const dialogRef = this.dialog.open(NewNodeDialog, {
       width: '250px',
       data: {nodeName: this.name, nodeDescription: this.description, Component: 'Add'}
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-console.log('33',this.isTop);
         if (this.isTop) {
           const node: TreeData = {
             Id: null,
@@ -60,7 +60,6 @@ console.log('33',this.isTop);
     });
   }
   ngAfterViewInit() {
-    console.log('62',this.AlltheKeys);
   }
 
 }
@@ -80,17 +79,3 @@ export class NewNodeDialog {
   }
 
 }
-/*
-.top-node {
-    position: relative;
-    left: 40%;
-    margin-left: 4px;
-  }
-  
-  .add-btn {
-    cursor: pointer;
-    position: relative;
-    left: 93%;
-    margin-top: 0px;
-  }
-  */

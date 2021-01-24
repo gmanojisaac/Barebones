@@ -1,24 +1,17 @@
 import { TreeData} from '../nested-tree.component';
-import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { Component, Output, EventEmitter, Input,ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-delete-node',
+  //changeDetection:ChangeDetectionStrategy.OnPush,
   templateUrl: './delete-node.component.html',
   styleUrls: ['./delete-node.component.scss']
 })
 export class DeleteNodeComponent {
-  @Output() deletedNode = new EventEmitter;
   @Input() currentNode: TreeData;
+  @Output() deletedNode = new EventEmitter;
 
   deleteNode() {
-    this.deletedNode.emit(this.currentNode);
+    this.deletedNode.emit({currentNode: this.currentNode});
   }
-/*
-.delete-btn {
-    cursor: pointer;
-    position: relative;
-    left: 89%;
-    font-size: 18px;
-  }
-  */
 }

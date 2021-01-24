@@ -1,20 +1,19 @@
-import { Component, Input, Output, EventEmitter, Inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, Inject,ChangeDetectionStrategy } from '@angular/core';
 import { TreeData, DialogData } from '../nested-tree.component';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-edit-node',
+  changeDetection:ChangeDetectionStrategy.OnPush,
   templateUrl: './edit-node.component.html',
   styleUrls: ['./edit-node.component.scss']
 })
 export class EditNodeComponent {
-
-  @Input() isTop: boolean;
+  @Input() checkTop: string;
   @Input() currentNode: TreeData;
   @Output() edittedNode = new EventEmitter;
 
   constructor(public dialog: MatDialog) {}
-
   openDialog(): void {
     const dialogRef = this.dialog.open(EditNodeDialog, {
       width: '250px',
@@ -25,7 +24,7 @@ export class EditNodeComponent {
         const node: TreeData = {
           Id: null,
           Name: result.nodeName,
-          Description: result.nodeDescription,
+          Description: this.currentNode.Description,
           Children: this.currentNode.Children
         };
         this.edittedNode.emit({currentNode: this.currentNode, node: node});
@@ -51,12 +50,3 @@ export class EditNodeDialog {
   }
 
 }
-/*
-.edit-btn {
-    cursor: pointer;
-    position: relative;
-    padding-left:4px;
-    left: 92%;
-    font-size: 18px;
-  }
-  */

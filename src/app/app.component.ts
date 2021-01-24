@@ -186,7 +186,6 @@ myusrinfoDetails:usrinfoDetails={
                       this.loadFirstPageKeys(profilevalbef);
                       this.getSectionsSubscription?.unsubscribe();
                       this.myuserProfile.myusrinfoFromDb = profilevalbef;
-                      console.log('189',this.myuserProfile.myusrinfoFromDb.projectLocation);
                       this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
                       return docData(this.db.firestore.doc('Profile/' + afterauth.uid)).pipe(
                         map((profileDetails:usrinfoDetails)=>{
