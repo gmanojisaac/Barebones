@@ -12,7 +12,7 @@ import { environment } from '../environments/environment';
 import { GooglePayButtonModule} from '@google-pay/button-angular';
 import { TreeStructureComponent } from './tree-structure/tree-structure.component';
 import { NestedTreeComponent } from './nested-tree/nested-tree.component';
-import { AddNodeComponent,NewNodeDialog } from './nested-tree/add-node/add-node.component';
+import { AddNodeComponent,NewNodeDialog,BottomSheetChangeOrder } from './nested-tree/add-node/add-node.component';
 import { DeleteNodeComponent, } from './nested-tree/delete-node/delete-node.component';
 import { EditNodeComponent,EditNodeDialog } from './nested-tree/edit-node/edit-node.component';
 
@@ -21,6 +21,7 @@ import { EditNodeComponent,EditNodeDialog } from './nested-tree/edit-node/edit-n
     AppComponent,
     TreeStructureComponent,
     NestedTreeComponent,
+    BottomSheetChangeOrder,
     AddNodeComponent,
     NewNodeDialog,
     DeleteNodeComponent,
@@ -37,6 +38,10 @@ import { EditNodeComponent,EditNodeDialog } from './nested-tree/edit-node/edit-n
     AngularFirestoreModule, // firestore
     AngularFireAuthModule, // auth
     AngularFireStorageModule // storage
+  ],
+  entryComponents: [
+    NewNodeDialog,
+    BottomSheetChangeOrder
   ],
   bootstrap: [AppComponent]
   

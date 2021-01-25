@@ -6,7 +6,6 @@ import { of as observableOf } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { UserdataService, MainSectionGroup } from '../service/userdata.service';
 
-
 export class TreeData {
   Id: number;
   Name: string;
@@ -229,4 +228,5 @@ export class NestedTreeComponent implements OnInit, AfterViewInit {
     childrenNodeData.currentNode.Children.push(childrenNodeData.node);
     this.refreshTreeData();
   }
+
 }

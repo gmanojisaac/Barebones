@@ -4,7 +4,6 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 
 @Component({
   selector: 'app-edit-node',
-  changeDetection:ChangeDetectionStrategy.OnPush,
   templateUrl: './edit-node.component.html',
   styleUrls: ['./edit-node.component.scss']
 })

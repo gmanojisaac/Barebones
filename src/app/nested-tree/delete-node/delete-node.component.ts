@@ -1,9 +1,8 @@
 import { TreeData} from '../nested-tree.component';
-import { Component, Output, EventEmitter, Input,ChangeDetectionStrategy } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 
 @Component({
   selector: 'app-delete-node',
-  //changeDetection:ChangeDetectionStrategy.OnPush,
   templateUrl: './delete-node.component.html',
   styleUrls: ['./delete-node.component.scss']
 })
