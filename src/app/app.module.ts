@@ -11,8 +11,8 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { environment } from '../environments/environment';
 import { GooglePayButtonModule} from '@google-pay/button-angular';
 import { TreeStructureComponent } from './tree-structure/tree-structure.component';
-import { NestedTreeComponent } from './nested-tree/nested-tree.component';
-import { AddNodeComponent,NewNodeDialog,BottomSheetChangeOrder } from './nested-tree/add-node/add-node.component';
+import { NestedTreeComponent,BottomSheetChangeOrder } from './nested-tree/nested-tree.component';
+import { AddNodeComponent,NewNodeDialog } from './nested-tree/add-node/add-node.component';
 import { DeleteNodeComponent, } from './nested-tree/delete-node/delete-node.component';
 import { EditNodeComponent,EditNodeDialog } from './nested-tree/edit-node/edit-node.component';
 

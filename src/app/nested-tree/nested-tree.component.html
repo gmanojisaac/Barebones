@@ -1,7 +1,7 @@
 <div *ngIf="(Sections | async) as SectionsReady; else SectionsnotReady">
 
   <div fxLayout="column" style="width: 100%; height: 75vh;overflow-y:auto;" >
-    <mat-card>
+    <mat-card *ngIf="SectionsReady !== undefined">
     <mat-card-header style="padding:2%; border:solid; background-color: black;color:white;">
       <span style="margin-top:2%;">{{latestProject}} </span>  <mat-chip color="primary" selected style=" cursor: pointer;margin-left:5%;">View Tasks</mat-chip>
     </mat-card-header>
@@ -88,7 +88,19 @@
           </li>
         </mat-nested-tree-node>
       </mat-tree>
-      <app-add-node [isTop]="true" [AlltheKeys]="AlltheKeys" [latestaddProject]="Project"></app-add-node>
+      <app-add-node
+      [isTop]="true"
+      [latestaddProject]="Project"
+      [AlltheKeys]="AlltheKeys"
+      ></app-add-node>
+
+      <button mat-raised-button color="warn" (click)="openBottomSheet()" style="margin:5%;">
+
+        Change Order<mat-icon style="margin-left:5%;">
+        add_box
+        </mat-icon>
+        </button>
+        
     </mat-card>
   </div>
 </div>
