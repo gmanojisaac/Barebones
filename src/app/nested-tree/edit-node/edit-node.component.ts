@@ -19,6 +19,7 @@ export class EditNodeComponent {
   options: string[] = [];
   constructor(public dialog: MatDialog) {}
   openDialog(): void {
+    this.options=[];
     const fatherElement: TreeData = this.findFatherNode(this.currentNode.Id, this.masterdata);
     if(fatherElement[0]){
       fatherElement[0].Children.forEach(mykey=>{

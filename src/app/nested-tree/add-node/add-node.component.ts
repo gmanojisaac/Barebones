@@ -26,6 +26,7 @@ export class AddNodeComponent implements AfterViewInit {
     }
 
   openDialog(): void {
+    this.options=[];
     console.log('isTop',this.isTop,'latestaddProject',this.latestaddProject,'currentNode',this.currentNode,'AlltheKeys', this.AlltheKeys,'masterdata',this.masterdata);
     if(this.isTop){
       this.masterdata.forEach(mykey=>{
