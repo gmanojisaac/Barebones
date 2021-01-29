@@ -1,14 +1,27 @@
-<div mat-dialog-content>
-    <mat-form-field>
-      <input matInput placeholder="Node Name" [(ngModel)]="data.Name">
+<form class="example-form" *ngIf="(filteredOptions | async) as myfilter"> 
+<div mat-dialog-content  >
+    <mat-form-field class="example-full-width">
+      <input type="text"
+             placeholder="Edit/Create"
+             aria-label="Number"
+             matInput
+             [formControl]="myControl"
+             [matAutocomplete]="auto">
+      <mat-autocomplete #auto="matAutocomplete"  [displayWith]="displayFn">
+        <mat-option *ngFor="let option of myfilter" [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-autocomplete>
     </mat-form-field>
   </div>
   <div mat-dialog-actions>
-    <button mat-button color="warn" (click)="onNoClick()" style="position: relative;right: 15px;">
+    <button mat-button color="warn" (click)="onNoClick()" style="position: relative;right: 15px;" cdkFocusInitial>
       No Thanks
     </button>
-    <button mat-stroked-button color="primary" [disabled]="!(data.Name || data.Description)" [mat-dialog-close]="{nodeName: data.Name, nodeDescription: data.Description}" style="position: relative;left: 20px;">
+  
+    <button mat-stroked-button color="primary" [disabled]="!(myfilter.length === 0 )" [mat-dialog-close]="{nodeName: myControl.value, nodeDescription: data.Description}" style="position: relative;left: 20px;">
       {{data.Component}}
     </button>
+
   </div>
-  
+</form>

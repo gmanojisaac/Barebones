@@ -29,9 +29,11 @@
             ></app-delete-node>
             <app-edit-node
               (edittedNode)="editNode($event)"
+              [masterdata]="nestedDataSource.data"
               [currentNode]="node"
             ></app-edit-node>
             <app-add-node
+            [masterdata]="nestedDataSource.data"
                [isTop]="false"
               [latestaddProject]="Project"
               [currentNode]="node"
@@ -69,9 +71,11 @@
               ></app-delete-node>
               <app-edit-node
                 (edittedNode)="editNode($event)"
+                [masterdata]="nestedDataSource.data"
                 [currentNode]="node"
               ></app-edit-node>
               <app-add-node
+              [masterdata]="nestedDataSource.data"
                 [isTop]="false"
                 [latestaddProject]="Project"
                 [currentNode]="node"
@@ -89,6 +93,7 @@
         </mat-nested-tree-node>
       </mat-tree>
       <app-add-node
+      [masterdata]="nestedDataSource.data"
       [isTop]="true"
       [latestaddProject]="Project"
       [AlltheKeys]="AlltheKeys"
