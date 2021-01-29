@@ -26,16 +26,17 @@ export class AddNodeComponent implements AfterViewInit {
     }
 
   openDialog(): void {
-    const fatherElement: TreeData = this.findFatherNode(this.currentNode.Id, this.masterdata);
-    if(fatherElement[0]){
-      fatherElement[0].Children.forEach(mykey=>{
-        this.options.push(mykey.Name);
-      });      
-    }else{
+    console.log('isTop',this.isTop,'latestaddProject',this.latestaddProject,'currentNode',this.currentNode,'AlltheKeys', this.AlltheKeys,'masterdata',this.masterdata);
+    if(this.isTop){
       this.masterdata.forEach(mykey=>{
         this.options.push(mykey.Name);
       });
+    }else{
+      this.currentNode.Children.forEach(mykey=>{
+        this.options.push(mykey.Name);
+      });  
     }
+
     const dialogRef = this.dialog.open(NewNodeDialog, {
       width: '250px',
       data: {nodeName: this.name,  Component: 'Add',filterValues:this.options}

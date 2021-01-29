@@ -270,60 +270,79 @@ export class NestedTreeComponent implements OnInit, AfterViewInit {
 @Component({
   selector: 'bottom-sheet-changeorder',
   template:`
-  <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" cdkDropList (cdkDropListDropped)="drop($event)">
-    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding cdkDrag [cdkDragData]="node" (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
+  <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-list"  cdkDropList (cdkDropListDropped)="drop($event)">
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding class="example-box"  cdkDrag [cdkDragData]="node" (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
+    <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
       <button mat-icon-button disabled></button>
-      {{node.filename}} 
+      <span>{{node.filename}} </span>
     </mat-tree-node>
   
-    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding cdkDrag [cdkDragData]="node" (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
-      <button mat-icon-button matTreeNodeToggle (click)="expansionModel.toggle(node.id)"
+    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding class="example-box"  cdkDrag [cdkDragData]="node" (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
+    <div class="example-custom-placeholder" *cdkDragPlaceholder></div>  
+    <button mat-icon-button 
               [attr.aria-label]="'toggle ' + node.filename">
         <mat-icon class="mat-icon-rtl-mirror">
           {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
         </mat-icon>
       </button>
-      {{node.filename}}
+      <span style="margin-left:20%;">{{node.filename}} </span>
     </mat-tree-node>
   </mat-tree>
   `,
   styles:[`
   
-.basic-container {
-  padding: 30px;
-}
-
-.version-info {
-  font-size: 8pt;
-  float: right;
-}
-
-/**
- * TREE DRAG AND DROP STYLING
- */
-
-.mat-tree-node {
-  background-color: rgb(66, 157, 253);
-  color: white;
-  user-select: none;
-  cursor: move;
-
-  &.cdk-drag-preview { // while dragging
-    @include mat-elevation(12);
+  .example-list {
+    width: 500px;
+    max-width: 100%;
+    border: solid 10px green;
+    min-height: 60px;
+    display: block;
+    background: white;
+    border-radius: 4px;
+    overflow: hidden;
   }
-  &.cdk-drag-placeholder { // potential drop area
-    opacity: 0;
+  
+  .example-box {
+    padding: 20px 10px;
+    border-bottom: solid 10px yellow;
+    color: rgba(0, 0, 0, 0.87);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    box-sizing: border-box;
+    cursor: move;
+    background: lightblue;
+    font-size: 20px;
   }
-}
-
-/* items moving away to make room for drop */
-.cdk-drop-list-dragging .mat-tree-node:not(.cdk-drag-placeholder) {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-/* item being dropped */
-.cdk-drag-animating {
-  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
-}
+  
+  .cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  }
+  
+  .cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+  
+  .example-box:last-child {
+    border: none;
+  }
+  
+  .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+  
+  .example-custom-placeholder {
+    background: grey;
+    border: dotted 3px red;
+    min-height: 60px;
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+  
   `]
 })
 export class BottomSheetChangeOrder implements AfterViewInit {
