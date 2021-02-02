@@ -124,8 +124,24 @@
         </div>
     </div>
     <ng-template #startPage>
-        <div class="loginscreen" fxLayoutAlign="space-around center" style="height:100vh;">
-            <mat-label>
+        <div fxLayoutAlign="space-around start" >
+            <mat-toolbar color="primary">
+                <h1>
+                    StepsWise Tracking Tool
+                </h1>
+                <span fxFlex="grow"></span>
+                <div fxHide.lt-sm>
+                    Login
+                </div>
+                <button mat-icon-button>
+                    <fa-icon (click)="componentLogIn()" class="fas faSignInAlt fa-lg" [icon]="['fas', 'sign-in-alt']">
+                    </fa-icon>
+                    <firebase-ui (signInSuccessWithAuthResult)="successCallback($event)"
+             (signInFailure)="errorCallback($event)"
+             (uiShown)="uiShownCallback()"></firebase-ui>
+                </button>
+            </mat-toolbar>
+            <!-- class="loginscreen" mat-label>
                 <div fxLayout="column" style="letter-spacing: 20px;">
                     <h1> <strong style="font-size:40px">StepsWise Task Tracker</strong> </h1>
                 </div>
@@ -162,7 +178,7 @@
                     </div>
                 </mat-card-content>
 
-            </mat-card>
+            </mat-card-->
         </div>
     </ng-template>
 
@@ -179,7 +195,7 @@
             <div *ngIf="(myauth | async) === null" class="loginscreen" fxLayoutAlign="space-around center"
                 style="height:100vh;">
 
-                <mat-label>
+                <!--mat-label>
                     <div fxLayout="column" style="letter-spacing: 20px;">
                         <h1> <strong style="font-size:40px">StepsWise Task Tracker</strong> </h1>
                     </div>
@@ -212,7 +228,7 @@
                         </div>
                     </mat-card-content>
 
-                </mat-card>
+                </mat-card-->
 
             </div>
         </div>

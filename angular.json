@@ -17,6 +17,12 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "./node_modules/firebaseui/dist/esm.js",
+              "./node_modules/firebaseui",
+              "./node_modules/firebaseui/dist",
+              "firebaseui"
+            ],
             "outputPath": "dist/goldenNoStrict",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -29,7 +35,8 @@
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "/node_modules/firebaseui/dist/firebaseui.css"
             ],
             "scripts": []
           },

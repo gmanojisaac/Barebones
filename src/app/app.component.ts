@@ -18,6 +18,8 @@ import {
   trigger
 } from "@angular/animations";
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
+import {FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult, FirebaseuiAngularLibraryService} from 'firebaseui-angular';
+
 
 @Component({
   selector: 'app-root',
@@ -143,9 +145,10 @@ myusrinfoDetails:usrinfoDetails={
     public developmentservice: UserdataService,
     private db: AngularFirestore,
     public fb: FormBuilder,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    public firebaseuiAngularLibraryService: FirebaseuiAngularLibraryService
   ) {
-
+    this.firebaseuiAngularLibraryService.firebaseUiInstance.disableAutoSignIn();
     const addProfileDetailsSub=  this.myprojectControls.addProfileDetails.valueChanges.pipe(
       startWith({   
         profilename: '',
@@ -303,5 +306,17 @@ myusrinfoDetails:usrinfoDetails={
   drawerclose() {
     this.sidenav.close();
   }
+  successCallback(data: FirebaseUISignInSuccessWithAuthResult) {
+    console.log('successCallback', data);
 
+  }
+
+  errorCallback(data: FirebaseUISignInFailure) {
+    console.warn('errorCallback', data);
+  }
+
+  uiShownCallback() {
+    console.log('UI shown');
+  }
+  
 }
