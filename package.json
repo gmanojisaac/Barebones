@@ -28,6 +28,8 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@google-pay/button-angular": "^2.1.5",
     "firebase": "^7.0 || ^8.0",
+    "firebaseui": "^4.7.1",
+    "firebaseui-angular": "^5.1.1",
     "ngx-sharebuttons": "^8.0.5",
     "rxfire": "^4.0.0",
     "rxjs": "~6.6.0",

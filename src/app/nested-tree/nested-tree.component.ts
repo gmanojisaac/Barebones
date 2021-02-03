@@ -185,7 +185,7 @@ export class NestedTreeComponent implements OnInit, AfterViewInit {
   }
   initialize() {
 
-    this.Sections.pipe(filter(myobj => myobj !== null), map((data: any) => {
+    this.Sections.pipe(filter(myobj => myobj !== undefined), map((data: any) => {
       this.nestedDataSource.data=        [{
         Id: 1,
         Name: 'John Heart ',

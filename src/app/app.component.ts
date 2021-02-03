@@ -1,7 +1,7 @@
 
 import { Component, ViewChild,AfterViewInit } from '@angular/core';
 import { BehaviorSubject, Subscription, Observable,of } from 'rxjs';
-import { UserdataService,MainSectionGroup, userProfile,usrinfo, projectFlags, usrinfoDetails,projectControls } from './service/userdata.service';
+import { UserdataService,MainSectionGroup, userProfile,usrinfo, projectFlags, projectDetail, usrinfoDetails,projectControls } from './service/userdata.service';
 import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase/app';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -18,6 +18,8 @@ import {
   trigger
 } from "@angular/animations";
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
+import {FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult, FirebaseuiAngularLibraryService} from 'firebaseui-angular';
+
 
 @Component({
   selector: 'app-root',
@@ -136,15 +138,16 @@ myusrinfoDetails:usrinfoDetails={
   myprofilevalbef: Observable<usrinfo>= new BehaviorSubject(undefined);
   myprofileDetails: Observable<usrinfoDetails>= new BehaviorSubject(undefined);
   @ViewChild('drawer') public sidenav: MatSidenav;
-
+  DisplayprojectDetails:projectDetail[];
 
   constructor(
     public afAuth: AngularFireAuth,
     public developmentservice: UserdataService,
     private db: AngularFirestore,
     public fb: FormBuilder,
-    public dialog: MatDialog
+    public dialog: MatDialog, public firebaseuiAngularLibraryService: FirebaseuiAngularLibraryService
   ) {
+    this.firebaseuiAngularLibraryService.firebaseUiInstance.disableAutoSignIn();
 
     const addProfileDetailsSub=  this.myprojectControls.addProfileDetails.valueChanges.pipe(
       startWith({   
@@ -179,7 +182,6 @@ myusrinfoDetails:usrinfoDetails={
                           this.myprofilevalbef=of(undefined);
                           this.Sections = of(null);
                         }
-                        return of(onlineval);
                       });
                     } else {
                       this.myprofilevalbef=of(profilevalbef);
@@ -187,13 +189,18 @@ myusrinfoDetails:usrinfoDetails={
                       this.getSectionsSubscription?.unsubscribe();
                       this.myuserProfile.myusrinfoFromDb = profilevalbef;
                       this.Sections = this.getSections(this.db.doc(this.myuserProfile.myusrinfoFromDb.projectLocation));
-                      return docData(this.db.firestore.doc('Profile/' + afterauth.uid)).pipe(
-                        map((profileDetails:usrinfoDetails)=>{
+                      return docData(this.db.firestore.doc('profile/' + afterauth.uid)).pipe(
+                        switchMap((profileDetails:usrinfoDetails)=>{
                           
                           if (!Object.keys(profileDetails).length === true) {
                             this.myprofileDetails=of(undefined);
                           }else{
                               this.myprofileDetails=of(profileDetails);
+                              return docData(this.db.firestore.doc('projectList/publicProjects')).pipe(
+                                map((projectDetails:any)=>{
+                                  this.DisplayprojectDetails= projectDetails.public;                                  
+                                  return of(onlineval);
+                                }));
                           }                              
                           //return of(onlineval);
                         }) ,withLatestFrom(addProfileDetailsSub),
@@ -209,6 +216,12 @@ myusrinfoDetails:usrinfoDetails={
                   })
                 )
               } else {
+                this.Sections = this.getSections(this.db.doc('publicProjectKeys/Angular interview'));
+                return docData(this.db.firestore.doc('projectList/publicProjects')).pipe(
+                  map((projectDetails:any)=>{
+                     this.DisplayprojectDetails= projectDetails.public;                                  
+                    return of(onlineval);
+                  }));
                 this.getSectionsSubscription?.unsubscribe();
                 this.myprojectControls.addProfileDetails.reset();
                 this.myprojectControls.addProfileDetails.enable();
@@ -303,5 +316,16 @@ myusrinfoDetails:usrinfoDetails={
   drawerclose() {
     this.sidenav.close();
   }
+  successCallback(data: FirebaseUISignInSuccessWithAuthResult) {
+    console.log('successCallback', data);
 
+  }
+
+  errorCallback(data: FirebaseUISignInFailure) {
+    console.warn('errorCallback', data);
+  }
+
+  uiShownCallback() {
+    console.log('UI shown');
+  }
 }

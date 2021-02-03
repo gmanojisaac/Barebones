@@ -14,6 +14,24 @@ import { NestedTreeComponent,BottomSheetChangeOrder } from './nested-tree/nested
 import { AddNodeComponent,NewNodeDialog } from './nested-tree/add-node/add-node.component';
 import { DeleteNodeComponent, } from './nested-tree/delete-node/delete-node.component';
 import { EditNodeComponent,EditNodeDialog } from './nested-tree/edit-node/edit-node.component';
+import {firebase, firebaseui, FirebaseUIModule} from 'firebaseui-angular';
+
+const firebaseUiAuthConfig: firebaseui.auth.Config = {
+  signInOptions: [
+      {
+        // Google provider must be enabled in Firebase Console to support one-tap
+        // sign-up.
+        provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        // Required to enable ID token credentials for this provider.
+        // This can be obtained from the Credentials page of the Google APIs
+        // console. Use the same OAuth client ID used for the Google provider
+        // configured with GCIP or Firebase Auth.
+        clientId: '155833140934-om6lcebvnosmo8sgkkogpojvs74g0la5.apps.googleusercontent.com'
+      }],
+  
+    credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO
+  
+  };
 
 @NgModule({
   declarations: [
@@ -35,7 +53,9 @@ import { EditNodeComponent,EditNodeDialog } from './nested-tree/edit-node/edit-n
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule, // firestore
     AngularFireAuthModule, // auth
-    AngularFireStorageModule // storage
+    AngularFireStorageModule // storage    
+    ,
+    FirebaseUIModule.forRoot(firebaseUiAuthConfig)
   ],
   entryComponents: [
     NewNodeDialog,

@@ -7,6 +7,14 @@ import { map, first } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormControl, FormGroup } from '@angular/forms';
 
+export interface projectDetail{
+  creationDate:Date;                      
+  description:string;
+  photoUrl:string;
+  profileName:string;
+  projectName:string;
+  projectUid:string;
+}
 export interface myusrinfo {
   MembershipEnd: Date;
   MembershipType: string;
