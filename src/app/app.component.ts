@@ -39,6 +39,7 @@ import {FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult, Firebase
 })
 export class AppComponent {
   title = 'goldenNoStrict';
+  startProject='Angular interview';
   myauth;
   loggedinstate:Observable<string>=new BehaviorSubject(undefined);
   subjectauth = new BehaviorSubject(undefined);
@@ -169,10 +170,12 @@ myusrinfoDetails:usrinfoDetails={
         if (onlineval === true) {
           return this.myauth.pipe(
             switchMap((afterauth: firebase.User) => {
+              console.log(afterauth);
               if (afterauth !== null && afterauth !== undefined) {
                 this.myuserProfile.userAuthenObj = afterauth;
                 return docData(this.db.firestore.doc('myProfile/' + afterauth.uid)).pipe(
                   switchMap((profilevalbef: any) => {
+  
                     if (!Object.keys(profilevalbef).length === true) {
                       this.developmentservice.findOrCreate(afterauth.uid).then(success => {
                         if (success !== 'doc exists') {
@@ -198,7 +201,8 @@ myusrinfoDetails:usrinfoDetails={
                               this.myprofileDetails=of(profileDetails);
                               return docData(this.db.firestore.doc('projectList/publicProjects')).pipe(
                                 map((projectDetails:any)=>{
-                                  this.DisplayprojectDetails= projectDetails.public;                                  
+                                  this.DisplayprojectDetails= projectDetails.public;  
+                                                                
                                   return of(onlineval);
                                 }));
                           }                              
@@ -206,6 +210,7 @@ myusrinfoDetails:usrinfoDetails={
                         }) ,withLatestFrom(addProfileDetailsSub),
                         map((values: any) => {
                           const [publickey, keys] = values;
+                          console.log('reached here',onlineval);  
                           return of(onlineval);
                         }));                     
                     }
