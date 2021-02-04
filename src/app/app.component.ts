@@ -39,6 +39,7 @@ import {FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult, Firebase
 })
 export class AppComponent {
   title = 'goldenNoStrict';
+  startScreen="start";
   startProject='Angular interview';
   myauth;
   loggedinstate:Observable<string>=new BehaviorSubject(undefined);
@@ -136,7 +137,7 @@ myusrinfoDetails:usrinfoDetails={
   areasOfInterest: '',
   skills: ''
 };
-  myprofilevalbef: Observable<usrinfo>= new BehaviorSubject(undefined);
+  myprofilevalbef: Observable<any>= new BehaviorSubject(undefined);
   myprofileDetails: Observable<usrinfoDetails>= new BehaviorSubject(undefined);
   @ViewChild('drawer') public sidenav: MatSidenav;
   DisplayprojectDetails:projectDetail[];
@@ -199,7 +200,7 @@ myusrinfoDetails:usrinfoDetails={
                             this.myprofileDetails=of(undefined);
                           }else{
                               this.myprofileDetails=of(profileDetails);
-                              return docData(this.db.firestore.doc('projectList/publicProjects')).pipe(
+                              return docData(this.db.firestore.doc('projectList/publicProject')).pipe(
                                 map((projectDetails:any)=>{
                                   this.DisplayprojectDetails= projectDetails.public;  
                                                                 
@@ -221,8 +222,8 @@ myusrinfoDetails:usrinfoDetails={
                   })
                 )
               } else {
-                this.Sections = this.getSections(this.db.doc('publicProjectKeys/Angular interview'));
-                return docData(this.db.firestore.doc('projectList/publicProjects')).pipe(
+                this.Sections = this.getSections(this.db.doc('projectKey/Angular interview'));
+                return docData(this.db.firestore.doc('projectList/publicProject')).pipe(
                   map((projectDetails:any)=>{
                      this.DisplayprojectDetails= projectDetails.public;                                  
                     return of(onlineval);
@@ -242,6 +243,22 @@ myusrinfoDetails:usrinfoDetails={
       })
     );
 
+  }
+  expansionClick($event){
+    this.startScreen= 'continue';
+    this.startProject=$event.projectName;
+    this.getSectionsSubscription?.unsubscribe();
+    this.Sections = this.getSections(this.db.doc('projectKey/' + $event.projectName));
+    this.myprofileDetails=docData(this.db.firestore.doc('profile/' + $event.projectUid));
+    this.myprofilevalbef=docData(this.db.firestore.doc('myProfile/' + $event.projectUid)).pipe(
+      withLatestFrom(this.myprofileDetails),
+      map((values:any)=>{
+        const[details, initval]= values;
+        return({mydetails:details,myinitval:initval  });
+      })
+    )
+    
+    console.log($event);
   }
   loadFirstPageKeys(profileData: any) {
     if (profileData !== undefined) {//norecords

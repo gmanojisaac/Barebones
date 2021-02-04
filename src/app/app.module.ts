@@ -14,8 +14,8 @@ import { NestedTreeComponent,BottomSheetChangeOrder } from './nested-tree/nested
 import { AddNodeComponent,NewNodeDialog } from './nested-tree/add-node/add-node.component';
 import { DeleteNodeComponent, } from './nested-tree/delete-node/delete-node.component';
 import { EditNodeComponent,EditNodeDialog } from './nested-tree/edit-node/edit-node.component';
-import {firebase, firebaseui, FirebaseUIModule} from 'firebaseui-angular';
-
+import {firebaseui, FirebaseUIModule} from 'firebaseui-angular';
+import firebase from 'firebase/app';
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
   signInOptions: [
       {

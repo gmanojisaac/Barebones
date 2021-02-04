@@ -148,8 +148,8 @@ export class UserdataService {
       const promise = Promise.all([
         this.db.firestore.doc('myProfile/' + uid).set(newprojectinfo,{merge: true}),
         this.db.firestore.doc('projectList/' + uid).set({ownerRecord: firebase.firestore.FieldValue.arrayUnion(projectname)},{merge: true}),
-        this.db.firestore.doc('publicProjectKeys/' + projectname).set({MainSection},  {merge: false}) ,
-        this.db.firestore.doc('projectList/' + 'publicProjects/').set({public: firebase.firestore.FieldValue.arrayUnion(projectname)},{merge: true})
+        this.db.firestore.doc('projectKey/' + projectname).set({MainSection},  {merge: false}) ,
+        this.db.firestore.doc('projectList/' + 'publicProject/').set({public: firebase.firestore.FieldValue.arrayUnion(projectname)},{merge: true})
       ]);
       return promise;
     });
@@ -157,7 +157,7 @@ export class UserdataService {
   async createDefKeys(projectname: string,MainSection:any) : Promise<void>{
     await this.db.firestore.runTransaction(() => {
       const promise = Promise.all([      
-        this.db.firestore.doc('publicProjectKeys/' + projectname).set({MainSection},  {merge: false}) ,
+        this.db.firestore.doc('projectKey/' + projectname).set({MainSection},  {merge: false}) ,
         this.db.firestore.doc(projectname+ '/MainSection/items/SubSection').delete()
       ]);
       return promise;
@@ -168,9 +168,9 @@ export class UserdataService {
     await this.db.firestore.runTransaction(() => {
       const promise = Promise.all([
         this.db.firestore.doc('projectList/' + uid).update({ownerRecord: firebase.firestore.FieldValue.arrayRemove(oldprojectName)}),
-        this.db.firestore.doc('projectList/' + 'publicProjects').update({public: firebase.firestore.FieldValue.arrayRemove(oldprojectName)}),
+        this.db.firestore.doc('projectList/' + 'publicProject').update({public: firebase.firestore.FieldValue.arrayRemove(oldprojectName)}),
         this.db.firestore.doc('myProfile/' + uid).set(newprojectinfo,{merge: true}),
-        this.db.firestore.doc('publicProjectKeys/' + oldprojectName).delete()
+        this.db.firestore.doc('projectKey/' + oldprojectName).delete()
       ]);
       return promise;
     });
@@ -178,7 +178,7 @@ export class UserdataService {
   async deleteMainSection(ProjectName: string, MainSection: any) : Promise<void>{    
     await this.db.firestore.runTransaction(() => {
       const promise = Promise.all([
-        this.db.doc('publicProjectKeys/' + ProjectName).set({MainSection },  {merge: false} )
+        this.db.doc('projectKey/' + ProjectName).set({MainSection },  {merge: false} )
     ]);
     return promise;
   });
@@ -187,7 +187,7 @@ export class UserdataService {
     await this.db.firestore.runTransaction(() => {
       console.log('reached',ProjectName);
       const promise = Promise.all([
-        this.db.doc('/publicProjectKeys/' + ProjectName ).set({MainSection },  {merge: false} )
+        this.db.doc('/projectKey/' + ProjectName ).set({MainSection },  {merge: false} )
     ]);
     return promise;
   });
@@ -195,7 +195,7 @@ export class UserdataService {
   async updatevisibility(ProjectName: string,MainSection: any) : Promise<void>{
     await this.db.firestore.runTransaction(() => {
       const promise = Promise.all([
-        this.db.doc('publicProjectKeys/' + ProjectName).set({MainSection},  {merge: false})
+        this.db.doc('projectKey/' + ProjectName).set({MainSection},  {merge: false})
     ]);
     return promise;
   });}
@@ -203,7 +203,7 @@ export class UserdataService {
     console.log('195',ProjectName);
     await this.db.firestore.runTransaction(() => {
       const promise = Promise.all([
-        this.db.doc('publicProjectKeys/' + ProjectName).set({MainSection},  {merge: false}),
+        this.db.doc('projectKey/' + ProjectName).set({MainSection},  {merge: false}),
         this.db.doc(ProjectName + '/' + MainSectionName + '/items/' + SubSectionName ).delete()  
     ]);
     return promise;
@@ -212,7 +212,7 @@ export class UserdataService {
     await this.db.firestore.runTransaction(() => {
       const promise = Promise.all([
         this.db.doc( ProjectName + '/' + MainSectionName + '/items/' + SubSectionName + '/').delete(),
-        this.db.doc('publicProjectKeys/' + ProjectName).set({MainSection},  {merge: false})        
+        this.db.doc('projectKey/' + ProjectName).set({MainSection},  {merge: false})        
       ]);
       return promise;
     });
@@ -221,7 +221,7 @@ export class UserdataService {
     await this.db.firestore.runTransaction(() => {
       const promise = Promise.all([
         this.db.doc( ProjectName + '/' + MainSectionName + '/items/' + SubSectionName + '/').delete(),
-        this.db.doc('publicProjectKeys/' + ProjectName).set({MainSection}),
+        this.db.doc('projectKey/' + ProjectName).set({MainSection}),
       ]);
       return promise;
     });
@@ -230,7 +230,7 @@ export class UserdataService {
     await this.db.firestore.runTransaction(() => {
       console.log('reached',ProjectName);
       const promise = Promise.all([
-        this.db.doc('/publicProjectKeys/' + ProjectName ).set({MainSection },  {merge: false} )
+        this.db.doc('/projectKey/' + ProjectName ).set({MainSection },  {merge: false} )
     ]);
     return promise;
   });
