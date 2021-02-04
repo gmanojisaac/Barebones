@@ -165,24 +165,24 @@
             <mat-grid-list cols="3" rowHeight="100vh">
                 <mat-grid-tile colspan="1" rowspan="1" [style.background]="'cyan'" fxLayout="row wrap">
 
-                    <div *ngIf="(myprofilevalbef | async) as myprofilevalbefReady; else myprofileDetailsNotReady" >
+                    <div *ngIf="(latestprofile | async) as myprofilevalbefReady; else myprofileDetailsNotReady" >
                         <mat-label style="margin-left:20%;">
                             Profile Details:
                         </mat-label>
                         <pre style="margin-left:20%;">
-                        MembershipEnd: {{myprofilevalbefReady?.mydetails.MembershipEnd}}
-                        MembershipType:{{myprofilevalbefReady?.mydetails.MembershipType}}
-                        projectLocation: {{myprofilevalbefReady?.mydetails.projectLocation}}
-                        projectOwner: {{myprofilevalbefReady?.mydetails.projectOwner}}
+                        MembershipEnd: {{myprofilevalbefReady?.MembershipEnd}}
+                        MembershipType:{{myprofilevalbefReady?.MembershipType}}
+                        projectLocation: {{myprofilevalbefReady?.projectLocation}}
+                        projectOwner: {{myprofilevalbefReady?.projectOwner}}
                         projectName: {{myprofilevalbefReady?.projectName}} 
                        
 
-                        Profilename: {{myprofilevalbefReady?.myinitval.profileName}}
-                        Email:{{myprofilevalbefReady?.myinitval.email}}
-                        Gender: {{myprofilevalbefReady?.myinitval.gender}}
-                        AreasOfInterest:{{myprofilevalbefReady?.myinitval.areaOfinterest}}
-                        Skills: {{myprofilevalbefReady?.myinitval.skills}}
-                        Location: {{myprofilevalbefReady?.myinitval.location}}
+                        Profilename: {{myprofilevalbefReady?.profileName}}
+                        Email:{{myprofilevalbefReady?.email}}
+                        Gender: {{myprofilevalbefReady?.gender}}
+                        AreasOfInterest:{{myprofilevalbefReady?.areaOfinterest}}
+                        Skills: {{myprofilevalbefReady?.skills}}
+                        Location: {{myprofilevalbefReady?.location}}
                     </pre>
                     </div>
 
@@ -248,13 +248,13 @@
                 </mat-grid-tile>
 
                 <mat-grid-tile colspan="1" rowspan="1" [style.background]="'red'">
-                    <mat-accordion>
-                        <mat-expansion-panel *ngFor="let detail of DisplayprojectDetails" (click)="expansionClick(detail)">
+                    <mat-accordion *ngIf="DisplayprojectDetails| async as detailsdisplayed">
+                        <mat-expansion-panel *ngFor="let detail of detailsdisplayed" (click)="expansionClick(detail)">
                           <mat-expansion-panel-header >
-                            <mat-panel-title fxFlexAlign="center" fxFlex="grow">
+                            <mat-panel-title  >
                                 {{detail.projectName}}
                             </mat-panel-title>
-                            <mat-panel-description>
+                            <mat-panel-description fxFlex >
                                 <div mat-card-avatar [ngStyle]="{'background-image': 'url(' + detail.photoUrl + ')', 'background-size': 'cover'  }" ></div>
                             </mat-panel-description>
                           </mat-expansion-panel-header>

@@ -146,7 +146,7 @@ export class UserdataService {
   async createnewproject(uid:string, projectname: string, newprojectinfo: any, MainSection:any) : Promise<void>{
     await this.db.firestore.runTransaction(() => {
       const promise = Promise.all([
-        this.db.firestore.doc('myProfile/' + uid).set(newprojectinfo,{merge: true}),
+        this.db.firestore.doc('profile/' + uid).set(newprojectinfo,{merge: true}),
         this.db.firestore.doc('projectList/' + uid).set({ownerRecord: firebase.firestore.FieldValue.arrayUnion(projectname)},{merge: true}),
         this.db.firestore.doc('projectKey/' + projectname).set({MainSection},  {merge: false}) ,
         this.db.firestore.doc('projectList/' + 'publicProject/').set({public: firebase.firestore.FieldValue.arrayUnion(projectname)},{merge: true})
@@ -169,7 +169,7 @@ export class UserdataService {
       const promise = Promise.all([
         this.db.firestore.doc('projectList/' + uid).update({ownerRecord: firebase.firestore.FieldValue.arrayRemove(oldprojectName)}),
         this.db.firestore.doc('projectList/' + 'publicProject').update({public: firebase.firestore.FieldValue.arrayRemove(oldprojectName)}),
-        this.db.firestore.doc('myProfile/' + uid).set(newprojectinfo,{merge: true}),
+        this.db.firestore.doc('profile/' + uid).set(newprojectinfo,{merge: true}),
         this.db.firestore.doc('projectKey/' + oldprojectName).delete()
       ]);
       return promise;

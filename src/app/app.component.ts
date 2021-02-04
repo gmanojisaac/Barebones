@@ -90,6 +90,21 @@ export class AppComponent {
     return this.getSectionsBehaviourSub;
   };
 
+  latestprofile = of(undefined);
+  getlatestprofileSubscription: Subscription;
+  getlatestprofileBehaviourSub = new BehaviorSubject(undefined);
+  getlatestprofile = (MainAndSubSectionkeys: AngularFirestoreDocument<any>) => {
+    if (this.getlatestprofileSubscription !== undefined) {
+      this.getlatestprofileSubscription.unsubscribe();
+    }
+    this.getlatestprofileSubscription = MainAndSubSectionkeys.valueChanges().subscribe((val: any) => {
+      
+            this.getlatestprofileBehaviourSub.next(val);
+
+    });
+    return this.getlatestprofileBehaviourSub;
+  };
+
   myuserProfile: userProfile = {
     userAuthenObj: null,//Receive User obj after login success
     myusrinfoFromDb: null
@@ -140,7 +155,7 @@ myusrinfoDetails:usrinfoDetails={
   myprofilevalbef: Observable<any>= new BehaviorSubject(undefined);
   myprofileDetails: Observable<usrinfoDetails>= new BehaviorSubject(undefined);
   @ViewChild('drawer') public sidenav: MatSidenav;
-  DisplayprojectDetails:projectDetail[];
+  DisplayprojectDetails:Observable<projectDetail[]>;
 
   constructor(
     public afAuth: AngularFireAuth,
@@ -174,7 +189,7 @@ myusrinfoDetails:usrinfoDetails={
               console.log(afterauth);
               if (afterauth !== null && afterauth !== undefined) {
                 this.myuserProfile.userAuthenObj = afterauth;
-                return docData(this.db.firestore.doc('myProfile/' + afterauth.uid)).pipe(
+                return docData(this.db.firestore.doc('profile/' + afterauth.uid)).pipe(
                   switchMap((profilevalbef: any) => {
   
                     if (!Object.keys(profilevalbef).length === true) {
@@ -202,7 +217,7 @@ myusrinfoDetails:usrinfoDetails={
                               this.myprofileDetails=of(profileDetails);
                               return docData(this.db.firestore.doc('projectList/publicProject')).pipe(
                                 map((projectDetails:any)=>{
-                                  this.DisplayprojectDetails= projectDetails.public;  
+                                  this.DisplayprojectDetails= of(projectDetails.public);  
                                                                 
                                   return of(onlineval);
                                 }));
@@ -225,7 +240,7 @@ myusrinfoDetails:usrinfoDetails={
                 this.Sections = this.getSections(this.db.doc('projectKey/Angular interview'));
                 return docData(this.db.firestore.doc('projectList/publicProject')).pipe(
                   map((projectDetails:any)=>{
-                     this.DisplayprojectDetails= projectDetails.public;                                  
+                     this.DisplayprojectDetails= of(projectDetails.public);                                  
                     return of(onlineval);
                   }));
                 this.getSectionsSubscription?.unsubscribe();
@@ -249,16 +264,7 @@ myusrinfoDetails:usrinfoDetails={
     this.startProject=$event.projectName;
     this.getSectionsSubscription?.unsubscribe();
     this.Sections = this.getSections(this.db.doc('projectKey/' + $event.projectName));
-    this.myprofileDetails=docData(this.db.firestore.doc('profile/' + $event.projectUid));
-    this.myprofilevalbef=docData(this.db.firestore.doc('myProfile/' + $event.projectUid)).pipe(
-      withLatestFrom(this.myprofileDetails),
-      map((values:any)=>{
-        const[details, initval]= values;
-        return({mydetails:details,myinitval:initval  });
-      })
-    )
-    
-    console.log($event);
+    this.latestprofile= this.getlatestprofile(this.db.doc('profile/' + $event.projectUid));
   }
   loadFirstPageKeys(profileData: any) {
     if (profileData !== undefined) {//norecords
@@ -280,7 +286,7 @@ myusrinfoDetails:usrinfoDetails={
             projectOwner: true,
             projectName: 'Demo'
           };
-          this.db.doc<any>('myProfile/' + this.myuserProfile.userAuthenObj.uid).set(newItem);
+          this.db.doc<any>('profile/' + this.myuserProfile.userAuthenObj.uid).set(newItem);
           this.myuserProfile.myusrinfoFromDb.projectOwner = true;
           this.myuserProfile.myusrinfoFromDb.projectName = 'Demo';
           this.myuserProfile.myusrinfoFromDb.projectLocation = '/projectList/DemoProjectKey';
@@ -306,7 +312,7 @@ myusrinfoDetails:usrinfoDetails={
       projectOwner: true,
       projectName: 'Demo'
     };
-    this.db.doc<any>('myProfile/' + this.myuserProfile.userAuthenObj.uid).set(newItem);
+    this.db.doc<any>('profile/' + this.myuserProfile.userAuthenObj.uid).set(newItem);
     
   }
   UpdateUserProfileFlag(){
