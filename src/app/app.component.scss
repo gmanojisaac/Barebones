@@ -110,9 +110,10 @@ mat-panel-description mat-card{
   $color : rgb(190,230,180);
   $color-dark : darken($color, 55%);
   $color-light : lighten($color, 5%);
-
+  
 // use only the available space inside the 400x400 frame
 .frame {
+
   position: absolute;
   top: 50%;
   left: 50%;
@@ -122,7 +123,6 @@ mat-panel-description mat-card{
   margin-left: -200px;
   border-radius: 2px;
 	box-shadow: 4px 8px 16px 0 rgba(0,0,0,0.1);
-	overflow: hidden;
   background: linear-gradient(to bottom left, $color-dark, $color);
 	background-size : 125% 125%;
 	color : $color-dark;
