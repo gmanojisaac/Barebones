@@ -2,8 +2,10 @@
 
  <div fxLayout="column">
     <mat-card *ngIf="SectionsReady !== undefined" >
-    <mat-card-header style="padding:12%; border:solid; background-color: black;color:white;">
-      <span style="margin-top:2%;">{{latestProject}} </span>  <mat-chip color="primary" selected style=" cursor: pointer;margin-left:5%;">View Tasks</mat-chip>
+    <mat-card-header style="padding-top:10% ;padding-bottom:10%; border:solid; background-color: black;color:white;" >
+      <span style="margin-top:2%;margin-right:25%;" >{{latestProject}} </span> 
+      
+      <mat-chip color="primary" selected style=" cursor: pointer;">View Tasks</mat-chip>
     </mat-card-header>
     
       <mat-tree
