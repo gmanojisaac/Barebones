@@ -150,7 +150,7 @@
         </div>
     </div>
     <ng-template #startPage >
-        <mat-toolbar>
+        <mat-toolbar color="primary">
             <h1>
                 StepsWise Tracking Tool
             </h1>
@@ -305,7 +305,7 @@
 
                                     </mat-panel-title>
                                     <mat-panel-description style=" border-style:unset !important;">
-                                        <mat-card fxLayout="column">
+                                        <mat-card fxLayout="column" >
                                             <span mat-card-avatar
                                                 [ngStyle]="{'background-image': 'url(' + detail.photoUrl + ')', 'background-size': 'cover' }"></span>
                                         </mat-card>
@@ -328,9 +328,13 @@
 
             </mat-grid-tile>
 
-            <mat-grid-tile colspan="1" rowspan="1">
-                <app-nested-tree [Sections]="Sections" [latestProject]="startProject" fxFlex fxFlexAlign="center">
+            <mat-grid-tile colspan="1" rowspan="1"  >
+                <div class="InitScreen" >
+                    <div class=" frame" >
+                <app-nested-tree  style="overflow-y:auto;" [Sections]="Sections" [latestProject]="startProject" fxFlex fxFlexAlign="center">
                 </app-nested-tree>
+                </div>
+                </div>
 
             </mat-grid-tile>
         </mat-grid-list>

@@ -63,8 +63,14 @@ ul {
 
 mat-tree{
     background: linear-gradient(to bottom left, $color-dark, $color);
+    font-family: 'Open Sans', Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   mat-card {
     background: linear-gradient(to bottom left, $color-dark, $color);
+    font-family: 'Open Sans', Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
