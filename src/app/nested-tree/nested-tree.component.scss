@@ -56,3 +56,15 @@ ul {
 .mat-icon-button {
   z-index: 100;
 }
+
+  $color : rgb(190,230,180);
+  $color-dark : darken($color, 55%);
+  $color-light : lighten($color, 5%);
+
+mat-tree{
+    background: linear-gradient(to bottom left, $color-dark, $color);
+  }
+
+  mat-card {
+    background: linear-gradient(to bottom left, $color-dark, $color);
+  }

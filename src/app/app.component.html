@@ -3,7 +3,7 @@
     <div *ngIf="(loggedinstate | async) === 'firstpage' as myloggedinstate; else startPage">
         <mat-toolbar color="primary">
             <h1>
-                StepsWise Tracking Tool-Here
+                StepsWise Tasking Tool
             </h1>
             <span fxFlex="grow"></span>
             <div fxHide.lt-sm>
@@ -18,7 +18,7 @@
         <div>
             <mat-grid-list cols="3" rowHeight="100vh">
                 <mat-grid-tile colspan="1" rowspan="1" [style.background]="'cyan'">
-                    <div *ngIf="(myprofilevalbef | async) as myprofilevalbefReady; else myprofilevalbefNotReady" >
+                    <div *ngIf="(myprofilevalbef | async) as myprofilevalbefReady; else myprofilevalbefNotReady">
                         <mat-label style="margin-left:20%;">
                             Profile Details:
                         </mat-label>
@@ -60,13 +60,13 @@
                                 <mat-card-content class="empty-label">
                                     <form [formGroup]="myprojectControls?.addProfileDetails" fxLayout="row wrap"
                                         fxLayoutAlign="center center">
-                                        <mat-form-field appearance="fill" floatLabel="Edit Sub-Heading" >
+                                        <mat-form-field appearance="fill" floatLabel="Edit Sub-Heading">
                                             <mat-label>Update DisplayName</mat-label>
                                             <input matInput placeholder="Sub-Heading"
                                                 formControlName="profilenameControl">
                                         </mat-form-field>
 
-                                        <mat-form-field appearance="fill" floatLabel="Edit Sub-Heading" >
+                                        <mat-form-field appearance="fill" floatLabel="Edit Sub-Heading">
                                             <mat-label>Upadate Photo</mat-label>
                                             <input matInput placeholder="Sub-Heading" formControlName="photourlControl">
                                         </mat-form-field>
@@ -82,14 +82,13 @@
                                             <input matInput placeholder="Sub-Heading" formControlName="genderControl">
                                         </mat-form-field>
 
-                                        <mat-form-field appearance="fill" floatLabel="Edit Sub-Heading" >
+                                        <mat-form-field appearance="fill" floatLabel="Edit Sub-Heading">
                                             <mat-label>Update areasOfInterest</mat-label>
                                             <input matInput placeholder="Sub-Heading"
                                                 formControlName="areasOfInterestControl">
                                         </mat-form-field>
 
-                                        <mat-form-field appearance="fill" floatLabel="Edit Sub-Heading"
-                                        >
+                                        <mat-form-field appearance="fill" floatLabel="Edit Sub-Heading">
                                             <mat-label>Update skills</mat-label>
                                             <input matInput placeholder="Sub-Heading" formControlName="skillsControl">
                                         </mat-form-field>
@@ -104,14 +103,14 @@
                         </ng-template>
                     </div>
                     <ng-template #myprofilevalbefNotReady>
-                        <mat-card class="list" *ngIf="myprojectFlags.newuserProfileDetails === false"
-                        fxLayout="column" fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
-                        <mat-card-content class="empty-label">
-                            Do You want to Create New User?</mat-card-content>
-                        <mat-card-actions>
-                            <button mat-raised-button color="primary" (click)="CreateNewUser()">NewUser</button>
-                        </mat-card-actions>
-                    </mat-card>
+                        <mat-card class="list" *ngIf="myprojectFlags.newuserProfileDetails === false" fxLayout="column"
+                            fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
+                            <mat-card-content class="empty-label">
+                                Do You want to Create New User?</mat-card-content>
+                            <mat-card-actions>
+                                <button mat-raised-button color="primary" (click)="CreateNewUser()">NewUser</button>
+                            </mat-card-actions>
+                        </mat-card>
                     </ng-template>
                 </mat-grid-tile>
 
@@ -119,36 +118,39 @@
 
                     <mat-accordion>
                         <mat-expansion-panel *ngFor="let detail of DisplayprojectDetails">
-                          <mat-expansion-panel-header >
-                            <mat-panel-title fxFlexAlign="center" fxFlex="grow">
-                                {{detail.projectName}}
-                            </mat-panel-title>
-                            <mat-panel-description>
-                                <div mat-card-avatar [ngStyle]="{'background-image': 'url(' + detail.photoUrl + ')', 'background-size': 'cover'  }" ></div>
-                            </mat-panel-description>
-                          </mat-expansion-panel-header>
-                          <div fxLayout="column">
-                            {{detail.description}}
-                            Created: {{detail.creationDate.toDate() | date:'dd-mm-yyyy'}}
-                          </div>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title fxFlexAlign="center" fxFlex="grow">
+                                    {{detail.projectName}}
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                    <div mat-card-avatar
+                                        [ngStyle]="{'background-image': 'url(' + detail.photoUrl + ')', 'background-size': 'cover'  }">
+                                    </div>
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                            <div fxLayout="column">
+                                {{detail.description}}
+                                Created: {{detail.creationDate.toDate() | date:'dd-mm-yyyy'}}
+                            </div>
 
                         </mat-expansion-panel>
-                        
-                        
-                    </mat-accordion>     
-                   
+
+
+                    </mat-accordion>
+
                 </mat-grid-tile>
 
-                <mat-grid-tile colspan="1" rowspan="1" [style.background]="'blue'" >
-                   
-                    <app-nested-tree  [Sections]="Sections" [latestProject]="myuserProfile.myusrinfoFromDb?.projectName"  fxFlex fxFlexAlign="center"></app-nested-tree>
+                <mat-grid-tile colspan="1" rowspan="1" [style.background]="'blue'">
+
+                    <app-nested-tree [Sections]="Sections" [latestProject]="myuserProfile.myusrinfoFromDb?.projectName"
+                        fxFlex fxFlexAlign="center"></app-nested-tree>
                 </mat-grid-tile>
 
             </mat-grid-list>
         </div>
     </div>
-    <ng-template #startPage>
-        <mat-toolbar >
+    <ng-template #startPage >
+        <mat-toolbar>
             <h1>
                 StepsWise Tracking Tool
             </h1>
@@ -157,19 +159,18 @@
                 Convert your work into tasks
             </div>
 
-                <firebase-ui (signInSuccessWithAuthResult)="successCallback($event)"
-                (signInFailure)="errorCallback($event)"
+            <firebase-ui (signInSuccessWithAuthResult)="successCallback($event)" (signInFailure)="errorCallback($event)"
                 (uiShown)="uiShownCallback()"></firebase-ui>
 
         </mat-toolbar>
-            <mat-grid-list cols="3" rowHeight="100vh">
-                <mat-grid-tile colspan="1" rowspan="1" [style.background]="'cyan'" fxLayout="row wrap">
+        <mat-grid-list cols="3" rowHeight="42.3em" style="background-color: thistle;">
+            <mat-grid-tile colspan="1" rowspan="1"  fxLayout="row wrap">
 
-                    <div *ngIf="(latestprofile | async) as myprofilevalbefReady; else myprofileDetailsNotReady" >
-                        <mat-label style="margin-left:20%;">
-                            Profile Details:
-                        </mat-label>
-                        <pre style="margin-left:20%;">
+                <div *ngIf="(latestprofile | async) as myprofilevalbefReady; else myprofileDetailsNotReady">
+                    <mat-label style="margin-left:20%;">
+                        Profile Details:
+                    </mat-label>
+                    <pre style="margin-left:20%;">
                         MembershipEnd: {{myprofilevalbefReady?.MembershipEnd}}
                         MembershipType:{{myprofilevalbefReady?.MembershipType}}
                         projectLocation: {{myprofilevalbefReady?.projectLocation}}
@@ -184,11 +185,55 @@
                         Skills: {{myprofilevalbefReady?.skills}}
                         Location: {{myprofilevalbefReady?.location}}
                     </pre>
-                    </div>
+                </div>
 
-                    <ng-template #myprofileDetailsNotReady>
-                        Start Screen
-                        <!--mat-card class="list" *ngIf="myprojectFlags.newuserProfileDetails === false"
+                <ng-template #myprofileDetailsNotReady>
+                    <div class="InitScreen">
+                        <div class="frame">
+                            <div class="center">
+                                <div class="card">
+                                    <div class="left">
+                                        <div class="avatar">
+                                            <div class="circle">
+                                                <div class="circle">
+
+                                                    <img mat-card-avatar
+                                                    [ngStyle]="{'background-image': 'url(' + 'https://pbs.twimg.com/profile_images/894730722271010816/1g-2p3_m_400x400.jpg' + ')', 'background-size': 'contain' }">
+                                                </div>
+
+                                                
+                                            </div>
+
+                                        </div>
+                                        <div class="info">
+                                            <span class="big">salix dubois</span>
+                                            <span class="small">programmer</span>
+                                        </div>
+                                        <div class="buttons">
+                                            <button class="flw">Tasks</button>
+                                            <button class="msg">Email</button>
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <div class="stats posts">
+                                            <span class="big"> 523</span>
+                                            <span class="small">Tasks</span>
+                                        </div>
+                                        <div class="stats likes">
+                                            <span class="big">1387</span>
+                                            <span class="small"> likes</span>
+
+                                        </div>
+                                        <div class="stats flwrs">
+                                            <span class="big"> Member</span>
+                                            <span class="small">Since Jan2020</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>      
+                        </div>
+                    </div>  
+                                <!--mat-card class="list" *ngIf="myprojectFlags.newuserProfileDetails === false"
                             fxLayout="column" fxLayout.lt-sm="column" fxLayoutAlign="space-around center">
                             <mat-card-content class="empty-label">
                                 Do You want to Add User Profile?</mat-card-content>
@@ -243,48 +288,63 @@
                                     (click)="UpdateUserProfile()">Update</button>
                             </mat-card-actions>
                         </mat-card-->
-                    </ng-template>
+                </ng-template>
 
-                </mat-grid-tile>
+            </mat-grid-tile>
 
-                <mat-grid-tile colspan="1" rowspan="1" [style.background]="'red'">
-                    <mat-accordion *ngIf="DisplayprojectDetails| async as detailsdisplayed">
-                        <mat-expansion-panel *ngFor="let detail of detailsdisplayed" (click)="expansionClick(detail)">
-                          <mat-expansion-panel-header >
-                            <mat-panel-title  >
-                                {{detail.projectName}}
-                            </mat-panel-title>
-                            <mat-panel-description fxFlex >
-                                <div mat-card-avatar [ngStyle]="{'background-image': 'url(' + detail.photoUrl + ')', 'background-size': 'cover'  }" ></div>
-                            </mat-panel-description>
-                          </mat-expansion-panel-header>
-                          <div fxLayout="column">
-                            {{detail.description}}
-                            Created: {{detail.creationDate.toDate() | date:'dd-mm-yyyy'}}
-                          </div>
-                        </mat-expansion-panel>                      
-                    </mat-accordion>     
-                   
-                </mat-grid-tile>
+            <mat-grid-tile colspan="1" rowspan="1" >
+                <mat-tab-group>
+                    <mat-tab label="Tasks">
+                        <mat-accordion *ngIf="DisplayprojectDetails| async as detailsdisplayed">
+                            <mat-expansion-panel *ngFor="let detail of detailsdisplayed"
+                                (click)="expansionClick(detail)">
+                                <mat-expansion-panel-header >
+                                    <mat-panel-title fxFlex="grow">
+                                        <span fxFlexAlign="center">{{detail.projectName}}</span>
 
-                <mat-grid-tile colspan="1" rowspan="1" [style.background]="'blue'" >                   
-                    <app-nested-tree   *ngIf="startScreen !== 'start' ; else startit" [Sections]="Sections" [latestProject]="startProject"  fxFlex fxFlexAlign="center"></app-nested-tree>
-                    <ng-template #startit>
-                        Here
-                    </ng-template>
-                </mat-grid-tile>
-            </mat-grid-list>
+
+                                    </mat-panel-title>
+                                    <mat-panel-description style=" border-style:unset !important;">
+                                        <mat-card fxLayout="column">
+                                            <span mat-card-avatar
+                                                [ngStyle]="{'background-image': 'url(' + detail.photoUrl + ')', 'background-size': 'cover' }"></span>
+                                        </mat-card>
+
+
+                                    </mat-panel-description>
+                                </mat-expansion-panel-header>
+                                <div fxLayout="column">
+                                    {{detail.description}}
+                                    Created: {{detail.creationDate.toDate() | date:'dd-mm-yyyy'}}
+                                </div>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </mat-tab>
+                    <mat-tab label="Your Tasks"> Content 2 </mat-tab>
+                    <mat-tab label="Subscription"> Content 3 </mat-tab>
+                </mat-tab-group>
+
+
+
+            </mat-grid-tile>
+
+            <mat-grid-tile colspan="1" rowspan="1">
+                <app-nested-tree [Sections]="Sections" [latestProject]="startProject" fxFlex fxFlexAlign="center">
+                </app-nested-tree>
+
+            </mat-grid-tile>
+        </mat-grid-list>
 
     </ng-template>
 </div>
 <ng-template #onlineAndAuthNotReady>
-    <div *ngIf="(myonline | async) as myonlineReady; else myonlineNotReady">     
-          
+    <div *ngIf="(myonline | async) as myonlineReady; else myonlineNotReady">
+
         <div *ngIf="(myauth | async) as authready;else  authnotready">
-           H {{myauth | async| json}}
+            H {{myauth | async| json}}
         </div>
         <button (click)="componentLogOff()">Logoff</button>
-        <ng-template #authnotready>  
+        <ng-template #authnotready>
             {{myauth | async| json}}
             <div *ngIf="(myauth | async) === undefined">
                 <div fxLayoutAlign="center center" style="height:100vh;">
@@ -293,71 +353,74 @@
             </div>
             <div *ngIf="(myauth | async) === null" class="loginscreen" fxLayoutAlign="space-around center"
                 style="height:100vh;">
-                        <mat-toolbar color="primary">
-            <h1>
-                StepsWise Tracking Tool-Here
-            </h1>
-            <span fxFlex="grow"></span>
-            <div fxHide.lt-sm>
-                Welcome {{myuserProfile?.userAuthenObj?.displayName}}!
-            </div>
-            <button mat-icon-button>
-                <fa-icon (click)="componentLogOff()" class="fas faSignOutAlt fa-lg" [icon]="['fas', 'sign-out-alt']">
-                </fa-icon>
-            </button>
-        </mat-toolbar>
+                <mat-toolbar color="primary">
+                    <h1>
+                        StepsWise Tracking Tool-Here
+                    </h1>
+                    <span fxFlex="grow"></span>
+                    <div fxHide.lt-sm>
+                        Welcome {{myuserProfile?.userAuthenObj?.displayName}}!
+                    </div>
+                    <button mat-icon-button>
+                        <fa-icon (click)="componentLogOff()" class="fas faSignOutAlt fa-lg"
+                            [icon]="['fas', 'sign-out-alt']">
+                        </fa-icon>
+                    </button>
+                </mat-toolbar>
 
-        <div>
-            <mat-grid-list cols="3" rowHeight="100vh">
-                <mat-grid-tile colspan="1" rowspan="1" [style.background]="'cyan'">
-                    <!--firebase-ui (signInSuccessWithAuthResult)="successCallback($event)"
+                <div>
+                    <mat-grid-list cols="3" rowHeight="100vh">
+                        <mat-grid-tile colspan="1" rowspan="1" [style.background]="'cyan'">
+                            <!--firebase-ui (signInSuccessWithAuthResult)="successCallback($event)"
                     (signInFailure)="errorCallback($event)"
                     (uiShown)="uiShownCallback()"></firebase-ui-->
-                </mat-grid-tile>
+                        </mat-grid-tile>
 
-                <mat-grid-tile colspan="1" rowspan="1" [style.background]="'red'">
+                        <mat-grid-tile colspan="1" rowspan="1" [style.background]="'red'">
 
-                    <mat-accordion>
-                        <mat-expansion-panel *ngFor="let detail of DisplayprojectDetails">
-                          <mat-expansion-panel-header >
-                            <mat-panel-title fxFlexAlign="center" fxFlex="grow">
-                                {{detail.projectName}}
-                            </mat-panel-title>
-                            <mat-panel-description>
-                                <div mat-card-avatar [ngStyle]="{'background-image': 'url(' + detail.photoUrl + ')', 'background-size': 'cover'  }" ></div>
-                            </mat-panel-description>
-                          </mat-expansion-panel-header>
-                          <div fxLayout="column">
-                            {{detail.description}}
-                            Created: {{detail.creationDate.toDate() | date:'dd-mm-yyyy'}}
-                          </div>
+                            <mat-accordion>
+                                <mat-expansion-panel *ngFor="let detail of DisplayprojectDetails">
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title fxFlexAlign="center" fxFlex="grow">
+                                            {{detail.projectName}}
+                                        </mat-panel-title>
+                                        <mat-panel-description>
+                                            <div mat-card-avatar
+                                                [ngStyle]="{'background-image': 'url(' + detail.photoUrl + ')', 'background-size': 'cover'  }">
+                                            </div>
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
+                                    <div fxLayout="column">
+                                        {{detail.description}}
+                                        Created: {{detail.creationDate.toDate() | date:'dd-mm-yyyy'}}
+                                    </div>
 
-                        </mat-expansion-panel>
-                        
-                        
-                    </mat-accordion>     
-                   
-                </mat-grid-tile>
+                                </mat-expansion-panel>
 
-                <mat-grid-tile colspan="1" rowspan="1" [style.background]="'blue'" >                   
-                    <app-nested-tree  [Sections]="Sections" latestProject="Angular interview"  fxFlex fxFlexAlign="center"></app-nested-tree>
-                </mat-grid-tile>
 
-            </mat-grid-list>
-        </div>
+                            </mat-accordion>
+
+                        </mat-grid-tile>
+
+                        <mat-grid-tile colspan="1" rowspan="1" [style.background]="'blue'">
+                            <app-nested-tree [Sections]="Sections" latestProject="Angular interview" fxFlex
+                                fxFlexAlign="center"></app-nested-tree>
+                        </mat-grid-tile>
+
+                    </mat-grid-list>
+                </div>
 
 
             </div>
         </ng-template>
     </div>
 
-    <ng-template #myonlineNotReady>        
+    <ng-template #myonlineNotReady>
         <div *ngIf="(myonline | async) == false">
 
             <div fxLayoutAlign="center center" style="height:100vh;">
                 Lost Internet Connection!
             </div>
-        </div>        
+        </div>
     </ng-template>
 </ng-template>
-
