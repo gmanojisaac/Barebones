@@ -20,6 +20,10 @@ import {
 import { AngularFirestoreDocument } from '@angular/fire/firestore';
 import {FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult, FirebaseuiAngularLibraryService} from 'firebaseui-angular';
 
+import '@firebase/auth';
+import { auth as uiAuth } from 'firebaseui';
+import 'firebaseui/dist/firebaseui.css';
+
 
 @Component({
   selector: 'app-root',
