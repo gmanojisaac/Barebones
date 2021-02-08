@@ -1,7 +1,7 @@
 
 import { Component, ViewChild,AfterViewInit } from '@angular/core';
 import { BehaviorSubject, Subscription, Observable,of } from 'rxjs';
-import { UserdataService,MainSectionGroup, userProfile,usrinfo, projectFlags, projectDetail, usrinfoDetails,projectControls } from './service/userdata.service';
+import { UserdataService,MainSectionGroup, userProfile,completeinfo, projectFlags, projectDetail, usrinfoDetails,projectControls } from './service/userdata.service';
 import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase/app';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -23,7 +23,16 @@ import {FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult, Firebase
 import '@firebase/auth';
 import { auth as uiAuth } from 'firebaseui';
 import 'firebaseui/dist/firebaseui.css';
+import { FormGroupDirective, NgForm} from '@angular/forms';
+import {ErrorStateMatcher} from '@angular/material/core';
 
+/** Error when invalid control is dirty, touched, or submitted. */
+export class MyErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    const isSubmitted = form && form.submitted;
+    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
+  }
+}
 
 @Component({
   selector: 'app-root',
@@ -42,6 +51,7 @@ import 'firebaseui/dist/firebaseui.css';
 
 })
 export class AppComponent {
+  myphotourl='https://pbs.twimg.com/profile_images/894730722271010816/1g-2p3_m_400x400.jpg';
   title = 'goldenNoStrict';
   startScreen="start";
   startProject='Angular interview';
@@ -93,15 +103,28 @@ export class AppComponent {
     });
     return this.getSectionsBehaviourSub;
   };
-
-  latestprofile = of(undefined);
+  latestprofileStartValue:completeinfo={
+    areaOfinterest:'Angular',
+    email:'test@gmail.com',
+    gender:'male',
+    location:'Nagercoil',
+    membershipEnd: firebase. firestore. Timestamp.fromDate(new Date()),
+    photoUrl:'https://pbs.twimg.com/profile_images/894730722271010816/1g-2p3_m_400x400.jpg',
+    membershipType:'Member',
+    profileName:'Salix Dubois',
+    projectLocation:'Nagercoil',
+    skills:'Angular',
+    tasksNo:100,
+    likesNo:100
+  }
+  latestprofile = of(this.latestprofileStartValue);
   getlatestprofileSubscription: Subscription;
   getlatestprofileBehaviourSub = new BehaviorSubject(undefined);
   getlatestprofile = (MainAndSubSectionkeys: AngularFirestoreDocument<any>) => {
     if (this.getlatestprofileSubscription !== undefined) {
       this.getlatestprofileSubscription.unsubscribe();
     }
-    this.getlatestprofileSubscription = MainAndSubSectionkeys.valueChanges().subscribe((val: any) => {
+    this.getlatestprofileSubscription = MainAndSubSectionkeys.valueChanges().subscribe((val: projectDetail) => {
       
             this.getlatestprofileBehaviourSub.next(val);
 
@@ -160,7 +183,16 @@ myusrinfoDetails:usrinfoDetails={
   myprofileDetails: Observable<usrinfoDetails>= new BehaviorSubject(undefined);
   @ViewChild('drawer') public sidenav: MatSidenav;
   DisplayprojectDetails:Observable<projectDetail[]>;
+  DisplayPrivateprojectDetails:Observable<projectDetail[]>=docData(this.db.firestore.doc('projectList/' + 'q9Y1xWGXNwTh6yHhUahuuEU2GZI2'));
+  
+  emailFormControl = new FormControl('', [
+    Validators.required,
+    Validators.email,
+  ]);
 
+  matcher = new MyErrorStateMatcher();
+  optionsTasks: string[] =[];
+  filteredTasksOptions: Observable<string[]>;
   constructor(
     public afAuth: AngularFireAuth,
     public developmentservice: UserdataService,
@@ -169,7 +201,20 @@ myusrinfoDetails:usrinfoDetails={
     public dialog: MatDialog, public firebaseuiAngularLibraryService: FirebaseuiAngularLibraryService
   ) {
     this.firebaseuiAngularLibraryService.firebaseUiInstance.disableAutoSignIn();
-
+    this.filteredTasksOptions= this.emailFormControl.valueChanges.pipe(
+      startWith(''),
+      switchMap(value => {
+        if(value === ''){
+          return docData(this.db.firestore.doc('projectList/publicProject')).pipe(
+            map((projectDetails:any)=>{
+               this.DisplayprojectDetails= of(projectDetails.public);  
+               return this._filter(value)
+            })
+          );
+        }
+        return this._filter(value)
+      })
+    );
     const addProfileDetailsSub=  this.myprojectControls.addProfileDetails.valueChanges.pipe(
       startWith({   
         profilename: '',
@@ -261,7 +306,11 @@ myusrinfoDetails:usrinfoDetails={
         }
       })
     );
+  }
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
 
+    return this.optionsTasks.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
   }
   expansionClick($event){
     this.startScreen= 'continue';
@@ -269,6 +318,9 @@ myusrinfoDetails:usrinfoDetails={
     this.getSectionsSubscription?.unsubscribe();
     this.Sections = this.getSections(this.db.doc('projectKey/' + $event.projectName));
     this.latestprofile= this.getlatestprofile(this.db.doc('profile/' + $event.projectUid));
+    this.myphotourl= $event.photoUrl;
+    this.DisplayPrivateprojectDetails= docData(this.db.firestore.doc('projectList/' + $event.projectUid));
+
   }
   loadFirstPageKeys(profileData: any) {
     if (profileData !== undefined) {//norecords

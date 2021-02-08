@@ -7,6 +7,20 @@ import { map, first } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormControl, FormGroup } from '@angular/forms';
 
+export interface completeinfo{
+  areaOfinterest:string;
+  email:string;
+  gender:string;
+  location:string;
+  membershipEnd:firebase. firestore. Timestamp;
+  photoUrl:string,
+  membershipType:string;
+  profileName:string;
+  projectLocation:string;
+  skills:string;
+  tasksNo:number;
+  likesNo:number;
+}
 export interface projectDetail{
   creationDate:Date;                      
   description:string;

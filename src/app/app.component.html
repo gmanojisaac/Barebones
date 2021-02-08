@@ -152,7 +152,7 @@
     <ng-template #startPage >
         <mat-toolbar color="primary">
             <h1>
-                StepsWise Tracking Tool
+                StepsWise Tasking Tool
             </h1>
             <span fxFlex="grow"></span>
             <div fxHide.gt-sm="true">
@@ -167,7 +167,54 @@
             <mat-grid-tile colspan="1" rowspan="1"  fxLayout="row wrap">
 
                 <div *ngIf="(latestprofile | async) as myprofilevalbefReady; else myprofileDetailsNotReady">
-                    <mat-label style="margin-left:20%;">
+                    <div class="InitScreen">
+                        <div class="frame">
+                            <div class="center">
+                                <div class="card">
+                                    <div class="left">
+                                        <div class="avatar">
+                                            <div class="circle">
+                                                <div class="circle">
+
+                                                    <img mat-card-avatar
+                                                    [ngStyle]="{'background-image': 'url(' + myprofilevalbefReady?.photoUrl + ')', 'background-size': 'contain' }">
+                                                </div>
+
+                                                
+                                            </div>
+
+                                        </div>
+                                        <div class="info">
+                                            <span class="big">{{myprofilevalbefReady.profileName}}</span>
+                                            <span class="small">{{myprofilevalbefReady.skills}}</span>
+                                           
+                                        </div>
+                                        <div class="buttons">
+                                            <button class="flw">Tasks</button>
+                                            <button class="msg">Email</button>
+                                            <button class="msg">More</button>
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <div class="stats posts">
+                                            <span class="big"> {{myprofilevalbefReady.tasksNo}}</span>
+                                            <span class="small">Tasks</span>
+                                        </div>
+                                        <div class="stats likes">
+                                            <span class="big">{{myprofilevalbefReady.likesNo}}</span>
+                                            <span class="small"> likes</span>
+
+                                        </div>
+                                        <div class="stats flwrs">
+                                            <span class="big"> {{myprofilevalbefReady.membershipType}}</span>
+                                            <span class="small">Till {{myprofilevalbefReady?.membershipEnd.toDate() |  date}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>      
+                        </div>
+                    </div> 
+                    <!--mat-label style="margin-left:20%;">
                         Profile Details:
                     </mat-label>
                     <pre style="margin-left:20%;">
@@ -184,7 +231,7 @@
                         AreasOfInterest:{{myprofilevalbefReady?.areaOfinterest}}
                         Skills: {{myprofilevalbefReady?.skills}}
                         Location: {{myprofilevalbefReady?.location}}
-                    </pre>
+                    </pre-->
                 </div>
 
                 <ng-template #myprofileDetailsNotReady>
@@ -198,7 +245,7 @@
                                                 <div class="circle">
 
                                                     <img mat-card-avatar
-                                                    [ngStyle]="{'background-image': 'url(' + 'https://pbs.twimg.com/profile_images/894730722271010816/1g-2p3_m_400x400.jpg' + ')', 'background-size': 'contain' }">
+                                                    [ngStyle]="{'background-image': 'url(' + myphotourl + ')', 'background-size': 'contain' }">
                                                 </div>
 
                                                 
@@ -212,6 +259,7 @@
                                         <div class="buttons">
                                             <button class="flw">Tasks</button>
                                             <button class="msg">Email</button>
+                                            <button class="msg">More</button>
                                         </div>
                                     </div>
                                     <div class="right">
@@ -226,7 +274,7 @@
                                         </div>
                                         <div class="stats flwrs">
                                             <span class="big"> Member</span>
-                                            <span class="small">Since Jan2020</span>
+                                            <span class="small">Till </span>
                                         </div>
                                     </div>
                                 </div>
@@ -295,6 +343,21 @@
             <mat-grid-tile colspan="1" rowspan="1" >
                 <mat-tab-group>
                     <mat-tab label="Tasks">
+
+                        <form fxFlexOffset="10%" class="example-form">
+                            <mat-form-field class="example-full-width">
+                              <mat-label>Search</mat-label>
+                              <input type="text" matInput [formControl]="emailFormControl" [errorStateMatcher]="matcher"
+                                     placeholder="Enter Task Name">
+                              <mat-hint>Search for Public Tasks!</mat-hint>
+                              <mat-error *ngIf="emailFormControl.hasError('text') && !emailFormControl.hasError('required')">
+                                Please enter a valid Task Name
+                              </mat-error>
+                              <mat-error *ngIf="emailFormControl.hasError('required')">
+                                Task Name is <strong>required</strong>
+                              </mat-error>
+                            </mat-form-field>
+                          </form>
                         <mat-accordion *ngIf="DisplayprojectDetails| async as detailsdisplayed">
                             <mat-expansion-panel *ngFor="let detail of detailsdisplayed"
                                 (click)="expansionClick(detail)">
@@ -320,8 +383,37 @@
                             </mat-expansion-panel>
                         </mat-accordion>
                     </mat-tab>
-                    <mat-tab label="Your Tasks"> Content 2 </mat-tab>
-                    <mat-tab label="Subscription"> Content 3 </mat-tab>
+                    <mat-tab label="Your Tasks">
+                        <button fxFlexOffset="10%" mat-raised-button color="warn"> Search</button>
+
+                        <mat-accordion *ngIf="DisplayPrivateprojectDetails| async as detailsdisplayed">
+
+                            <mat-expansion-panel *ngFor="let detail of detailsdisplayed.ownerRecord">
+                                <mat-expansion-panel-header >
+                                    <mat-panel-title fxFlex="grow">
+                                        <span fxFlexAlign="center">{{detail.projectName}}</span>
+
+
+                                    </mat-panel-title>
+                                    <mat-panel-description style=" border-style:unset !important;">
+                                        <mat-card fxLayout="column" >
+                                            <span mat-card-avatar
+                                                [ngStyle]="{'background-image': 'url(' + detail.photoUrl + ')', 'background-size': 'cover' }"></span>
+                                        </mat-card>
+
+
+                                    </mat-panel-description>
+                                </mat-expansion-panel-header>
+                                <div fxLayout="column">
+                                    {{detail.description}}
+                                    Created: {{detail.creationDate.toDate() | date:'dd-mm-yyyy'}}
+                                </div>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </mat-tab>
+                    <mat-tab label="Subscription"> 
+                        Content 3 
+                    </mat-tab>
                 </mat-tab-group>
 
 
@@ -338,7 +430,6 @@
 
             </mat-grid-tile>
         </mat-grid-list>
-
     </ng-template>
 </div>
 <ng-template #onlineAndAuthNotReady>
